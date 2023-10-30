@@ -1,113 +1,130 @@
 <template>
-  <a-layout style="height: 100vh">
-    <a-layout-header class="header">
-      <div class="logo" />
-      <a-menu
-          v-model:selectedKeys="selectedKeys1"
-          theme="dark"
-          mode="horizontal"
-          style="line-height: 64px; "
-      >
-        <a-menu-item key="1">nav 1</a-menu-item>
-        <a-menu-item key="2">nav 2</a-menu-item>
-        <a-menu-item key="3">nav 3</a-menu-item>
-      </a-menu>
-    </a-layout-header>
-    <a-layout style="height: calc(100vh - 64px)">
-      <a-layout-sider
-          v-model:collapsed="collapsed"
-          collapsible
-          breakpoint="lg"
-          @collapse="onCollapse"
-          @breakpoint="onBreakpoint"
-          style="height: 100%; overflow: auto;"
-      >
-        <div class="logo" />
-        <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-          <a-menu-item key="1">
-            <pie-chart-outlined />
-            <span>Option 1</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <desktop-outlined />
-            <span>Option 2</span>
-          </a-menu-item>
-          <a-sub-menu key="sub1">
-            <template #title>
-              <span>
-                <user-outlined />
-                <span>User</span>
-              </span>
-            </template>
-            <a-menu-item key="3">Tom</a-menu-item>
-            <a-menu-item key="4">Bill</a-menu-item>
-            <a-menu-item key="5">Alex</a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub2">
-            <template #title>
-              <span>
-                <team-outlined />
-                <span>Team</span>
-              </span>
-            </template>
-            <a-menu-item key="6">Team 1</a-menu-item>
-            <a-menu-item key="8">Team 2</a-menu-item>
-          </a-sub-menu>
-          <a-menu-item key="9">
-            <file-outlined />
-            <span>File</span>
+  <div>
+    <a-layout class="layout">
+      <a-layout-header class="layout-header-container">
+        <div style="color: white;position: absolute; left: 0;padding-left: 1rem;">翻斗花园</div>
+        <a-menu
+            v-model:selectedKeys="selectedKeys"
+            theme="dark"
+            mode="horizontal"
+            style="line-height: 3rem;"
+        >
+          <a-menu-item :key="menu.value" v-for="menu in headerMenuList" style="border-radius: 0.4rem">
+            {{ menu.name }}
           </a-menu-item>
         </a-menu>
-      </a-layout-sider>
-      <a-layout style="height: calc(100vh - 64px); overflow: auto">
-        <!--        <a-layout-header style="background: #fff; padding: 0" />-->
-        <a-layout-content style="margin: 16px;">
+        <PlusOutlined class="header-item-icon"/>
 
-          <div style="padding: 24px; background: #fff; min-height: 360px; overflow:auto;">
-            <div v-for="i in 500">
-              div {{i}}
+        <!-- 启动台 -->
+        <a-popover placement="bottomRight" style="">
+          <template #content>
+            <div class="start-menu">
+              <div v-for="i in 10" style="width: 5rem;height: 5rem; border: 1px solid black;margin: 0.5rem">
+                {{ i }}
+              </div>
             </div>
+          </template>
+          <AppstoreFilled class="header-item-icon"/>
+        </a-popover>
+        <div class="header-item-avatar">
+          avatar
+        </div>
+      </a-layout-header>
+      <a-layout-content style="height: calc(100vh - 3rem); overflow: auto;">
+        <div style="background: #fff; padding: 24px;">
+          Content
+          <div v-for="i in 100">
+            {{ i }}
           </div>
-        </a-layout-content>
-      </a-layout>
+        </div>
+      </a-layout-content>
     </a-layout>
-  </a-layout>
+
+  </div>
 </template>
 
-<script lang="ts" setup>
-import {
-  PieChartOutlined,
-  DesktopOutlined,
-  UserOutlined,
-  TeamOutlined,
-  FileOutlined,
-} from '@ant-design/icons-vue';
-import { ref } from 'vue';
-const collapsed = ref<boolean>(false);
-const selectedKeys = ref<string[]>(['1']);
 
-const selectedKeys1 = ref<string[]>(['2']);
+<script setup lang="ts">
+import {ref} from 'vue';
+import {AppstoreFilled, PlusOutlined} from "@ant-design/icons-vue";
 
-const onCollapse = (collapsed: boolean, type: string) => {
-  console.log(collapsed, type);
-};
+const selectedKeys = ref<number[]>([0]);
 
-const onBreakpoint = (broken: boolean) => {
-  console.log(broken);
-};
+// 顶部菜单
+interface HeaderMenu {
+  name: string,
+  value: number,
+  order: number,
+}
+
+const headerMenuList = ref<HeaderMenu[]>([{
+  name: '照片',
+  value: 1,
+  order: 0,
+}, {
+  name: '电影',
+  value: 2,
+  order: 1,
+},
+])
+
 </script>
 
-<style scoped>
-#components-layout-demo-side .logo {
-  height: 32px;
-  margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
+
+<style lang="scss" scoped>
+//:deep(.full-modal) {
+//  .ant-modal {
+//    width: 100vw !important;
+//    max-width: 100vw !important;
+//    top: 0;
+//    padding-bottom: 0;
+//    margin: 0;
+//  }
+//
+//  .ant-modal-content {
+//    display: flex;
+//    flex-direction: column;
+//    height: calc(100vh);
+//  }
+//
+//  .ant-modal-body {
+//    flex: 1;
+//  }
+//}
+
+.start-menu {
+  display: grid;
+  //width: 17rem;
+  grid-template-columns: 33% 33% 33%;
+  gap: 1rem;
 }
 
-.site-layout .site-layout-background {
-  background: #fff;
+.layout-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 1rem;
+  padding: 0 1rem;
+  height: 3rem;
+  //background-color: #535bf2;
 }
-[data-theme='dark'] .site-layout .site-layout-background {
+
+.header-item-icon {
+  color: white;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.header-item-avatar {
+  border-radius: 100%;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid white;
+  color: white;
+  line-height: 2.5rem;
+}
+
+[data-theme='dark'] .site-layout-content {
   background: #141414;
 }
 </style>
