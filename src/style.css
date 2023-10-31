@@ -14,13 +14,16 @@
   -webkit-text-size-adjust: 100%;
 
   /* 盒子长宽包含内外边距+边框 */
-  box-sizing: border-box;
+  /*box-sizing: border-box;*/
 
 }
 
-.app-container{
+html{
   height: 100%;
-  width: 100%;
+}
+
+.app-container{
+  padding: 2rem;
 }
 
 
@@ -75,7 +78,7 @@ button:focus-visible {
   /*padding: 2rem;*/
   height: 100%;
   width: 100%;
-  text-align: center;
+
 }
 
 @media (prefers-color-scheme: light) {
