@@ -1,7 +1,7 @@
 <template>
   <div>
-    <a-layout class="layout">
-      <a-layout-header class="layout-header-container">
+    <n-layout class="layout">
+      <n-layout-header class="layout-header-container">
         <div style="color: white;position: absolute; left: 0;padding-left: 1rem;">翻斗花园</div>
         <a-menu
             v-model:selectedKeys="selectedKeys"
@@ -16,29 +16,20 @@
         <PlusOutlined class="header-item-icon"/>
 
         <!-- 启动台 -->
-        <a-popover placement="bottomRight" style="">
-          <template #content>
-            <div class="start-menu">
-              <div v-for="i in 10" style="width: 5rem;height: 5rem; border: 1px solid black;margin: 0.5rem">
-                {{ i }}
-              </div>
-            </div>
-          </template>
-          <AppstoreFilled class="header-item-icon"/>
-        </a-popover>
+        <AppstoreFilled class="header-item-icon"/>
         <div class="header-item-avatar">
           avatar
         </div>
-      </a-layout-header>
-      <a-layout-content style="height: calc(100vh - 3rem); overflow: auto;">
+      </n-layout-header>
+      <n-layout-content style="height: calc(100vh - 3rem); overflow: auto;">
         <div style="background: #fff; padding: 24px;">
           Content
           <div v-for="i in 100">
             {{ i }}
           </div>
         </div>
-      </a-layout-content>
-    </a-layout>
+      </n-layout-content>
+    </n-layout>
 
   </div>
 </template>

@@ -15,10 +15,18 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Login',
         component:()=>import('@/views/login/login.vue'),
     },{
-        path: '/user_manage',
+        path: '/user',
         name: 'UserManage',
-        component:()=>import('@/views/user_manage/userManage.vue'),
-    }
+        component:()=>import('@/views/user/userManage.vue'),
+    },{
+        path: '/siderMenu',
+        name: 'SiderMenu',
+        component:()=>import('@/components/layout/siderLayout/SiderLayout.vue'),
+    },{
+        path: '/media',
+        name: 'Media',
+        component:()=>import('@/views/media/Media.vue'),
+    },
 ]
 
 // RouterOptions是路由选项类型
