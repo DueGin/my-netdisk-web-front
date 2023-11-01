@@ -26,26 +26,6 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@ant-design/colors@^6.0.0":
-  "integrity" "sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ=="
-  "resolved" "https://registry.npmmirror.com/@ant-design/colors/-/colors-6.0.0.tgz"
-  "version" "6.0.0"
-  dependencies:
-    "@ctrl/tinycolor" "^3.4.0"
-
-"@ant-design/icons-svg@^4.2.1":
-  "integrity" "sha512-4QBZg8ccyC6LPIRii7A0bZUk3+lEDCLnhB+FVsflGdcWPPmV+j3fire4AwwoqHV/BibgvBmR9ZIo4s867smv+g=="
-  "resolved" "https://registry.npmmirror.com/@ant-design/icons-svg/-/icons-svg-4.3.1.tgz"
-  "version" "4.3.1"
-
-"@ant-design/icons-vue@^7.0.1":
-  "integrity" "sha512-eCqY2unfZK6Fe02AwFlDHLfoyEFreP6rBwAZMIJ1LugmfMiVgwWDYlp1YsRugaPtICYOabV1iWxXdP12u9U43Q=="
-  "resolved" "https://registry.npmmirror.com/@ant-design/icons-vue/-/icons-vue-7.0.1.tgz"
-  "version" "7.0.1"
-  dependencies:
-    "@ant-design/colors" "^6.0.0"
-    "@ant-design/icons-svg" "^4.2.1"
-
 "@antfu/utils@^0.7.5", "@antfu/utils@^0.7.6":
   "integrity" "sha512-pvFiLP2BeOKA/ZOS6jxx4XhKzdVLHDhGlFEaZ2flWWYf2xOqVniqpk38I04DFRyz+L0ASggl7SkItTc+ZLju4w=="
   "resolved" "https://registry.npmmirror.com/@antfu/utils/-/utils-0.7.6.tgz"
@@ -1188,11 +1168,6 @@
   "resolved" "https://registry.npmmirror.com/@css-render/vue3-ssr/-/vue3-ssr-0.15.12.tgz"
   "version" "0.15.12"
 
-"@ctrl/tinycolor@^3.4.0":
-  "integrity" "sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA=="
-  "resolved" "https://registry.npmmirror.com/@ctrl/tinycolor/-/tinycolor-3.6.1.tgz"
-  "version" "3.6.1"
-
 "@emotion/hash@~0.8.0":
   "integrity" "sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow=="
   "resolved" "https://registry.npmmirror.com/@emotion/hash/-/hash-0.8.0.tgz"
@@ -1280,6 +1255,18 @@
   "version" "5.1.0"
   dependencies:
     "@hapi/hoek" "^9.0.0"
+
+"@iconify/types@^2.0.0":
+  "integrity" "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="
+  "resolved" "https://registry.npmmirror.com/@iconify/types/-/types-2.0.0.tgz"
+  "version" "2.0.0"
+
+"@iconify/vue@^4.1.1":
+  "integrity" "sha512-RL85Bm/DAe8y6rT6pux7D2FJSiUEM/TPfyK7GrbAOfTSwrhvwJW+S5yijdGcmtXouA8MtuH9C7l4hiSE4mLMjg=="
+  "resolved" "https://registry.npmmirror.com/@iconify/vue/-/vue-4.1.1.tgz"
+  "version" "4.1.1"
+  dependencies:
+    "@iconify/types" "^2.0.0"
 
 "@josephg/resolvable@^1.0.0":
   "integrity" "sha512-CtzORUwWTTOTqfVtHaKRJ0I1kNQd1bpn3sUh8I3nJDVY+5/M/Oe1DnEWzPQvqq/xPIIkzzzIP7mfCoAjFRvDhg=="
@@ -1612,11 +1599,6 @@
   "version" "0.0.32"
   dependencies:
     "@types/node" "*"
-
-"@vicons/ionicons5@^0.12.0":
-  "integrity" "sha512-Iy1EUVRpX0WWxeu1VIReR1zsZLMc4fqpt223czR+Rpnrwu7pt46nbnC2ycO7ItI/uqDLJxnbcMC7FujKs9IfFA=="
-  "resolved" "https://registry.npmmirror.com/@vicons/ionicons5/-/ionicons5-0.12.0.tgz"
-  "version" "0.12.0"
 
 "@vitejs/plugin-vue@^4.2.3":
   "integrity" "sha512-xdguqb+VUwiRpSg+nsc2HtbAUSGak25DXYvpQQi4RVU1Xq1uworyoH/md9Rfd8zMmPR/pSghr309QNcftUVseg=="
@@ -6357,7 +6339,7 @@
     "@vue/compiler-sfc" "2.7.15"
     "csstype" "^3.1.0"
 
-"vue@^3.0.0", "vue@^3.0.11", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.3.4", "vue@>=3.0.3", "vue@2 || 3", "vue@3.3.7":
+"vue@^3.0.0", "vue@^3.0.11", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.3.4", "vue@>=3", "vue@2 || 3", "vue@3.3.7":
   "integrity" "sha512-YEMDia1ZTv1TeBbnu6VybatmSteGOS3A3YgfINOfraCbf85wdKHzscD6HSS/vB4GAtI7sa1XPX7HcQaJ1l24zA=="
   "resolved" "https://registry.npmmirror.com/vue/-/vue-3.3.7.tgz"
   "version" "3.3.7"
