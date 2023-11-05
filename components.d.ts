@@ -43,6 +43,8 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NCol: typeof import('naive-ui')['NCol']
     NDataTable: typeof import('naive-ui')['NDataTable']
+    NDialog: typeof import('naive-ui')['NDialog']
+    NDialogProvider: typeof import('naive-ui')['NDialogProvider']
     NDropdown: typeof import('naive-ui')['NDropdown']
     NForm: typeof import('naive-ui')['NForm']
     NFormItem: typeof import('naive-ui')['NFormItem']
@@ -63,5 +65,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SiderLayout: typeof import('./src/components/layout/siderLayout/SiderLayout.vue')['default']
     StartMenu: typeof import('./src/components/startMenu/StartMenu.vue')['default']
+    VideoPlayer: typeof import('./src/components/videoPlayer/VideoPlayer.vue')['default']
   }
 }

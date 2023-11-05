@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="login-form-container">
-      <a-form
+      <n-form
           :model="formState"
           name="normal_login"
           class="login-form"
@@ -9,38 +9,38 @@
           @finish="onFinish"
           @finishFailed="onFinishFailed"
       >
-        <a-form-item
+        <n-form-item
             label="用户名"
             name="username"
             :rules="[{ required: true, message: 'Please input your username!' }]"
         >
-          <a-input v-model:value="formState.username">
+          <n-input v-model:value="formState.username">
             <template #prefix>
-              <UserOutlined class="site-form-item-icon"/>
+              <icon icon="ant-design:user-outlined"/>
             </template>
-          </a-input>
-        </a-form-item>
+          </n-input>
+        </n-form-item>
 
-        <a-form-item
+        <n-form-item
             label="密码"
             name="password"
             :rules="[{ required: true, message: 'Please input your password!' }]"
         >
-          <a-input-password v-model:value="formState.password">
+          <n-input type="password" v-model:value="formState.password">
             <template #prefix>
-              <LockOutlined class="site-form-item-icon"/>
+              <icon icon="ant-design:lock-outlined"/>
             </template>
-          </a-input-password>
-        </a-form-item>
+          </n-input>
+        </n-form-item>
 
-        <a-form-item class="remember-me-item" name="remember" no-style>
+        <n-form-item class="remember-me-item" name="remember" no-style>
           <div style="display: flex; margin-left: 1rem;justify-content: space-between;">
-            <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+            <n-checkbox v-model:checked="formState.remember">Remember me</n-checkbox>
             <a class="login-form-forgot" href="">忘记密码？</a></div>
-        </a-form-item>
+        </n-form-item>
 
           <div style="display: flex; justify-content: flex-end; column-gap: 1rem;align-items: center;margin-top: 1rem;">
-            <a-button
+            <n-button
                 :disabled="disabled"
                 type="primary"
                 html-type="submit"
@@ -49,16 +49,16 @@
                 @click="login"
             >
               登录
-            </a-button>
+            </n-button>
             <a href="">现在注册！</a></div>
-      </a-form>
+      </n-form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {reactive, computed} from 'vue';
-import {UserOutlined, LockOutlined} from '@ant-design/icons-vue';
+import {computed, reactive} from 'vue';
+import {Icon} from "@iconify/vue";
 
 const layout = {
   labelCol: {span: 8},

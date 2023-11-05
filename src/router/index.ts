@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, Router, RouteRecordRaw, RouterOptions} from 'vue-router'
-import HeaderAndSiderLayout from "@/components/layout/headerAndSiderLayout/HeaderAndSiderLayout.vue";
+import MediaRouter from "@/router/components/MediaRouter.ts";
 //由于router的API默认使用了类型进行初始化，内部包含类型定义，所以本文内部代码中的所有数据类型是可以省略的
 //RouterRecordRaw是路由组件对象
 
@@ -28,26 +28,9 @@ const routes: Array<RouteRecordRaw> = [
     path: '/startMenu',
     name: 'StartMenu',
     component: () => import('@/components/startMenu/StartMenu.vue'),
-  }, {
-    path: '/media',
-    name: 'Media',
-    component: HeaderAndSiderLayout,
-    redirect: '/media/home',
-    meta: {
-      title: '媒体',
-    },
-    children: [
-      {
-        path: 'home',
-        name: 'MediaHome',
-        component: () => import('@/views/media/index.vue'),
-      },{
-        path: 'photo',
-        name: 'MediaPhoto',
-        component: () => import('@/views/media/MediaList.vue'),
-      },
-    ]
   },
+  MediaRouter,
+
 ]
 
 // RouterOptions是路由选项类型

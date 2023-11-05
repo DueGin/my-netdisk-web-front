@@ -1,5 +1,3 @@
-
-
 export default function getMenuListByType(type: string): Promise<Menu[]> {
   if (type === 'media') {
     return new Promise<Menu[]>(resolve => resolve(menuOptions))
@@ -19,14 +17,14 @@ const menuOptions: Menu[] = [
     key: 'photo',
     icon: 'tabler:photo',
     disabled: false,
-pathName: 'MediaPhoto'
+    pathName: 'MediaPhoto'
   },
   {
     label: '视频',
     key: 'a-wild-sheep-chase',
     disabled: true,
     icon: 'majesticons:video-line',
-    pathName: 'MediaVideo'
+    // pathName: 'MediaVideo'
   },
   {
     label: '电影',

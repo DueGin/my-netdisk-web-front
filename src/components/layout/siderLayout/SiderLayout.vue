@@ -58,7 +58,6 @@ getMenuListByType('media').then(res => {
 const handleIcon = (m) => {
   // 处理路由
   let l = m.label
-  console.log(l)
   m.label = ()=> h(
       RouterLink,
       {
