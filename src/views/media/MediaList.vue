@@ -1,11 +1,17 @@
 <template>
   <div class="app-container">
     <div class="media-tool-ctn">
-      <n-button type="primary" @click="clickEdit">编辑</n-button>
+      <n-button v-if="isShowCancelButton && !isAlwaysSelectAll" type="primary" @click="selectAll">全选</n-button>
+      <n-button v-if="isShowCancelButton && isAlwaysSelectAll" type="primary" @click="selectAll">取消全选</n-button>
       <n-button v-if="isShowCancelButton" type="primary" @click="clickCancel">取消</n-button>
+      <n-button v-else type="primary" @click="clickEdit">编辑</n-button>
     </div>
     <div class="media-container">
-      <div v-for="item in mediaList" class="media-item" @click="isOpenChoose && chooseItem(item)">
+      <div
+          v-for="item in mediaList"
+          :class="['media-item',{'cur-poi':isShowCancelButton}]"
+          @click="isOpenSelect && selectItem(item)"
+      >
         <n-image
             v-if="item.type === 'photo'"
             :src="item.src"
@@ -13,12 +19,14 @@
             style="border-radius: 0.5rem"
             :preview-disabled="isPreviewPhoto"
         />
-        <VideoPlayer v-if="item.type === 'video'" :isUseDialog="isUseVideoDialog"
-                     :src="item.src"
+        <VideoPlayer
+            v-if="item.type === 'video'"
+            :isUseDialog="isUseVideoDialog"
+            :src="item.src"
         />
-<!--        <n-icon size="2rem" style="position: absolute; ">-->
-<!--          <Icon icon="dashicons:yes-alt" color="#465e49" v-show="item.isChose" />-->
-<!--        </n-icon>-->
+        <n-icon v-if="item.isSelected" size="2rem" class="select-icon">
+          <Icon icon="zondicons:checkmark-outline" color="#758f69"/>
+        </n-icon>
       </div>
     </div>
   </div>
@@ -28,11 +36,11 @@
 import {ref} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 
-const mediaList = [
+const mediaList = ref([
   {
     id: 1,
     type: 'photo',
-    src: 'https://www.dmoe.cc/random.php'
+    src: 'https://img.moehu.org/pic.php?id=acghs'
   }, {
     id: 2,
     type: 'video',
@@ -52,8 +60,8 @@ const mediaList = [
   }, {
     id: 6,
     type: 'photo',
-    // src: 'https://image.anosu.top/pixiv/direct?r18=1' // r18
-    src: 'https://img.moehu.org/pic.php?id=acghs'
+    src: 'https://image.anosu.top/pixiv/direct?r18=1' // r18
+    // src: 'https://img.moehu.org/pic.php?id=acghs'
   }, {
     id: 7,
     type: 'photo',
@@ -71,24 +79,64 @@ const mediaList = [
     type: 'photo',
     src: 'https://api.r10086.com/%E6%A8%B1%E9%81%93%E9%9A%8F%E6%9C%BA%E5%9B%BE%E7%89%87api%E6%8E%A5%E5%8F%A3.php?%E5%9B%BE%E7%89%87%E7%B3%BB%E5%88%97=Fate%E7%AB%96%E5%B1%8F%E7%B3%BB%E5%88%971'
   },
-]
-
-// const mediaList = ref([])
+])
 
 
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
 const isUseVideoDialog = ref(true)
-const isCanChose = ref(false)
-const isOpenChoose = ref(false)
-const choseList = []
+const isOpenSelect = ref(false)
+const isAlwaysSelectAll = ref(false)
+// 选中的图片map
+const selectMap = new Map()
 
-const chooseItem = (item) => {
-  console.log(item)
-  choseList.push(item)
-  item.isChose = true
+
+// 全选
+const selectAll = () => {
+  if (isAlwaysSelectAll.value) {
+    console.log('cancel select all')
+    mediaList.value.forEach(t => {
+      t.isSelected = false
+    })
+
+    selectMap.clear()
+    isAlwaysSelectAll.value = false
+  } else {
+    console.log('select all')
+    mediaList.value.forEach(t => {
+      t.isSelected = true
+      selectMap.set(t.id, t)
+    })
+
+    isAlwaysSelectAll.value = true
+  }
 }
 
+// 选择图片
+const selectItem = (item) => {
+  console.log(item)
+  if (selectMap.has(item.id)) {
+    console.log('had')
+    selectMap.delete(item.id)
+    item.isSelected = false
+  } else {
+    console.log('no had')
+    selectMap.set(item.id, item)
+    item.isSelected = true
+  }
+  console.log(item)
+}
+
+// 清空选择的图片
+const clearSelectPhoto = () => {
+  for (let value of selectMap.values()) {
+    value.isSelected = false
+  }
+  isAlwaysSelectAll.value = false
+  selectMap.clear()
+}
+
+// 点击取消按钮
 const clickCancel = () => {
   // 不显示取消按钮
   isShowCancelButton.value = false
@@ -96,12 +144,13 @@ const clickCancel = () => {
   isPreviewPhoto.value = false
   // 打开使用视频dialog
   isUseVideoDialog.value = false
-  // 关闭选中媒体item样式
-  isCanChose.value = false
-
-  isOpenChoose.value = false
+  // 关闭点击事件
+  isOpenSelect.value = false
+  // 清空选中map
+  clearSelectPhoto()
 }
 
+// 点击编辑按钮
 const clickEdit = () => {
   // 禁用预览图片
   isPreviewPhoto.value = true
@@ -109,17 +158,29 @@ const clickEdit = () => {
   isShowCancelButton.value = true
   // 关掉视频dialog
   isUseVideoDialog.value = false
-  // 打开选中媒体item样式
-  isCanChose.value = true
 
-  isOpenChoose.value = true
+  // 打开点击事件
+  isOpenSelect.value = true
 }
 
 </script>
 
 <style scoped>
-.chose-item {
-  border: 1px solid blue;
+.select-icon {
+  position: absolute;
+  right: -0.3rem;
+  bottom: -0.3rem;
+}
+
+.cur-poi {
+  cursor: pointer;
+}
+
+.media-tool-ctn {
+  display: flex;
+  column-gap: 1rem;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
 }
 
 .media-container :deep(img) {
@@ -142,6 +203,7 @@ const clickEdit = () => {
   transition: all 1s;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .media-item:hover {
