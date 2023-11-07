@@ -32,7 +32,7 @@
 import {h, ref} from "vue";
 import {NIcon} from "naive-ui";
 import {Icon} from "@iconify/vue";
-import getMenuListByType from "@/apis/menu/menuRequest.ts";
+import {getMenuListByType} from "@/apis/menu/menuRequest.ts";
 import {RouterLink} from "vue-router";
 
 const props = defineProps({

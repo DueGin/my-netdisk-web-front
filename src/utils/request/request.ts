@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { errorCodeType } from './errorCode.ts';
-import {message} from "ant-design-vue";
+import {errorCodeType} from './errorCode.ts';
 
 // 创建axios实例
 const request = axios.create({
@@ -54,7 +53,7 @@ request.interceptors.response.use((res:any) => {
         if(code === 200){
             return Promise.resolve(res.data)
         }else{
-            message.error(msg)
+            // message.error(msg) todo
             return Promise.reject(res.data)
         }
     },
@@ -70,7 +69,7 @@ request.interceptors.response.use((res:any) => {
         else if (msg.includes("Request failed with status code")) {
             msg = "系统接口" + msg.substr(msg.length - 3) + "异常";
         }
-        message.error(msg)
+        // message.error(msg) todo
         return Promise.reject(error)
     }
 )

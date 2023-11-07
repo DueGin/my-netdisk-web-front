@@ -1,4 +1,4 @@
-export default function getMenuListByType(type: string): Promise<Menu[]> {
+export function getMenuListByType(type: string): Promise<Menu[]> {
   if (type === 'media') {
     return new Promise<Menu[]>(resolve => resolve(menuOptions))
   }
