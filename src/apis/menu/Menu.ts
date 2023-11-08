@@ -1,9 +1,11 @@
-interface Menu {
-  label: string
+import {VNodeChild} from "vue";
+
+export default interface Menu {
+  label: string | (() => VNodeChild)
   key: string
   type?: string
+  pathName: string
   children?: Array<Menu>
   disabled?: boolean
-  pathName?: string
-  icon?: string|Function
+  icon?: string | (() => VNodeChild)
 }

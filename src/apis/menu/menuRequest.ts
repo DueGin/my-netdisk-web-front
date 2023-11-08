@@ -1,11 +1,15 @@
-export function getMenuListByType(type: string): Promise<Menu[]> {
+import Menu from "@/apis/menu/Menu.ts";
+
+export function getMenuListByType(type: string): Promise<Result<Menu[]>> {
   if (type === 'media') {
-    return new Promise<Menu[]>(resolve => resolve(menuOptions))
+    res.data = mediaMenuOptions
+    return new Promise<Result<Menu[]>>(resolve => resolve(res))
   }
-  return new Promise<Menu[]>(resolve => resolve([]))
+  return new Promise<Result<Menu[]>>(resolve => resolve(err))
 }
 
-const menuOptions: Menu[] = [
+
+const mediaMenuOptions: Menu[] = [
   {
     label: '首页',
     key: 'home',
@@ -19,60 +23,93 @@ const menuOptions: Menu[] = [
     disabled: false,
     pathName: 'MediaPhoto'
   },
+  // {
+  //   label: '视频',
+  //   key: 'a-wild-sheep-chase',
+  //   disabled: true,
+  //   icon: 'majesticons:video-line',
+  //   pathName: 'MediaVideo'
+  // },
+]
+
+const res: Result<Menu[]> = {
+  code: 200,
+}
+
+const err: Result<any> = {
+  code: 500
+}
+
+const startMenu: Menu[] = [
   {
-    label: '视频',
-    key: 'a-wild-sheep-chase',
-    disabled: true,
-    icon: 'majesticons:video-line',
-    // pathName: 'MediaVideo'
+    label: '媒体',
+    key: 'home',
+    icon: 'ion:logo-apple',
+    pathName: 'MediaHome',
   },
   {
-    label: '电影',
-    key: 'dance-dance-dance',
-    icon: 'mingcute:movie-line',
-    children: [
-      {
-        type: 'group',
-        label: '人物',
-        key: 'people',
-        children: [
-          {
-            label: '叙事者',
-            key: 'narrator',
-            // icon: PersonIcon
-          },
-          {
-            label: '羊男',
-            key: 'sheep-man',
-            // icon: PersonIcon
-          }
-        ]
-      },
-      {
-        label: '饮品',
-        key: 'beverage',
-        // icon: WineIcon
-        children: [
-          {
-            label: '威士忌',
-            key: 'whisky'
-          }
-        ]
-      },
-      {
-        label: '食物',
-        key: 'food',
-        children: [
-          {
-            label: '三明治',
-            key: 'sandwich'
-          }
-        ]
-      },
-      {
-        label: '过去增多，未来减少',
-        key: 'the-past-increases-the-future-recedes'
-      }
-    ]
-  }
+    label: '登录',
+    key: 'movie',
+    icon: 'ion:apps',
+    pathName: 'Login',
+  }, {
+    label: '电子书',
+    key: 'book',
+    icon: 'ion:logo-apple',
+    pathName: 'MediaHome',
+  },{
+    label: 'apple',
+    key: 'home',
+    icon: 'ion:logo-apple',
+    pathName: 'MediaHome',
+  },
+  {
+    label: 'apps',
+    key: 'home',
+    icon: 'ion:apps',
+    pathName: 'MediaHome',
+  }, {
+    label: 'apple',
+    key: 'home',
+    icon: 'ion:logo-apple',
+    pathName: 'MediaHome',
+  },
+
 ]
+
+
+export function getStartMenuList(): Promise<Result<Menu[]>>{
+  res.data = startMenu
+  return new Promise<Result<Menu[]>>(resolve => resolve(res))
+}
+
+
+
+const headerMenu: Menu[] = [
+  {
+    label: '首页',
+    key: 'home',
+    icon: 'tdesign:home',
+    pathName: 'MediaHome'
+  },
+  // {
+  //   label: '照片',
+  //   key: 'photo',
+  //   icon: 'tabler:photo',
+  //   disabled: false,
+  //   pathName: 'MediaPhoto'
+  // },
+  // {
+  //   label: '视频',
+  //   key: 'a-wild-sheep-chase',
+  //   disabled: false,
+  //   icon: 'majesticons:video-line',
+  //   pathName: 'MediaVideo'
+  // },
+]
+
+export function getHeaderMenuList(): Promise<Result<Menu[]>>{
+  res.data = headerMenu
+  return new Promise<Result<Menu[]>>(resolve => resolve(res))
+}
+

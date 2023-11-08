@@ -58,11 +58,15 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onActivated, ref} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
 import {getMediaList} from "@/apis/media/MediaRequest.ts";
+
+onActivated(() => {
+  console.log('activated mediaList')
+})
 
 const mediaList = ref([])
 
@@ -80,7 +84,6 @@ const isOpenSelect = ref(false)
 const isAlwaysSelectAll = ref(false)
 // 选中的图片map
 const selectMap = new Map()
-
 
 const showRightMenu = (e) => {
   console.log(e)

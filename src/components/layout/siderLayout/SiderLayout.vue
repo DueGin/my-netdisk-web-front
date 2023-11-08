@@ -11,66 +11,81 @@
           style="height: calc(100vh - 3rem);"
       >
         <n-menu
+            ref="siderMenuRef"
+            v-model:value="selectKey"
             :collapsed-width="64"
             :collapsed-icon-size="22"
-            :options="menuOptions"
+            :options="siderMenuOptions"
             accordion
         />
       </n-layout-sider>
-      <n-layout-content
-          content-style="height: calc(100vh - 3rem); overflow: auto;"
-      >
-        <router-view v-if="isUseRouter"/>
+      <n-layout-content content-style="height: calc(100vh - 3rem); overflow: auto;">
+        <router-view v-if="isUseRouter" v-slot="{Component}">
+          <keep-alive>
+            <Component :is="Component"/>
+          </keep-alive>
+        </router-view>
         <slot name="content" v-if="!isUseRouter"/>
       </n-layout-content>
     </n-layout>
   </n-space>
 </template>
 
-<script lang="ts" setup>
 
-import {h, ref} from "vue";
-import {NIcon} from "naive-ui";
-import {Icon} from "@iconify/vue";
+<script lang="ts" setup>
+import {ref, watch} from "vue";
 import {getMenuListByType} from "@/apis/menu/menuRequest.ts";
-import {RouterLink} from "vue-router";
+import {renderIcon} from "@/utils/render/IconRender.ts";
+import Menu from "@/apis/menu/Menu.ts";
+import {useRoute} from "vue-router";
+import {renderLinkText} from "@/utils/render/RouterLinkRender.ts";
+import {MenuInst} from 'naive-ui'
+import router from "@/router";
 
 const props = defineProps({
+  // 可以在router-view或者slot中做选择。isUseRouter=true，表示启动router-view，关闭slot
   isUseRouter: {
     type: Boolean,
     default: false
   },
 })
 
-function renderIcon(icon: string) {
-  return () => h(NIcon, null, {default: () => h(Icon, {icon: icon})})
+// 监听路由值，手动高亮菜单值
+const route = useRoute();
+const siderMenuRef = ref<MenuInst | null>(null)
+const selectKey = ref('')
+const handleHighlightMenu = () => {
+  console.log(route.path);
+  if (route.path) {
+    let split = route.path.split('/');
+    let menu = split[split.length - 1];
+    console.log(menu)
+    selectKey.value = menu
+    siderMenuRef.value?.showOption(menu)
+  }
 }
 
 
+watch(() => router.currentRoute.value.path, (from, to) => {
+  console.log(from, to)
+  handleHighlightMenu()
+}, {immediate: true})
+
+
 // 获取菜单值
-let menuOptions = ref([])
+const siderMenuOptions = ref([])
 getMenuListByType('media').then(res => {
-  res.forEach(t => handleIcon(t))
-  menuOptions.value = res
-  console.log(menuOptions)
+  if (res.code === 200 && res.data) {
+    // 处理菜单
+    res.data.forEach(handleMenu)
+    siderMenuOptions.value = res.data
+    console.log(siderMenuOptions)
+  }
 })
 
-const handleIcon = (m) => {
-  // 处理路由
-  let l = m.label
-  m.label = ()=> h(
-      RouterLink,
-      {
-        to: {
-          name: m.pathName,
-          params: {
-            lang: 'zh-CN'
-          }
-        }
-      },
-      { default: () => l }
-  )
-
+// 处理菜单
+const handleMenu = (m: Menu) => {
+  m.label = renderLinkText(m.pathName, m.label)
   // 处理icon
   if (m.icon && typeof m.icon === "string") {
     let t = m.icon
@@ -80,81 +95,12 @@ const handleIcon = (m) => {
   // 递归处理子菜单
   if (m.children) {
     m.children.forEach(m1 => {
-      handleIcon(m1)
+      handleMenu(m1)
     })
   }
 }
 
 
-// const menuOptions = [
-//   {
-//     label: '首页',
-//     key: 'home',
-//     icon: renderIcon('tdesign:home')
-//   },
-//   {
-//     label: '照片',
-//     key: 'photo',
-//     icon: renderIcon('tabler:photo'),
-//     disabled: false,
-//
-//   },
-//   {
-//     label: '视频',
-//     key: 'a-wild-sheep-chase',
-//     disabled: true,
-//     icon: renderIcon('majesticons:video-line')
-//   },
-//   {
-//     label: '电影',
-//     key: 'dance-dance-dance',
-//     icon: renderIcon('mingcute:movie-line'),
-//     children: [
-//       {
-//         type: 'group',
-//         label: '人物',
-//         key: 'people',
-//         children: [
-//           {
-//             label: '叙事者',
-//             key: 'narrator',
-//             // icon: renderIcon(PersonIcon)
-//           },
-//           {
-//             label: '羊男',
-//             key: 'sheep-man',
-//             // icon: renderIcon(PersonIcon)
-//           }
-//         ]
-//       },
-//       {
-//         label: '饮品',
-//         key: 'beverage',
-//         // icon: renderIcon(WineIcon),
-//         children: [
-//           {
-//             label: '威士忌',
-//             key: 'whisky'
-//           }
-//         ]
-//       },
-//       {
-//         label: '食物',
-//         key: 'food',
-//         children: [
-//           {
-//             label: '三明治',
-//             key: 'sandwich'
-//           }
-//         ]
-//       },
-//       {
-//         label: '过去增多，未来减少',
-//         key: 'the-past-increases-the-future-recedes'
-//       }
-//     ]
-//   }
-// ]
 </script>
 
 <style scoped>

@@ -18,11 +18,11 @@ const MediaRouter = {
       name: 'MediaPhoto',
       component: () => import('@/views/media/MediaList.vue'),
     },
-    // {
-    //   path: 'video',
-    //   name: 'MediaVideo',
-    //   component: () => import('@/views/media/MediaList.vue'),
-    // },
+    {
+      path: 'video',
+      name: 'MediaVideo',
+      component: () => import('@/views/media/MediaVideo.vue'),
+    },
   ]
 }
 
