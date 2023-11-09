@@ -1,15 +1,20 @@
-
-export function getMediaList(): Promise<Result<Media[]>>{
+export function getMediaList(): Promise<Result<Media[]>> {
+  res.data = mediaList
   return new Promise<Result<Media[]>>(resolve => resolve(res))
 }
 
-export function getMediaListByType(type: string):Promise<Result<Media[]>>{
-  res.data?.filter(v=> v.type === type)
+export function getMediaListByType(type: string): Promise<Result<Media[]>> {
+  res.data?.filter(v => v.type === type)
   return new Promise<Result<Media[]>>(resolve => resolve(res))
 }
 
+export function deleteMedia(ids: Array<number>): Promise<Result<Media[]>> {
+  console.log(ids)
+  mediaList = mediaList.filter(t=>(!ids.includes(t.id)))
+  return new Promise<Result<Media[]>>(resolve => resolve(res))
+}
 
-const mediaList: Media[] = [
+let mediaList: Media[] = [
   {
     id: 1,
     type: 'photo',
@@ -55,7 +60,6 @@ const mediaList: Media[] = [
 ]
 
 
-const res : Result<Media[]> = {
+const res: Result<Media[]> = {
   code: 200,
-  data: mediaList
 }

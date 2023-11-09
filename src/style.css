@@ -4,8 +4,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #444444;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,21 +29,21 @@ html{
 
 a {
   font-weight: 500;
-  color: #4d4d4d;
+  color: #444444;
   text-decoration: inherit;
 }
 a:hover {
-  color: rgba(24, 160, 88, 0.9);
+  color: #3ba969;
 }
 
 /* router-link */
 .router-link-active {
-  color: #4d4d4d;
+  color: #444444;
   text-decoration: none;
 }
 /* router-link hover时 */
 .router-link-active:hover {
-  color: rgba(24, 160, 88, 0.9);
+  color: #3ba969;
   text-decoration: none;
 }
 
@@ -76,6 +76,7 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
+  /* 注释掉，去除聚焦时显示黑框 */
   outline: 4px auto -webkit-focus-ring-color;
 }
 

@@ -14,15 +14,25 @@ const MediaRouter = {
       name: 'MediaHome',
       component: () => import('@/views/media/index.vue'),
     }, {
-      path: 'photo',
-      name: 'MediaPhoto',
+      path: 'media_list',
+      name: 'MediaList',
       component: () => import('@/views/media/MediaList.vue'),
     },
     {
-      path: 'video',
-      name: 'MediaVideo',
-      component: () => import('@/views/media/MediaVideo.vue'),
+      path: 'place',
+      name: 'MediaPlace',
+      component: () => import('@/views/media/MediaPlace.vue'),
     },
+    {
+      path: 'classify',
+      name: 'MediaClassify',
+      component: () => import('@/views/media/MediaClassify.vue'),
+    },
+    // {
+    //   path: 'video',
+    //   name: 'MediaVideo',
+    //   component: () => import('@/views/media/MediaVideo.vue'),
+    // },
   ]
 }
 

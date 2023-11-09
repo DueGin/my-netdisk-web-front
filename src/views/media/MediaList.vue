@@ -2,6 +2,14 @@
   <div class="app-container">
     <div class="media-tool-ctn">
       <n-button
+          type="primary"
+          @click="clickDelete"
+          :render-icon="renderIcon('mi:delete')"
+          v-show="isShowCancelButton"
+      >
+        删除
+      </n-button>
+      <n-button
           v-show="isShowCancelButton && !isAlwaysSelectAll"
           type="primary"
           @click="selectAll"
@@ -25,9 +33,13 @@
       >
         取消
       </n-button>
-      <n-button v-show="!isShowCancelButton" type="primary" @click="clickEdit"
-                :render-icon="renderIcon('mingcute:edit-line')">
-        编辑
+      <n-button
+          v-show="!isShowCancelButton"
+          type="primary"
+          @click="clickEdit"
+          :render-icon="renderIcon('mingcute:edit-line')"
+      >
+        选择
       </n-button>
     </div>
     <div class="media-container">
@@ -62,19 +74,22 @@ import {onActivated, ref} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import {getMediaList} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia, getMediaList} from "@/apis/media/MediaRequest.ts";
 
 onActivated(() => {
   console.log('activated mediaList')
 })
 
+// 媒体资源列表
 const mediaList = ref([])
-
-getMediaList().then(res => {
-  if (res.code === 200 && res.data) {
-    mediaList.value = res.data
-  }
-})
+const getList = () => {
+  getMediaList().then(res => {
+    if (res.code === 200 && res.data) {
+      mediaList.value = res.data
+    }
+  })
+}
+getList()
 
 
 const isPreviewPhoto = ref(false)
@@ -123,6 +138,21 @@ const selectItem = (item) => {
     item.isSelected = true
   }
   console.log(item)
+}
+
+// 点击删除按钮
+const clickDelete = () => {
+  let ids = []
+  selectMap.forEach(t => ids.push(t.id))
+  deleteMedia(ids).then(res => {
+    if (res.code === 200) {
+      console.log('delete success')
+      // 关闭选择
+      clickCancel()
+      // 重新获取list
+      getList()
+    }
+  })
 }
 
 // 清空选择的图片

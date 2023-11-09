@@ -17,19 +17,27 @@ const mediaMenuOptions: Menu[] = [
     pathName: 'MediaHome'
   },
   {
-    label: '照片',
-    key: 'photo',
+    label: '全部',
+    key: 'mediaList',
     icon: 'tabler:photo',
     disabled: false,
-    pathName: 'MediaPhoto'
+    pathName: 'MediaList'
   },
-  // {
-  //   label: '视频',
-  //   key: 'a-wild-sheep-chase',
-  //   disabled: true,
-  //   icon: 'majesticons:video-line',
-  //   pathName: 'MediaVideo'
-  // },
+  {
+    label: '地点',
+    key: 'place',
+    disabled: false,
+    icon: 'ep:place',
+    pathName: 'MediaPlace'
+  },
+  {
+    label: '分类',
+    key: 'classify',
+    disabled: false,
+    icon: 'mingcute:classify-add-2-line',
+    pathName: 'MediaClassify'
+  },
+
 ]
 
 const res: Result<Menu[]> = {

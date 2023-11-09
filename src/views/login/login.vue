@@ -5,16 +5,16 @@
           :model="formState"
           name="normal_login"
           class="login-form"
-          v-bind="layout"
-          @finish="onFinish"
-          @finishFailed="onFinishFailed"
+          label-placement="left"
+          label-width="65px"
+          size="large"
       >
         <n-form-item
             label="用户名"
             name="username"
             :rules="[{ required: true, message: 'Please input your username!' }]"
         >
-          <n-input v-model:value="formState.username">
+          <n-input v-model:value="formState.username" clearable >
             <template #prefix>
               <icon icon="ant-design:user-outlined"/>
             </template>
@@ -26,7 +26,7 @@
             name="password"
             :rules="[{ required: true, message: 'Please input your password!' }]"
         >
-          <n-input type="password" v-model:value="formState.password">
+          <n-input type="password" v-model:value="formState.password" clearable >
             <template #prefix>
               <icon icon="ant-design:lock-outlined"/>
             </template>
@@ -34,23 +34,27 @@
         </n-form-item>
 
         <n-form-item class="remember-me-item" name="remember" no-style>
-          <div style="display: flex; margin-left: 1rem;justify-content: space-between;">
-            <n-checkbox v-model:checked="formState.remember">Remember me</n-checkbox>
-            <a class="login-form-forgot" href="">忘记密码？</a></div>
+          <div style="display: flex; margin: 0 1rem;justify-content: space-between; width: 100%;">
+            <n-checkbox v-model:checked="formState.remember">记住密码</n-checkbox>
+            <n-button @click="clickForgetPassword" :focusable="false" text>忘记密码？</n-button>
+          </div>
         </n-form-item>
 
-          <div style="display: flex; justify-content: flex-end; column-gap: 1rem;align-items: center;margin-top: 1rem;">
-            <n-button
-                :disabled="disabled"
-                type="primary"
-                html-type="submit"
-                class="login-form-button"
-                style="width: 30%"
-                @click="login"
-            >
-              登录
-            </n-button>
-            <a href="">现在注册！</a></div>
+        <div style="display: flex; justify-content: center; column-gap: 1rem;align-items: center;margin-top: 1rem; position: relative">
+          <n-button
+              :disabled="disabled"
+              type="primary"
+              html-type="submit"
+              class="login-form-button"
+              style="width: 30%"
+              @click="login"
+          >
+            登录
+          </n-button>
+          <n-button style="position: absolute; right: 10px;" @click="navigateToRegister" text :focusable="false">
+            现在注册！
+          </n-button>
+        </div>
       </n-form>
     </div>
   </div>
@@ -59,11 +63,6 @@
 <script setup lang="ts">
 import {computed, reactive} from 'vue';
 import {Icon} from "@iconify/vue";
-
-const layout = {
-  labelCol: {span: 8},
-  wrapperCol: {span: 16},
-};
 
 interface FormState {
   username: string;
@@ -77,26 +76,53 @@ const formState = reactive<FormState>({
   remember: true,
 });
 
-const login = () => {
-  console.log("login==>", formState)
+const remberMeLocalStorageKey = 'login'
+// 获取remember me
+const getRememberMe = ()=>{
+  let v = localStorage.getItem(remberMeLocalStorageKey)
+  let t
+  v && (t = JSON.parse(v))
+  formState.username = t.username
+  formState.password = t.password
 }
+getRememberMe()
 
-const onFinish = (values: any) => {
-  console.log('Success:', values);
-};
+// 登录
+const login = () => {
+  if(formState.remember){
+    // todo 从后端登录后返回的加密串保存到浏览器缓存中
+    localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
+  }
+  console.log("login==>", formState)
 
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
-};
+}
 const disabled = computed(() => {
   return !(formState.username && formState.password);
 });
 
+
+// 点击现在注册按钮
+const navigateToRegister = () => {
+  console.log('Click Register Now!')
+}
+
+// 点击忘记密码按钮
+const clickForgetPassword = () => {
+  console.log('Click Forget Password')
+}
+
+
 </script>
 
 <style scoped>
+
+.app-container {
+  height: 100vh;
+  box-sizing: border-box;
+}
+
 .login-form {
-  width: 20rem;
+  width: 17rem;
 }
 
 .login-form-container {
@@ -109,11 +135,6 @@ const disabled = computed(() => {
 .remember-me-item {
   width: 100%;
 }
-
-
-/*.remember-me-item >>> .ant-form-item-control-input-content{
-  display: flex;
-}*/
 
 
 </style>

@@ -33,6 +33,7 @@ declare module 'vue' {
     ATableColumn: typeof import('ant-design-vue/es')['TableColumn']
     ATag: typeof import('ant-design-vue/es')['Tag']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
+    Folder: typeof import('./src/components/folder/Folder.vue')['default']
     FullScreenModal: typeof import('./src/components/full_screen_modal/FullScreenModal.vue')['default']
     GButton: typeof import('./src/components/GButton/GButton.vue')['default']
     HeaderAndSiderLayout: typeof import('./src/components/layout/headerAndSiderLayout/HeaderAndSiderLayout.vue')['default']
