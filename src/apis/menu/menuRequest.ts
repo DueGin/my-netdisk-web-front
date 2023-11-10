@@ -1,4 +1,4 @@
-import Menu from "@/apis/menu/Menu.ts";
+import Menu from "@/model/menu/Menu.ts";
 
 export function getMenuListByType(type: string): Promise<Result<Menu[]>> {
   if (type === 'media') {
@@ -18,10 +18,10 @@ const mediaMenuOptions: Menu[] = [
   },
   {
     label: '全部',
-    key: 'mediaList',
+    key: 'mediaAll',
     icon: 'tabler:photo',
     disabled: false,
-    pathName: 'MediaList'
+    pathName: 'MediaAll'
   },
   {
     label: '地点',

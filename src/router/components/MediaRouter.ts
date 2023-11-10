@@ -14,9 +14,9 @@ const MediaRouter = {
       name: 'MediaHome',
       component: () => import('@/views/media/index.vue'),
     }, {
-      path: 'media_list',
-      name: 'MediaList',
-      component: () => import('@/views/media/MediaList.vue'),
+      path: 'mediaAll',
+      name: 'MediaAll',
+      component: () => import('@/views/media/MediaAll.vue'),
     },
     {
       path: 'place',
@@ -26,7 +26,7 @@ const MediaRouter = {
     {
       path: 'classify',
       name: 'MediaClassify',
-      component: () => import('@/views/media/MediaClassify.vue'),
+      component: () => import('@/views/media/classify/MediaClassify.vue'),
     },
     // {
     //   path: 'video',

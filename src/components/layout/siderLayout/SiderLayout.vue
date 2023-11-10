@@ -36,7 +36,7 @@
 import {ref, watch} from "vue";
 import {getMenuListByType} from "@/apis/menu/menuRequest.ts";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import Menu from "@/apis/menu/Menu.ts";
+import Menu from "@/model/menu/Menu.ts";
 import {useRoute} from "vue-router";
 import {renderLinkText} from "@/utils/render/RouterLinkRender.ts";
 import {MenuInst} from 'naive-ui'

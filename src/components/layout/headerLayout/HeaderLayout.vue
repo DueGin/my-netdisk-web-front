@@ -30,7 +30,7 @@ import {h, ref} from 'vue';
 import {NIcon} from 'naive-ui'
 import StartMenu from "@/components/startMenu/StartMenu.vue";
 import {Icon} from "@iconify/vue";
-import Menu from "@/apis/menu/Menu.ts";
+import Menu from "@/model/menu/Menu.ts";
 
 const props = defineProps({
   isUseRouter: {

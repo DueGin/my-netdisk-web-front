@@ -49,7 +49,7 @@
 import {defineComponent, h, ref} from 'vue'
 import type {DataTableColumns} from 'naive-ui'
 import {NButton, NSwitch} from "naive-ui";
-import User from "@/apis/user/user.ts";
+import User from "@/model/user/user.ts";
 import {getUserList} from "@/apis/user/request.ts";
 
 export default defineComponent({

@@ -1,96 +1,90 @@
 <template>
-  <div class="app-container">
-    <div class="media-tool-ctn">
-      <n-button
-          type="primary"
-          @click="clickDelete"
-          :render-icon="renderIcon('mi:delete')"
-          v-show="isShowCancelButton"
-      >
-        删除
-      </n-button>
-      <n-button
-          v-show="isShowCancelButton && !isAlwaysSelectAll"
-          type="primary"
-          @click="selectAll"
-          :render-icon="renderIcon('fluent:select-all-on-24-filled')"
-      >
-        全选
-      </n-button>
-      <n-button
-          v-show="isShowCancelButton && isAlwaysSelectAll"
-          type="primary"
-          @click="selectAll"
-          :render-icon="renderIcon('fluent:select-all-on-24-regular')"
-      >
-        取消全选
-      </n-button>
-      <n-button
-          v-show="isShowCancelButton"
-          type="primary"
-          @click="clickCancel"
-          :render-icon="renderIcon('mdi:cancel')"
-      >
-        取消
-      </n-button>
-      <n-button
-          v-show="!isShowCancelButton"
-          type="primary"
-          @click="clickEdit"
-          :render-icon="renderIcon('mingcute:edit-line')"
-      >
-        选择
-      </n-button>
-    </div>
-    <div class="media-container">
-      <div
-          v-for="item in mediaList"
-          :class="['media-item',{'cur-poi':isShowCancelButton}]"
-          @click="isOpenSelect && selectItem(item)"
-      >
-        <n-image
-            @contextmenu="showRightMenu"
-            v-if="item.type === 'photo'"
-            :src="item.src"
-            object-fit="contain"
-            style="border-radius: 0.5rem"
-            :preview-disabled="isPreviewPhoto"
-        />
-        <VideoPlayer
-            v-if="item.type === 'video'"
-            :isUseDialog="isUseVideoDialog"
-            :src="item.src"
-        />
-        <n-icon v-if="item.isSelected" size="2rem" class="select-icon">
-          <Icon icon="zondicons:checkmark-outline" color="#758f69"/>
-        </n-icon>
-      </div>
+  <div class="media-tool-ctn">
+    <n-button
+        type="primary"
+        @click="clickDelete"
+        :render-icon="renderIcon('mi:delete')"
+        v-show="isShowCancelButton"
+    >
+      删除
+    </n-button>
+    <n-button
+        v-show="isShowCancelButton && !isAlwaysSelectAll"
+        type="primary"
+        @click="selectAll"
+        :render-icon="renderIcon('fluent:select-all-on-24-filled')"
+    >
+      全选
+    </n-button>
+    <n-button
+        v-show="isShowCancelButton && isAlwaysSelectAll"
+        type="primary"
+        @click="selectAll"
+        :render-icon="renderIcon('fluent:select-all-on-24-regular')"
+    >
+      取消全选
+    </n-button>
+    <n-button
+        v-show="isShowCancelButton"
+        type="primary"
+        @click="clickCancel"
+        :render-icon="renderIcon('mdi:cancel')"
+    >
+      取消
+    </n-button>
+    <n-button
+        v-show="!isShowCancelButton"
+        type="primary"
+        @click="clickEdit"
+        :render-icon="renderIcon('mingcute:edit-line')"
+    >
+      选择
+    </n-button>
+  </div>
+  <div class="media-container">
+    <div
+        v-for="item in mediaList"
+        :class="['media-item',{'cur-poi':isShowCancelButton}]"
+        @click="isOpenSelect && selectItem(item)"
+    >
+      <n-image
+          @contextmenu="showRightMenu"
+          v-if="item.type === 'photo'"
+          :src="item.src"
+          object-fit="contain"
+          style="border-radius: 0.5rem"
+          :preview-disabled="isPreviewPhoto"
+      />
+      <VideoPlayer
+          v-if="item.type === 'video'"
+          :isUseDialog="isUseVideoDialog"
+          :src="item.src"
+      />
+      <n-icon v-if="item.isSelected" size="2rem" class="select-icon">
+        <Icon icon="zondicons:checkmark-outline" color="#758f69"/>
+      </n-icon>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onActivated, ref} from 'vue'
+import {ref} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import {deleteMedia, getMediaList} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia} from "@/apis/media/MediaRequest.ts";
 
-onActivated(() => {
-  console.log('activated mediaList')
+const props = defineProps({
+  // 媒体列表
+  mediaList: {
+    type: Array,
+    default: []
+  }
 })
 
-// 媒体资源列表
-const mediaList = ref([])
-const getList = () => {
-  getMediaList().then(res => {
-    if (res.code === 200 && res.data) {
-      mediaList.value = res.data
-    }
-  })
-}
-getList()
-
+const emits = defineEmits<{
+  (e: 'handleDelete', ids: Array<number>): void
+}>()
 
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
@@ -100,6 +94,7 @@ const isAlwaysSelectAll = ref(false)
 // 选中的图片map
 const selectMap = new Map()
 
+// 显示右键菜单
 const showRightMenu = (e) => {
   console.log(e)
 }
@@ -108,7 +103,7 @@ const showRightMenu = (e) => {
 const selectAll = () => {
   if (isAlwaysSelectAll.value) {
     console.log('cancel select all')
-    mediaList.value.forEach(t => {
+    props.mediaList?.forEach(t => {
       t.isSelected = false
     })
 
@@ -116,7 +111,7 @@ const selectAll = () => {
     isAlwaysSelectAll.value = false
   } else {
     console.log('select all')
-    mediaList.value.forEach(t => {
+    props.mediaList?.forEach(t => {
       t.isSelected = true
       selectMap.set(t.id, t)
     })
@@ -144,13 +139,14 @@ const selectItem = (item) => {
 const clickDelete = () => {
   let ids = []
   selectMap.forEach(t => ids.push(t.id))
+  emits('handleDelete', ids)
   deleteMedia(ids).then(res => {
     if (res.code === 200) {
       console.log('delete success')
       // 关闭选择
       clickCancel()
-      // 重新获取list
-      getList()
+      // 执行cb
+
     }
   })
 }

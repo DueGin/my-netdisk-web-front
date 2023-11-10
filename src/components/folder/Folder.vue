@@ -31,6 +31,8 @@ const props = defineProps({
   align-items: center;
   justify-items: center;
   box-sizing: border-box;
+  position: relative;
+  float: left;
 }
 
 .f-icon {

@@ -13,6 +13,7 @@ const request = axios.create({
 
 // 请求拦截
 request.interceptors.request.use(config => {
+  console.log("请求" + config.baseURL + '，参数：' + config.params + '请求体：' + config.data)
   // 是否需要设置 token放在请求头
   // config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   // get请求映射params参数
@@ -40,12 +41,13 @@ request.interceptors.request.use(config => {
   }
   return config
 }, error => {
-  console.log(error)
-  Promise.reject(error)
+  console.error(error)
+  return Promise.reject(error)
 })
 
 // 响应拦截器
 request.interceptors.response.use((res: any) => {
+    console.log('响应', res)
     // 未设置状态码则默认成功状态
     const code = res.data['code'] || 200;
     // 获取错误信息
@@ -59,7 +61,7 @@ request.interceptors.response.use((res: any) => {
     }
   },
   error => {
-    console.log('err' + error)
+    console.error(error)
     let {msg} = error;
     if (msg == "Network Error") {
       msg = "后端接口连接异常";
