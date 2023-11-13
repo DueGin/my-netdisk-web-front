@@ -13,32 +13,33 @@ const request = axios.create({
 
 // 请求拦截
 request.interceptors.request.use(config => {
-  console.log("请求" + config.baseURL + '，参数：' + config.params + '请求体：' + config.data)
+  console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
+  console.log(config)
   // 是否需要设置 token放在请求头
   // config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   // get请求映射params参数
-  if (config.method === 'get' && config.params) {
-    let url = config.url + '?';
-    for (const propName of Object.keys(config.params)) {
-      const value = config.params[propName];
-      var part = encodeURIComponent(propName) + "=";
-      if (value !== null && typeof (value) !== "undefined") {
-        // 对象处理
-        if (typeof value === 'object') {
-          for (const key of Object.keys(value)) {
-            let params = propName + '[' + key + ']';
-            var subPart = encodeURIComponent(params) + "=";
-            url += subPart + encodeURIComponent(value[key]) + "&";
-          }
-        } else {
-          url += part + encodeURIComponent(value) + "&";
-        }
-      }
-    }
-    url = url.slice(0, -1);
-    config.params = {};
-    config.url = url;
-  }
+  // if (config.method === 'get' && config.params) {
+  //   let url = config.url + '?';
+  //   for (const propName of Object.keys(config.params)) {
+  //     const value = config.params[propName];
+  //     var part = encodeURIComponent(propName) + "=";
+  //     if (value !== null && typeof (value) !== "undefined") {
+  //       // 对象处理
+  //       if (typeof value === 'object') {
+  //         for (const key of Object.keys(value)) {
+  //           let params = propName + '[' + key + ']';
+  //           var subPart = encodeURIComponent(params) + "=";
+  //           url += subPart + encodeURIComponent(value[key]) + "&";
+  //         }
+  //       } else {
+  //         url += part + encodeURIComponent(value) + "&";
+  //       }
+  //     }
+  //   }
+  //   url = url.slice(0, -1);
+  //   config.params = {};
+  //   config.url = url;
+  // }
   return config
 }, error => {
   console.error(error)

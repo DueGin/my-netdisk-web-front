@@ -62,6 +62,7 @@ declare module 'vue' {
     NMenu: typeof import('naive-ui')['NMenu']
     NMenuItem: typeof import('naive-ui')['NMenuItem']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
+    NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
     NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']
     NSwitch: typeof import('naive-ui')['NSwitch']

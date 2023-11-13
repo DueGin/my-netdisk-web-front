@@ -1,5 +1,6 @@
 import Mock from "mockjs";
 import {success} from "@/mock/Result.ts";
+import {getParams} from "@/mock/ParamUtil.ts";
 
 
 let mediaList: Media[] = [
@@ -47,9 +48,6 @@ let mediaList: Media[] = [
   },
 ]
 
-Mock.setup({
-
-})
 
 Mock.mock('/netdisk/media/list', 'get', (options) => {
   const params = options.body
@@ -57,24 +55,27 @@ Mock.mock('/netdisk/media/list', 'get', (options) => {
   return success(mediaList);
 })
 
-Mock.mock('/netdisk/media/delete', 'post', (options)=>{
+Mock.mock('/netdisk/media/delete', 'post', (options) => {
   console.log(options)
   const body = JSON.parse(options.body)
   let ids = body.ids
   console.log(ids)
-  mediaList = mediaList.filter(t=>(!ids.includes(t.id)))
+  mediaList = mediaList.filter(t => (!ids.includes(t.id)))
   return success()
 })
 
-Mock.mock('/netdisk/media/classify','get',(options)=>{
+Mock.mock(RegExp('/netdisk/media/classify\\?classifyId=.*'), 'get', (options) => {
   console.log(options)
-  const id = options.body
+  const map = getParams(options.url)
+  let id = Number(map.get('classifyId'))
+  console.log(id)
+
   if (id === 1) {
-    let res = success(mediaList1);
-    return new Promise<Result<Media[]>>(resolve => resolve(res))
+    console.log("mediaList1")
+    return success(mediaList1);
   } else {
-    let res = success(mediaList2)
-    return new Promise<Result<Media[]>>(resolve => resolve(res))
+    console.log("mediaList2")
+    return success(mediaList2)
   }
 })
 

@@ -28,11 +28,11 @@ const MediaRouter = {
       name: 'MediaClassify',
       component: () => import('@/views/media/classify/MediaClassify.vue'),
     },
-    // {
-    //   path: 'video',
-    //   name: 'MediaVideo',
-    //   component: () => import('@/views/media/MediaVideo.vue'),
-    // },
+    {
+      path: 'classify/list',
+      name: 'MediaClassifyList',
+      component: () => import('@/views/media/classify/MediaClassifyList.vue'),
+    },
   ]
 }
 

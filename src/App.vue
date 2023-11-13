@@ -2,9 +2,10 @@
 </script>
 
 <template>
-
-  <n-dialog-provider>
-    <n-message-provider>
+  <!-- 通知最多5条 -->
+  <n-notification-provider :max="5">
+    <n-dialog-provider>
+      <n-message-provider>
 
         <router-view v-slot="{Component}">
           <keep-alive>
@@ -12,9 +13,9 @@
           </keep-alive>
         </router-view>
 
-    </n-message-provider>
-  </n-dialog-provider>
-
+      </n-message-provider>
+    </n-dialog-provider>
+  </n-notification-provider>
 </template>
 
 <style scoped>

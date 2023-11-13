@@ -32,10 +32,11 @@ export function deleteMedia(ids: Array<number>): Promise<Result<Media[]>> {
  * @param classifyId 分类ID
  */
 export function getMediaListByClassifyId(classifyId: number): Promise<Result<Media[]>> {
+  console.log(classifyId)
   return request({
     url:'/media/classify',
     method:'get',
-    params: classifyId
+    params: {classifyId:classifyId}
   })
 }
 

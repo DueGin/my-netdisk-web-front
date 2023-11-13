@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
@@ -79,20 +79,52 @@ const props = defineProps({
   mediaList: {
     type: Array,
     default: []
+  },
+  selectMap: {
+    type: Map,
+    default: new Map(),
   }
 })
 
-const emits = defineEmits<{
-  (e: 'handleDelete', ids: Array<number>): void
-}>()
+const emits = defineEmits(['handleDelete'])
+    // defineEmits<{
+  // (e: 'handleDelete', ids: Array<number>): void
+  // (e: 'update:selectMap', map: Map<number, object>): void
+// }>()
+
+
 
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
 const isUseVideoDialog = ref(true)
 const isOpenSelect = ref(false)
 const isAlwaysSelectAll = ref(false)
+
 // 选中的图片map
-const selectMap = new Map()
+const selectMap = props.selectMap ? props.selectMap : new Map();
+computed({
+  get(){
+    return new Proxy(props.selectMap, {
+      set(obj, name, val) {
+        emits("update:modelValue", {
+          ...obj,
+          [name]: val
+        })
+        return true
+      }
+    })
+  },
+  set(value){
+    emits("update:modelValue", {
+      ...props.selectMap,
+      keyword: value
+    })
+  }
+})
+
+// watch(selectMap, () => {
+  // emits('update:selectMap', selectMap)
+// })
 
 // 显示右键菜单
 const showRightMenu = (e) => {
@@ -194,10 +226,6 @@ const clickEdit = () => {
   position: absolute;
   right: -0.3rem;
   bottom: -0.3rem;
-}
-
-.cur-poi {
-  cursor: pointer;
 }
 
 .media-tool-ctn {
