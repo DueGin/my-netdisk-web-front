@@ -9,45 +9,46 @@
           label-width="65px"
           size="large"
       >
-        <n-form-item
-            label="用户名"
-            name="username"
-            :rules="[{ required: true, message: 'Please input your username!' }]"
-        >
-          <n-input v-model:value="formState.username" clearable >
+        <n-form-item label="用户名" name="username">
+          <n-input v-model:value="formState.username" clearable>
             <template #prefix>
               <icon icon="ant-design:user-outlined"/>
             </template>
           </n-input>
         </n-form-item>
 
-        <n-form-item
-            label="密码"
-            name="password"
-            :rules="[{ required: true, message: 'Please input your password!' }]"
-        >
-          <n-input type="password" v-model:value="formState.password" clearable >
+        <n-form-item label="密码" name="password">
+          <n-input type="password" v-model:value="formState.password" clearable>
             <template #prefix>
               <icon icon="ant-design:lock-outlined"/>
             </template>
           </n-input>
         </n-form-item>
+        <n-form-item label="验证码" name="code">
+          <n-input v-model:value="formState.verifyCode" placeholder="" clearable>
+            <template #prefix>
+              <icon icon="ant-design:lock-outlined"/>
+            </template>
+          </n-input>
+          <n-image style="cursor: pointer;" :src="verifyCodeUrl" @click="getCode" preview-disabled/>
+        </n-form-item>
 
         <n-form-item class="remember-me-item" name="remember" no-style>
           <div style="display: flex; margin: 0 1rem;justify-content: space-between; width: 100%;">
-            <n-checkbox v-model:checked="formState.remember">记住密码</n-checkbox>
+            <n-checkbox v-model:checked="formState.rememberMe">记住密码</n-checkbox>
             <n-button @click="clickForgetPassword" :focusable="false" text>忘记密码？</n-button>
           </div>
         </n-form-item>
 
-        <div style="display: flex; justify-content: center; column-gap: 1rem;align-items: center;margin-top: 1rem; position: relative">
+        <div
+            style="display: flex; justify-content: center; column-gap: 1rem;align-items: center;margin-top: 1rem; position: relative">
           <n-button
               :disabled="disabled"
               type="primary"
               html-type="submit"
               class="login-form-button"
               style="width: 30%"
-              @click="login"
+              @click="loginHandle"
           >
             登录
           </n-button>
@@ -61,43 +62,57 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive} from 'vue';
+import {computed, reactive, ref} from 'vue';
 import {Icon} from "@iconify/vue";
+import {login} from '@/apis/user/userRequest.ts'
+import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
 
-interface FormState {
-  username: string;
-  password: string;
-  remember: boolean;
+// 验证码
+const verifyCodeUrl = ref("");
+const getCode = () => {
+  getVerifyCode().then(res => {
+    console.log(res)
+    formState.uuid = <string>res.data?.uuid;
+    verifyCodeUrl.value = <string>res.data?.img;
+  })
 }
+getCode();
 
-const formState = reactive<FormState>({
+const formState = reactive({
   username: '',
   password: '',
-  remember: true,
+  uuid: '',
+  verifyCode: '',
+  rememberMe: false,
 });
 
-const remberMeLocalStorageKey = 'login'
+const rememberMeLocalStorageKey = 'login'
 // 获取remember me
-const getRememberMe = ()=>{
-  let v = localStorage.getItem(remberMeLocalStorageKey)
+const getRememberMe = () => {
+  let v = localStorage.getItem(rememberMeLocalStorageKey)
   let t
-  v && (t = JSON.parse(v))
-  formState.username = t.username
-  formState.password = t.password
+  if (v) {
+    t = JSON.parse(v)
+    formState.username = t.username
+    formState.password = t.password
+  }
 }
 getRememberMe()
 
 // 登录
-const login = () => {
-  if(formState.remember){
-    // todo 从后端登录后返回的加密串保存到浏览器缓存中
-    localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
-  }
-  console.log("login==>", formState)
+const loginHandle = () => {
 
+  // if (formState.remember) {
+  // todo 从后端登录后返回的加密串保存到浏览器缓存中
+  // localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
+  // }
+  console.log("login==>", formState)
+  login(formState).then(res => {
+    console.log(res)
+  })
 }
 const disabled = computed(() => {
-  return !(formState.username && formState.password);
+  return !(formState.username && formState.password && formState.verifyCode);
 });
 
 
@@ -122,7 +137,7 @@ const clickForgetPassword = () => {
 }
 
 .login-form {
-  width: 17rem;
+  width: 20rem;
 }
 
 .login-form-container {

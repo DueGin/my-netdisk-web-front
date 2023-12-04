@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {errorCodeType} from './errorCode.ts';
+import {store} from "@/store/store.ts";
 
 // 创建axios实例
 const request = axios.create({
@@ -16,7 +17,11 @@ request.interceptors.request.use(config => {
   console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
   console.log(config)
   // 是否需要设置 token放在请求头
-  // config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+  let token = store.getters.token;
+  if (token != null && token !== '') {
+    // 让每个请求携带自定义token 请根据实际情况自行修改
+    config.headers['Authorization'] = 'Bearer ' + token
+  }
   // get请求映射params参数
   // if (config.method === 'get' && config.params) {
   //   let url = config.url + '?';
@@ -49,11 +54,16 @@ request.interceptors.request.use(config => {
 // 响应拦截器
 request.interceptors.response.use((res: any) => {
     console.log('响应', res)
+    // todo 如果传回来存在auth头，则设置进去store
     // 未设置状态码则默认成功状态
     const code = res.data['code'] || 200;
     // 获取错误信息
     const msg = errorCodeType(code) || res.data['msg'] || errorCodeType('default')
     if (code === 200) {
+      let headers = res.headers;
+      if (headers && headers.authorization) {
+        store.commit("SET_TOKEN", headers.authorization);
+      }
       return Promise.resolve(res.data)
     } else {
       console.error(msg)
