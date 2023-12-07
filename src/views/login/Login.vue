@@ -66,6 +66,11 @@ import {computed, reactive, ref} from 'vue';
 import {Icon} from "@iconify/vue";
 import {login} from '@/apis/user/userRequest.ts'
 import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
+import router from "@/router";
+import {store} from "@/store/store.ts";
+import {useMessage} from 'naive-ui';
+
+const message = useMessage();
 
 // 验证码
 const verifyCodeUrl = ref("");
@@ -102,6 +107,8 @@ getRememberMe()
 // 登录
 const loginHandle = () => {
 
+  console.log(store)
+
   // if (formState.remember) {
   // todo 从后端登录后返回的加密串保存到浏览器缓存中
   // localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
@@ -109,6 +116,15 @@ const loginHandle = () => {
   console.log("login==>", formState)
   login(formState).then(res => {
     console.log(res)
+    if (res.code === 200 && res.data) {
+      // 设置用户信息
+      store.commit("SET_USER", res.data)
+      message.success('登录成功！', {duration: 1200, closable: true})
+      setTimeout(() => {
+        // 跳转主页
+        router.push({name: 'Index'});
+      }, 800)
+    }
   })
 }
 const disabled = computed(() => {

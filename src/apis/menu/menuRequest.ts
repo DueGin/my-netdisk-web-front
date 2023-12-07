@@ -61,26 +61,15 @@ const startMenu: Menu[] = [
     icon: 'ion:apps',
     pathName: 'Login',
   }, {
-    label: '电子书',
+    label: '首页',
     key: 'book',
     icon: 'ion:logo-apple',
-    pathName: 'MediaHome',
-  },{
-    label: 'apple',
-    key: 'home',
-    icon: 'ion:logo-apple',
-    pathName: 'MediaHome',
-  },
-  {
-    label: 'apps',
-    key: 'home',
-    icon: 'ion:apps',
-    pathName: 'MediaHome',
+    pathName: 'Index',
   }, {
-    label: 'apple',
-    key: 'home',
+    label: '用户管理',
+    key: 'book',
     icon: 'ion:logo-apple',
-    pathName: 'MediaHome',
+    pathName: 'UserManager',
   },
 
 ]
