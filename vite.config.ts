@@ -33,6 +33,23 @@ export default defineConfig({
       resolvers: [NaiveUiResolver()]
     })
   ],
+  server: {
+    host: '0.0.0.0',
+    cors: true,
+    open: false,
+    hmr: true,
+    port: 5173,
+    proxy: {
+      "/api": {
+        // 允许跨域
+        changeOrigin: true,
+        // 忽略安全证书
+        secure: true,
+        // 重写路径吧路径变为空字符
+        rewrite: (path) => path.replace(/^api/, '')
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, "src")

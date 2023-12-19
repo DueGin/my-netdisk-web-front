@@ -1,11 +1,13 @@
 import Menu from "@/model/menu/Menu.ts";
-
-export function getMenuListByType(type: string): Promise<Result<Menu[]>> {
-  if (type === 'media') {
+import {MenuConstant} from "@/constants/MenuConstant.ts";
+// 根据菜单类型值获取左侧菜单列表
+export function getMenuListByType(type: MenuConstant): Promise<Result<Menu[]>> {
+  if (type) {
     res.data = mediaMenuOptions
     return new Promise<Result<Menu[]>>(resolve => resolve(res))
   }
   return new Promise<Result<Menu[]>>(resolve => resolve(err))
+
 }
 
 
@@ -70,6 +72,16 @@ const startMenu: Menu[] = [
     key: 'book',
     icon: 'ion:logo-apple',
     pathName: 'UserManager',
+  },{
+    label: '组管理',
+    key: 'book',
+    icon: 'ion:logo-apple',
+    pathName: 'GroupManager',
+  },{
+    label: '资源组',
+    key: 'book',
+    icon: 'ion:logo-apple',
+    pathName: 'GroupHome',
   },
 
 ]

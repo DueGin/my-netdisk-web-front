@@ -23,7 +23,7 @@ import {ref} from "vue";
 import Folder from "@/components/folder/Folder.vue";
 import {getClassifyList} from "@/apis/media/ClassifyRequest.ts";
 import router from "@/router";
-import {MediaClassifyConstant} from "@/apis/media/MediaConstant.ts";
+import {MediaClassifyConstant} from "@/constants/MediaConstant.ts";
 
 // 获取tabs列表
 // 指定tabs默认选中项

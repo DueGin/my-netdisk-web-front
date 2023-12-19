@@ -1,6 +1,8 @@
 import axios from 'axios';
 import {errorCodeType} from './errorCode.ts';
 import {store} from "@/store/store.ts";
+import router from "@/router/index.ts";
+import {notification} from "@/utils/tip/TipUtil.ts";
 
 // 创建axios实例
 const request = axios.create({
@@ -20,7 +22,7 @@ request.interceptors.request.use(config => {
   let token = store.getters.token;
   if (token != null && token !== '') {
     // 让每个请求携带自定义token 请根据实际情况自行修改
-    config.headers['Authorization'] = 'Bearer ' + token
+    config.headers['Authorization'] = token
   }
   // get请求映射params参数
   // if (config.method === 'get' && config.params) {
@@ -70,10 +72,22 @@ request.interceptors.response.use((res: any) => {
       // message.error(msg) todo
       return Promise.reject(res.data)
     }
+
   },
-  error => {
-    console.error(error)
-    let {msg} = error;
+  err => {
+    console.error(err)
+    const resp = err.response;
+    if (resp.status === 403) {
+      notification.info({
+        title: "请先登录",
+        duration: 1000,
+      })
+      setTimeout(() => {
+        router.push({name: "Login"})
+      }, 800)
+      return Promise.reject(err);
+    }
+    let {msg} = err;
     if (msg == "Network Error") {
       msg = "后端接口连接异常";
     } else if (msg.includes("timeout")) {
@@ -82,7 +96,7 @@ request.interceptors.response.use((res: any) => {
       msg = "系统接口" + msg.substr(msg.length - 3) + "异常";
     }
     // message.error(msg) todo
-    return Promise.reject(error)
+    return Promise.reject(err)
   }
 )
 

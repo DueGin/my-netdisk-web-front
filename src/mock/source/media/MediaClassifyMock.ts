@@ -1,7 +1,7 @@
 import Mock from "mockjs";
 import {fail, success} from "@/mock/Result.ts";
 import {getParams} from "@/mock/ParamUtil.ts";
-import {MediaClassifyConstant} from "@/apis/media/MediaConstant.ts";
+import {MediaClassifyConstant} from "@/constants/MediaConstant.ts";
 
 Mock.mock(RegExp('/netdisk/media/classify/list\\?type=.*'), 'get', (options) => {
   console.log(options)
