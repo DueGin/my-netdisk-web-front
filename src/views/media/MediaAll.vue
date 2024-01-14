@@ -1,29 +1,47 @@
 <template>
   <div class="app-container">
-    <MediaList :mediaList="mediaList" @handleDelete="handleDeleteMedia"/>
+    <MediaList :mediaList="mediaList" @handleDelete="handleDeleteMedia" :uploadUrl="uploadUrl" @uploadCb="uploadCallback"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import {onActivated, ref} from 'vue'
-import {deleteMedia, getMediaList} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia, getMediaPage} from "@/apis/media/MediaRequest.ts";
 import MediaList from "@/components/Media/MediaList.vue";
 
 onActivated(() => {
   console.log('activated mediaList')
 })
 
+const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
+
 // 媒体资源列表
+let mediaParam = {
+  pageSize: 30,
+  pageNumber: 1,
+  onlyLookSelf: undefined
+}
 const mediaList = ref([])
-const getList = () => {
-  getMediaList().then(res => {
+const getPage = () => {
+  getMediaPage(mediaParam).then(res => {
     if (res.code === 200 && res.data) {
-      mediaList.value = res.data
+      mediaList.value = mediaList.value.concat(res.data.records);
+      mediaParam.pageNumber++;
+      console.log(mediaList.value)
     }
   })
 }
-getList()
+getPage()
 
+const uploadCallback = ()=>{
+  mediaParam = {
+    pageSize: 30,
+    pageNumber: 1,
+    onlyLookSelf: undefined
+  };
+  mediaList.value = []
+  getPage()
+}
 
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
@@ -33,57 +51,23 @@ const isAlwaysSelectAll = ref(false)
 // 选中的图片map
 const selectMap = new Map()
 
-const showRightMenu = (e) => {
-  console.log(e)
-}
-
-// 全选
-const selectAll = () => {
-  if (isAlwaysSelectAll.value) {
-    console.log('cancel select all')
-    mediaList.value.forEach(t => {
-      t.isSelected = false
-    })
-
-    selectMap.clear()
-    isAlwaysSelectAll.value = false
-  } else {
-    console.log('select all')
-    mediaList.value.forEach(t => {
-      t.isSelected = true
-      selectMap.set(t.id, t)
-    })
-
-    isAlwaysSelectAll.value = true
-  }
-}
-
-// 选择图片
-const selectItem = (item) => {
-  console.log(item)
-  if (selectMap.has(item.id)) {
-    console.log('had')
-    selectMap.delete(item.id)
-    item.isSelected = false
-  } else {
-    console.log('no had')
-    selectMap.set(item.id, item)
-    item.isSelected = true
-  }
-  console.log(item)
-}
 
 // 点击删除按钮
 const handleDeleteMedia = (ids) => {
-  // let ids = []
-  // selectMap.forEach(t => ids.push(t.id))
   deleteMedia(ids).then(res => {
     if (res.code === 200) {
       console.log('delete success')
       // 关闭选择
       clickCancel()
-      // 重新获取list
-      getList()
+      // 删除指定item
+      for (let i = 0; i < mediaList.value.length; i++) {
+        let v = mediaList.value[i];
+        for (let j = 0; j < ids.length; j++) {
+          if(v.id === ids[j]){
+
+          }
+        }
+      }
     }
   })
 }
@@ -111,18 +95,6 @@ const clickCancel = () => {
   clearSelectPhoto()
 }
 
-// 点击编辑按钮
-const clickEdit = () => {
-  // 禁用预览图片
-  isPreviewPhoto.value = true
-  // 显示取消按钮
-  isShowCancelButton.value = true
-  // 关掉视频dialog
-  isUseVideoDialog.value = false
-
-  // 打开点击事件
-  isOpenSelect.value = true
-}
 
 </script>
 

@@ -1,5 +1,8 @@
 <template>
   <div class="media-tool-ctn">
+
+    <n-button :render-icon="renderIcon('ion:cloud-upload-outline')" @click="clickUpload">上传</n-button>
+
     <n-button
         type="primary"
         @click="clickDelete"
@@ -41,7 +44,7 @@
       选择
     </n-button>
   </div>
-  <div class="media-container">
+  <div class="media-container" v-if="mediaList && mediaList.length!==0">
     <div
         v-for="item in mediaList"
         :class="['media-item',{'cur-poi':isShowCancelButton}]"
@@ -49,16 +52,16 @@
     >
       <n-image
           @contextmenu="showRightMenu"
-          v-if="item.type === 'photo'"
-          :src="item.src"
+          v-if="item.mimeType.includes('image')"
+          :src="item.url"
           object-fit="contain"
           style="border-radius: 0.5rem"
           :preview-disabled="isPreviewPhoto"
       />
       <VideoPlayer
-          v-if="item.type === 'video'"
+          v-if="item.mimeType.includes('video')"
           :isUseDialog="isUseVideoDialog"
-          :src="item.src"
+          :src="item.url"
       />
       <n-icon v-if="item.isSelected" size="2rem" class="select-icon">
         <Icon icon="zondicons:checkmark-outline" color="#758f69"/>
@@ -68,13 +71,20 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, ref, h} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
 import {deleteMedia} from "@/apis/media/MediaRequest.ts";
+import {useMainStore} from "@/store/store.ts";
+import {dialog} from "@/utils/tip/TipUtil.ts";
+import FileUpload from "@/components/fileUpload/FileUpload.vue";
 
 const props = defineProps({
+  uploadUrl: {
+    type: String,
+    default: import.meta.env.VITE_APP_BASE_API + '/upload'
+  },
   // 媒体列表
   mediaList: {
     type: Array,
@@ -86,14 +96,10 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['handleDelete'])
-    // defineEmits<{
-  // (e: 'handleDelete', ids: Array<number>): void
-  // (e: 'update:selectMap', map: Map<number, object>): void
-// }>()
+const emits = defineEmits(['handleDelete', 'uploadCb'])
 
 
-
+const isShowUploadButton = ref(true)
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
 const isUseVideoDialog = ref(true)
@@ -103,7 +109,7 @@ const isAlwaysSelectAll = ref(false)
 // 选中的图片map
 const selectMap = props.selectMap ? props.selectMap : new Map();
 computed({
-  get(){
+  get() {
     return new Proxy(props.selectMap, {
       set(obj, name, val) {
         emits("update:modelValue", {
@@ -114,7 +120,7 @@ computed({
       }
     })
   },
-  set(value){
+  set(value) {
     emits("update:modelValue", {
       ...props.selectMap,
       keyword: value
@@ -122,9 +128,6 @@ computed({
   }
 })
 
-// watch(selectMap, () => {
-  // emits('update:selectMap', selectMap)
-// })
 
 // 显示右键菜单
 const showRightMenu = (e) => {
@@ -172,15 +175,15 @@ const clickDelete = () => {
   let ids = []
   selectMap.forEach(t => ids.push(t.id))
   emits('handleDelete', ids)
-  deleteMedia(ids).then(res => {
-    if (res.code === 200) {
-      console.log('delete success')
-      // 关闭选择
-      clickCancel()
-      // 执行cb
-
-    }
-  })
+  // deleteMedia(ids).then(res => {
+  //   if (res.code === 200) {
+  //     console.log('delete success')
+  //     // 关闭选择
+  //     clickCancel()
+  //     // 执行cb
+  //
+  //   }
+  // })
 }
 
 // 清空选择的图片
@@ -202,6 +205,7 @@ const clickCancel = () => {
   isUseVideoDialog.value = false
   // 关闭点击事件
   isOpenSelect.value = false
+  isShowUploadButton.value = true;
   // 清空选中map
   clearSelectPhoto()
 }
@@ -214,9 +218,26 @@ const clickEdit = () => {
   isShowCancelButton.value = true
   // 关掉视频dialog
   isUseVideoDialog.value = false
-
+  isShowUploadButton.value = false;
   // 打开点击事件
   isOpenSelect.value = true
+}
+
+// 点击上传按钮
+const clickUpload = () => {
+  dialog.create({
+    icon: h(""),
+    title: h(""),
+    content: () => h(FileUpload, {
+      uploadUrl: props.uploadUrl,
+      // ['on-finish']: ()=>{
+      //   emits('uploadCb')
+      // }
+    }),
+    onClose:()=>{
+      emits('uploadCb')
+    }
+  })
 }
 
 </script>

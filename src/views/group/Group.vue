@@ -51,8 +51,8 @@ getList();
 const handleItemClick = (item) => {
   console.log(item)
   router.push({
-    path: '/group/detail',
-    query: {groupId: item.groupId}
+    path: '/group/info',
+    query: {groupId: item.id}
   })
 }
 

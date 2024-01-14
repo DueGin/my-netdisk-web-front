@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {errorCodeType} from './errorCode.ts';
-import {store} from "@/store/store.ts";
 import router from "@/router/index.ts";
 import {notification} from "@/utils/tip/TipUtil.ts";
 
@@ -19,7 +18,7 @@ request.interceptors.request.use(config => {
   console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
   console.log(config)
   // 是否需要设置 token放在请求头
-  let token = store.getters.token;
+  let token = localStorage.getItem("token");
   if (token != null && token !== '') {
     // 让每个请求携带自定义token 请根据实际情况自行修改
     config.headers['Authorization'] = token
@@ -64,7 +63,8 @@ request.interceptors.response.use((res: any) => {
     if (code === 200) {
       let headers = res.headers;
       if (headers && headers.authorization) {
-        store.commit("SET_TOKEN", headers.authorization);
+        // useMainStore().$state.token = headers.authorization;
+        localStorage.setItem("token", headers.authorization);
       }
       return Promise.resolve(res.data)
     } else {
@@ -79,7 +79,7 @@ request.interceptors.response.use((res: any) => {
     const resp = err.response;
     if (resp.status === 403) {
       notification.info({
-        title: "请先登录",
+        title: resp.data,
         duration: 1000,
       })
       setTimeout(() => {

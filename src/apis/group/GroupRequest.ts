@@ -8,3 +8,10 @@ export function addGroup(data: any): Promise<Result<any>> {
   return request.post('/group/create', data)
 }
 
+export function getGroupInfoById(id: any){
+  return request.get(`/group/info/${id}`)
+}
+
+export function updateGroupInfo(group:any){
+  return request.put('/group/modify', group)
+}

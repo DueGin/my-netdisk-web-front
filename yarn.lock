@@ -1852,7 +1852,7 @@
     "@vue/compiler-dom" "3.3.7"
     "@vue/shared" "3.3.7"
 
-"@vue/devtools-api@^6.0.0-beta.11", "@vue/devtools-api@^6.5.0":
+"@vue/devtools-api@^6.5.0":
   "integrity" "sha512-+KpckaAQyfbvshdDW5xQylLni1asvNSGme1JFs8I1+/H5pHEhqUKMEQD/qn3Nx5+/nycBq11qAEi8lk+LXI2dA=="
   "resolved" "https://registry.npmmirror.com/@vue/devtools-api/-/devtools-api-6.5.1.tgz"
   "version" "6.5.1"
@@ -5306,6 +5306,14 @@
   "resolved" "https://registry.npmmirror.com/pify/-/pify-4.0.1.tgz"
   "version" "4.0.1"
 
+"pinia@^2.1.7":
+  "integrity" "sha512-+C2AHFtcFqjPih0zpYuvof37SFxMQ7OEG2zV9jRI12i9BOy3YQVAHwdKtyyc8pDcDyIc33WCIsZaCFWU7WWxGQ=="
+  "resolved" "https://registry.npmmirror.com/pinia/-/pinia-2.1.7.tgz"
+  "version" "2.1.7"
+  dependencies:
+    "@vue/devtools-api" "^6.5.0"
+    "vue-demi" ">=0.14.5"
+
 "pinkie-promise@^2.0.0":
   "integrity" "sha512-0Gni6D4UcLTbv9c57DfxDGdr41XfgUjqWZu492f0cIGr16zDU06BWP/RAEvOuo7CQ0CNjHaLlM59YJJFm3NWlw=="
   "resolved" "https://registry.npmmirror.com/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
@@ -6396,7 +6404,7 @@
     "media-typer" "0.3.0"
     "mime-types" "~2.1.24"
 
-"typescript@*", "typescript@^5.0.2":
+"typescript@*", "typescript@^5.0.2", "typescript@>=4.4.4":
   "integrity" "sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w=="
   "resolved" "https://registry.npmmirror.com/typescript/-/typescript-5.2.2.tgz"
   "version" "5.2.2"
@@ -6819,6 +6827,11 @@
     "source-map" "^0.6.1"
     "yargs" "^16.2.0"
 
+"vue-demi@>=0.14.5":
+  "integrity" "sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w=="
+  "resolved" "https://registry.npmmirror.com/vue-demi/-/vue-demi-0.14.6.tgz"
+  "version" "0.14.6"
+
 "vue-router@^4.2.5":
   "integrity" "sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw=="
   "resolved" "https://registry.npmmirror.com/vue-router/-/vue-router-4.2.5.tgz"
@@ -6854,15 +6867,7 @@
     "videojs-flash" "^2.1.0"
     "videojs-hotkeys" "^0.2.20"
 
-"vue@^2.6.14":
-  "integrity" "sha512-a29fsXd2G0KMRqIFTpRgpSbWaNBK3lpCTOLuGLEDnlHWdjB8fwl6zyYZ8xCrqkJdatwZb4mGHiEfJjnw0Q6AwQ=="
-  "resolved" "https://registry.npmmirror.com/vue/-/vue-2.7.15.tgz"
-  "version" "2.7.15"
-  dependencies:
-    "@vue/compiler-sfc" "2.7.15"
-    "csstype" "^3.1.0"
-
-"vue@^3.0.0", "vue@^3.0.11", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.3.4", "vue@>=3", "vue@2 || 3", "vue@3.3.7":
+"vue@^2.6.14 || ^3.3.0", "vue@^3.0.0", "vue@^3.0.0-0 || ^2.6.0", "vue@^3.0.11", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.3.4", "vue@>=3", "vue@2 || 3", "vue@3.3.7":
   "integrity" "sha512-YEMDia1ZTv1TeBbnu6VybatmSteGOS3A3YgfINOfraCbf85wdKHzscD6HSS/vB4GAtI7sa1XPX7HcQaJ1l24zA=="
   "resolved" "https://registry.npmmirror.com/vue/-/vue-3.3.7.tgz"
   "version" "3.3.7"
@@ -6872,6 +6877,14 @@
     "@vue/runtime-dom" "3.3.7"
     "@vue/server-renderer" "3.3.7"
     "@vue/shared" "3.3.7"
+
+"vue@^2.6.14":
+  "integrity" "sha512-a29fsXd2G0KMRqIFTpRgpSbWaNBK3lpCTOLuGLEDnlHWdjB8fwl6zyYZ8xCrqkJdatwZb4mGHiEfJjnw0Q6AwQ=="
+  "resolved" "https://registry.npmmirror.com/vue/-/vue-2.7.15.tgz"
+  "version" "2.7.15"
+  dependencies:
+    "@vue/compiler-sfc" "2.7.15"
+    "csstype" "^3.1.0"
 
 "vueuc@^0.4.51":
   "integrity" "sha512-pLiMChM4f+W8czlIClGvGBYo656lc2Y0/mXFSCydcSmnCR1izlKPGMgiYBGjbY9FDkFG8a2HEVz7t0DNzBWbDw=="
@@ -6885,13 +6898,6 @@
     "seemly" "^0.3.6"
     "vdirs" "^0.1.4"
     "vooks" "^0.2.4"
-
-"vuex@^4.0.2":
-  "integrity" "sha512-hmV6UerDrPcgbSy9ORAtNXDr9M4wlNP4pEFKye4ujJF8oqgFFuxDCdOLS3eNoRTtq5O3hoBDh9Doj1bQMYHRbQ=="
-  "resolved" "https://registry.npmmirror.com/vuex/-/vuex-4.1.0.tgz"
-  "version" "4.1.0"
-  dependencies:
-    "@vue/devtools-api" "^6.0.0-beta.11"
 
 "wcwidth@^1.0.1":
   "integrity" "sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg=="

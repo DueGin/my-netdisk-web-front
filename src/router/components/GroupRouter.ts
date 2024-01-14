@@ -2,16 +2,25 @@ import HeaderAndSiderLayout from "@/components/layout/headerAndSiderLayout/Heade
 
 const GroupRouter = {
   path: '/group',
-  name: 'Group',
   component: HeaderAndSiderLayout,
   meta: {
     title: '组资源',
   },
   children: [
     {
-      path: 'detail',
-      name: 'GroupDetail',
-      component: () => import('@/views/group/groupDetail/GroupDetail.vue'),
+      path: 'info',
+      name: 'GroupInfo',
+      component: () => import('@/views/group/groupInfo/index.vue'),
+    },
+    {
+      path: 'resource',
+      name: 'GroupResource',
+      component: () => import('@/views/group/resource/index.vue'),
+    },
+    {
+      path: 'manager',
+      name: 'GroupManager',
+      component: () => import('@/views/group/manager/index.vue'),
     },
   ]
 }

@@ -67,7 +67,7 @@ import {Icon} from "@iconify/vue";
 import {login} from '@/apis/user/userRequest.ts'
 import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
 import router from "@/router";
-import {store} from "@/store/store.ts";
+import {useMainStore} from "@/store/store.ts";
 import {useMessage} from 'naive-ui';
 
 const message = useMessage();
@@ -104,10 +104,10 @@ const getRememberMe = () => {
 }
 getRememberMe()
 
+const mainStore = useMainStore();
+
 // 登录
 const loginHandle = () => {
-
-  console.log(store)
 
   // if (formState.remember) {
   // todo 从后端登录后返回的加密串保存到浏览器缓存中
@@ -118,7 +118,7 @@ const loginHandle = () => {
     console.log(res)
     if (res.code === 200 && res.data) {
       // 设置用户信息
-      store.commit("SET_USER", res.data)
+      mainStore.$state.user = res.data
       message.success('登录成功！', {duration: 1200, closable: true})
       setTimeout(() => {
         // 跳转主页

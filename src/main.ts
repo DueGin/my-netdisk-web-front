@@ -3,13 +3,14 @@ import './style.css'
 import App from './App.vue';
 import router from '@/router';
 import {Icon} from '@iconify/vue';
-import {key, store} from "@/store/store.ts";
+
+import {createPinia} from "pinia";
 // import '@/mock/index.ts'
 
 const app = createApp(App);
 
 app.use(router)
-  .use(store, key)
+  .use(createPinia())
 
 app.component('Icon', Icon)
 

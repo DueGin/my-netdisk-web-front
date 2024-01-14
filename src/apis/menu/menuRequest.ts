@@ -1,13 +1,22 @@
 import Menu from "@/model/menu/Menu.ts";
-import {MenuConstant} from "@/constants/MenuConstant.ts";
+import request from "@/utils/request/request.ts";
 // 根据菜单类型值获取左侧菜单列表
-export function getMenuListByType(type: MenuConstant): Promise<Result<Menu[]>> {
-  if (type) {
-    res.data = mediaMenuOptions
-    return new Promise<Result<Menu[]>>(resolve => resolve(res))
-  }
-  return new Promise<Result<Menu[]>>(resolve => resolve(err))
+export function getMenuListByType(type: number): Promise<Result<Menu[]>> {
+  // if (type) {
+  //   res.data = mediaMenuOptions
+  //   return new Promise<Result<Menu[]>>(resolve => resolve(res))
+  // }
+  // return new Promise<Result<Menu[]>>(resolve => resolve(err))
 
+  return request.get(`/menu/list/${type}`);
+}
+
+export function getMenuTreeList(){
+  return request.get('/menu/tree');
+}
+
+export function getMenuMap(){
+  return request.get('/menu/map');
 }
 
 
@@ -16,28 +25,28 @@ const mediaMenuOptions: Menu[] = [
     label: '首页',
     key: 'home',
     icon: 'tdesign:home',
-    pathName: 'MediaHome'
+    path: 'MediaHome'
   },
   {
     label: '全部',
     key: 'mediaAll',
     icon: 'tabler:photo',
     disabled: false,
-    pathName: 'MediaAll'
+    path: 'MediaAll'
   },
   {
     label: '地点',
     key: 'place',
     disabled: false,
     icon: 'ep:place',
-    pathName: 'MediaPlace'
+    path: 'MediaPlace'
   },
   {
     label: '分类',
     key: 'classify',
     disabled: false,
     icon: 'mingcute:classify-add-2-line',
-    pathName: 'MediaClassify'
+    path: 'MediaClassify'
   },
 
 ]
@@ -46,9 +55,6 @@ const res: Result<Menu[]> = {
   code: 200,
 }
 
-const err: Result<any> = {
-  code: 500
-}
 
 const startMenu: Menu[] = [
   {
@@ -99,21 +105,21 @@ const headerMenu: Menu[] = [
     label: '首页',
     key: 'home',
     icon: 'tdesign:home',
-    pathName: 'MediaHome'
+    path: 'MediaHome'
   },
   // {
   //   label: '照片',
   //   key: 'photo',
   //   icon: 'tabler:photo',
   //   disabled: false,
-  //   pathName: 'MediaPhoto'
+  //   path: 'MediaPhoto'
   // },
   // {
   //   label: '视频',
   //   key: 'a-wild-sheep-chase',
   //   disabled: false,
   //   icon: 'majesticons:video-line',
-  //   pathName: 'MediaVideo'
+  //   path: 'MediaVideo'
   // },
 ]
 

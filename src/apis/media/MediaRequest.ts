@@ -5,8 +5,16 @@ import request from "@/utils/request/request.ts";
  */
 export function getMediaList(): Promise<Result<Media[]>> {
   return request({
-    url:'/media/list',
-    method:'get',
+    url: '/media/list',
+    method: 'get',
+  })
+}
+
+export function getMediaPage(param: any) {
+  return request({
+    url: '/media/page',
+    method: 'get',
+    params: param
   })
 }
 
@@ -19,11 +27,11 @@ export function getMediaListByType(type: string): Promise<Result<Media[]>> {
  * 删除媒体
  * @param ids 媒体ID
  */
-export function deleteMedia(ids: Array<number>): Promise<Result<Media[]>> {
+export function deleteMedia(ids: any): Promise<Result<Media[]>> {
   return request({
-    url:'/media/delete',
-    method:'post',
-    data: {ids: ids},
+    url: '/media/remove',
+    method: 'post',
+    data: JSON.stringify(ids),
   })
 }
 
@@ -34,9 +42,9 @@ export function deleteMedia(ids: Array<number>): Promise<Result<Media[]>> {
 export function getMediaListByClassifyId(classifyId: number): Promise<Result<Media[]>> {
   console.log(classifyId)
   return request({
-    url:'/media/classify',
-    method:'get',
-    params: {classifyId:classifyId}
+    url: '/media/classify',
+    method: 'get',
+    params: {classifyId: classifyId}
   })
 }
 

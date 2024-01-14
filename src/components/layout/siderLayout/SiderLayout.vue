@@ -36,11 +36,11 @@
 import {ref, watch} from "vue";
 import {getMenuListByType} from "@/apis/menu/menuRequest.ts";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import Menu from "@/model/menu/Menu.ts";
 import {useRoute} from "vue-router";
-import {renderLinkText} from "@/utils/render/RouterLinkRender.ts";
+import {renderLinkTextWithPath} from "@/utils/render/RouterLinkRender.ts";
 import {MenuInst} from 'naive-ui'
 import router from "@/router";
+import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 
 const props = defineProps({
   // 可以在router-view或者slot中做选择。isUseRouter=true，表示启动router-view，关闭slot
@@ -50,42 +50,26 @@ const props = defineProps({
   },
 })
 
-// 监听路由值，手动高亮菜单值
-const route = useRoute();
-const siderMenuRef = ref<MenuInst | null>(null)
-const selectKey = ref('')
-const handleHighlightMenu = () => {
-  console.log(route.path);
-  if (route.path) {
-    let split = route.path.split('/');
-    let menu = split[split.length - 1];
-    console.log(menu)
-    selectKey.value = menu
-    siderMenuRef.value?.showOption(menu)
-  }
-}
-
-
-watch(() => router.currentRoute.value.path, (from, to) => {
-  console.log(from, to)
-  handleHighlightMenu()
-}, {immediate: true})
-
 
 // 获取菜单值
 const siderMenuOptions = ref([])
-getMenuListByType('media').then(res => {
-  if (res.code === 200 && res.data) {
-    // 处理菜单
-    res.data.forEach(handleMenu)
-    siderMenuOptions.value = res.data
-    console.log(siderMenuOptions)
-  }
-})
+const getMenuByType = (type: number) => {
+  getMenuListByType(type).then(res => {
+    if (res.code === 200 && res.data) {
+      // 处理菜单
+      res.data.forEach(handleMenuIcon)
+      siderMenuOptions.value = res.data
+      console.log(siderMenuOptions)
+    }
+  })
+}
 
 // 处理菜单
-const handleMenu = (m: Menu) => {
-  m.label = renderLinkText(m.pathName, m.label)
+const handleMenuIcon = (m) => {
+  m.label = renderLinkTextWithPath(m.path, m.name)
+  let split = m.path.split('/');
+  m.key = split[2];
+
   // 处理icon
   if (m.icon && typeof m.icon === "string") {
     let t = m.icon
@@ -93,12 +77,44 @@ const handleMenu = (m: Menu) => {
   }
 
   // 递归处理子菜单
-  if (m.children) {
-    m.children.forEach(m1 => {
-      handleMenu(m1)
-    })
+  if (m.childrenList) {
+    m.childrenList.forEach(handleMenuIcon)
   }
 }
+
+
+// 监听路由值，获取菜单列表，手动高亮菜单值
+const route = useRoute();
+const siderMenuRef = ref<MenuInst | null>(null)
+const selectKey = ref('')
+const menuStore = useMenuStore();
+
+const handleHighlightMenu = (menuKey) => {
+  selectKey.value = menuKey
+  console.log(siderMenuRef.value)
+  siderMenuRef.value?.showOption(menuKey)
+}
+
+const handleMenu = async () => {
+
+  if (route.path) {
+    let split = route.path.split('/');
+    let menuName = split[1];
+
+    let menuValue = menuStore.menuMap[menuName];
+
+    menuValue.forEach(handleMenuIcon)
+    siderMenuOptions.value = menuValue;
+    // await getMenuByType(menuValue);
+    let menuKey = split[split.length - 1];
+    handleHighlightMenu(menuKey);
+  }
+}
+
+
+watch(() => router.currentRoute.value.path, (from, to) => {
+  handleMenu()
+}, {immediate: true})
 
 
 </script>

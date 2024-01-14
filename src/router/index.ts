@@ -3,6 +3,7 @@ import MediaRouter from "@/router/components/MediaRouter.ts";
 import HeaderLayout from "@/components/layout/headerLayout/HeaderLayout.vue";
 import {h} from "vue";
 import GroupRouter from "@/router/components/GroupRouter.ts";
+import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 //由于router的API默认使用了类型进行初始化，内部包含类型定义，所以本文内部代码中的所有数据类型是可以省略的
 //RouterRecordRaw是路由组件对象
 
@@ -28,19 +29,19 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: () => import('@/views/login/Login.vue'),
   }, {
-    path: '/',
+    path: '/sys',
     name: 'Manager',
     component: () => h(HeaderLayout, {isUseRouter: true}),
     children: [
       {
         path: 'user/manager',
         name: 'UserManager',
-        component: () => import('@/views/user/userManage.vue'),
+        component: () => import('@/views/sys/user/userManage.vue'),
       },
       {
         path: 'group/manager',
         name: 'GroupManager',
-        component: () => import('@/views/group/GroupManager.vue'),
+        component: () => import('@/views/sys/group/GroupManager.vue'),
       },
     ]
   }, {
@@ -54,13 +55,12 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/group',
-    redirect: '/group/home',
-    component: ()=> h(HeaderLayout, {isUseRouter: true}),
-    children:[
+    component: () => h(HeaderLayout, {isUseRouter: true}),
+    children: [
       {
         path: 'home',
         name: 'GroupHome',
-        component: ()=>import('@/views/group/Group.vue')
+        component: () => import('@/views/group/Group.vue')
       }
     ]
   },
@@ -77,5 +77,40 @@ const options: RouterOptions = {
 
 // Router是路由对象类型
 const router: Router = createRouter(options)
+
+router.beforeEach((to, from, next)=>{
+  // 加载菜单并存入store
+  const store = useMenuStore();
+  store.getMenuMap();
+  next();
+})
+
+// router.beforeEach((to, from, next) => {
+//   // 加载动态菜单和路由
+//   addDynamicMenuAndRoutes(to, from)
+//   next()
+// })
+//
+//
+// /**
+//  * 加载动态菜单和路由
+//  */
+// function addDynamicMenuAndRoutes(to, from) {
+//
+//   getMenuTreeList().then(res => {
+//       if (res.code === 200 && res.data) {
+//         console.log(res.data);
+//         for (let i = 0; i < res.data.length; i++) {
+//           router.addRoute(res.data[i]);
+//         }
+//
+//       }
+//
+//     })
+//     .catch(err => {
+//       console.error(err)
+//     })
+// }
+
 
 export default router
