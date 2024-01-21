@@ -33,15 +33,15 @@ const props = defineProps({
     type: String,
     default: import.meta.env.VITE_APP_BASE_API + '/upload'
   },
-  uploadFile:{
+  uploadFile: {
     type: Array,
     default: []
   }
 });
 
-const emits = defineEmits([]);
+const emits = defineEmits(['on-finish']);
 
-const onFinish = (file)=>{
+const onFinish = (file) => {
   console.log(file)
   emits('on-finish')
 }

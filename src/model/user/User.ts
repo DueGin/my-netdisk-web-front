@@ -6,10 +6,9 @@ export default interface User {
   // avatar: string,
   username: string,
   password?: string,
-  // phone: string,
-  type?: number,
+  phone?: string,
   status?: number,
   rememberMe: boolean,
-  roles?: List,
-  groupRoles?: List,
+  sysRole?: string,
+  groupRoleList?: List,
 }

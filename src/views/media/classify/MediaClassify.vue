@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import Folder from "@/components/folder/Folder.vue";
-import {getClassifyList} from "@/apis/media/ClassifyRequest.ts";
+import {getClassifyList} from "@/apis/media/ClassifyApi.ts";
 import router from "@/router";
 import {MediaClassifyConstant} from "@/constants/MediaConstant.ts";
 
@@ -44,10 +44,12 @@ getList()
 // 点击folder
 const clickFolder = (id) => {
   console.log('click folder')
+  console.log(tabsValue.value, id);
   router.push({
     path: '/media/classify/list',
     query: {
-      classifyId: id
+      classifyId: id,
+      type: tabsValue.value
     }
   })
 }

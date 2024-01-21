@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {getMenuMap} from "@/apis/menu/menuRequest.ts";
+import {getMenuMap} from "@/apis/menu/menuApi.ts";
 
 export const useMenuStore = defineStore('menu', {
   state: () => ({
@@ -7,7 +7,7 @@ export const useMenuStore = defineStore('menu', {
   }),
   getters: {},
   actions: {
-    getMenuMap() {
+    getMenuMap(): Promise<any> {
       if (!this.menuMap) {
         return getMenuMap().then(res => {
           if (res.code === 200 && res.data) {

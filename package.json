@@ -14,7 +14,7 @@
     "mockjs": "^1.1.0",
     "pinia": "^2.1.7",
     "unplugin-auto-import": "^0.16.7",
-    "vue": "^3.3.4",
+    "vue": "^3.4.0",
     "vue-router": "^4.2.5",
     "vue-video-player": "^5.0.2"
   },

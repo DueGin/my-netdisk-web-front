@@ -37,14 +37,14 @@ export function deleteMedia(ids: any): Promise<Result<Media[]>> {
 
 /**
  * 获取分类下的媒体列表
+ * @param type 分类类型
  * @param classifyId 分类ID
  */
-export function getMediaListByClassifyId(classifyId: number): Promise<Result<Media[]>> {
+export function getMediaListByClassifyId(type: string, classifyId: string): Promise<Result<Media[]>> {
   console.log(classifyId)
   return request({
-    url: '/media/classify',
+    url: `/media/classify/${type}/${classifyId}`,
     method: 'get',
-    params: {classifyId: classifyId}
   })
 }
 

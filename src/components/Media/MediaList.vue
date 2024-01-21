@@ -1,48 +1,51 @@
 <template>
   <div class="media-tool-ctn">
-
-    <n-button :render-icon="renderIcon('ion:cloud-upload-outline')" @click="clickUpload">上传</n-button>
-
-    <n-button
-        type="primary"
-        @click="clickDelete"
-        :render-icon="renderIcon('mi:delete')"
-        v-show="isShowCancelButton"
-    >
-      删除
-    </n-button>
-    <n-button
-        v-show="isShowCancelButton && !isAlwaysSelectAll"
-        type="primary"
-        @click="selectAll"
-        :render-icon="renderIcon('fluent:select-all-on-24-filled')"
-    >
-      全选
-    </n-button>
-    <n-button
-        v-show="isShowCancelButton && isAlwaysSelectAll"
-        type="primary"
-        @click="selectAll"
-        :render-icon="renderIcon('fluent:select-all-on-24-regular')"
-    >
-      取消全选
-    </n-button>
-    <n-button
-        v-show="isShowCancelButton"
-        type="primary"
-        @click="clickCancel"
-        :render-icon="renderIcon('mdi:cancel')"
-    >
-      取消
-    </n-button>
-    <n-button
-        v-show="!isShowCancelButton"
-        type="primary"
-        @click="clickEdit"
-        :render-icon="renderIcon('mingcute:edit-line')"
-    >
-      选择
-    </n-button>
+    <div class="tool-left">
+      <n-button @click="router.go(-2)" v-if="isShowBackButton">返回</n-button>
+    </div>
+    <div class="tool-right">
+      <n-button :render-icon="renderIcon('ion:cloud-upload-outline')" @click="clickUpload">上传</n-button>
+      <n-button
+          type="primary"
+          @click="clickDelete"
+          :render-icon="renderIcon('mi:delete')"
+          v-show="isShowCancelButton"
+      >
+        删除
+      </n-button>
+      <n-button
+          v-show="isShowCancelButton && !isAlwaysSelectAll"
+          type="primary"
+          @click="selectAll"
+          :render-icon="renderIcon('fluent:select-all-on-24-filled')"
+      >
+        全选
+      </n-button>
+      <n-button
+          v-show="isShowCancelButton && isAlwaysSelectAll"
+          type="primary"
+          @click="selectAll"
+          :render-icon="renderIcon('fluent:select-all-on-24-regular')"
+      >
+        取消全选
+      </n-button>
+      <n-button
+          v-show="isShowCancelButton"
+          type="primary"
+          @click="clickCancel"
+          :render-icon="renderIcon('mdi:cancel')"
+      >
+        取消
+      </n-button>
+      <n-button
+          v-show="!isShowCancelButton"
+          type="primary"
+          @click="clickEdit"
+          :render-icon="renderIcon('mingcute:edit-line')"
+      >
+        选择
+      </n-button>
+    </div>
   </div>
   <div class="media-container" v-if="mediaList && mediaList.length!==0">
     <div
@@ -75,10 +78,11 @@ import {computed, ref, h} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import {deleteMedia} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia} from "@/apis/media/MediaApi.ts";
 import {useMainStore} from "@/store/store.ts";
 import {dialog} from "@/utils/tip/TipUtil.ts";
 import FileUpload from "@/components/fileUpload/FileUpload.vue";
+import router from "@/router";
 
 const props = defineProps({
   uploadUrl: {
@@ -93,6 +97,10 @@ const props = defineProps({
   selectMap: {
     type: Map,
     default: new Map(),
+  },
+  isShowBackButton: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -230,11 +238,11 @@ const clickUpload = () => {
     title: h(""),
     content: () => h(FileUpload, {
       uploadUrl: props.uploadUrl,
-      // ['on-finish']: ()=>{
+      // ['on-finish']: () => {
       //   emits('uploadCb')
       // }
     }),
-    onClose:()=>{
+    onClose: () => {
       emits('uploadCb')
     }
   })
@@ -243,17 +251,29 @@ const clickUpload = () => {
 </script>
 
 <style scoped>
+.media-tool-ctn {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
 .select-icon {
   position: absolute;
   right: -0.3rem;
   bottom: -0.3rem;
 }
 
-.media-tool-ctn {
+.tool-left {
+  width: 50%;
+  display: flex;
+  column-gap: 1rem;
+  justify-content: flex-start;
+}
+
+.tool-right {
+  width: 50%;
   display: flex;
   column-gap: 1rem;
   justify-content: flex-end;
-  margin-bottom: 1rem;
 }
 
 .media-container :deep(img) {

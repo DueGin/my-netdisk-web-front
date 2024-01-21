@@ -64,11 +64,12 @@
 <script setup lang="ts">
 import {computed, reactive, ref} from 'vue';
 import {Icon} from "@iconify/vue";
-import {login} from '@/apis/user/userRequest.ts'
+import {login} from '@/apis/user/userApi.ts'
 import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
 import router from "@/router";
 import {useMainStore} from "@/store/store.ts";
 import {useMessage} from 'naive-ui';
+import {notification} from "@/utils/tip/TipUtil.ts";
 
 const message = useMessage();
 
@@ -119,7 +120,13 @@ const loginHandle = () => {
     if (res.code === 200 && res.data) {
       // 设置用户信息
       mainStore.$state.user = res.data
-      message.success('登录成功！', {duration: 1200, closable: true})
+      mainStore.$state.sysRole = res.data.sysRole;
+      mainStore.$state.groupRoleList = res.data.groupRoleList;
+      notification.success({
+        content: '登录成功！',
+        duration: 1200,
+        closable: true
+      });
       setTimeout(() => {
         // 跳转主页
         router.push({name: 'Index'});

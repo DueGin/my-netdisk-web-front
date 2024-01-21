@@ -1,12 +1,17 @@
 <template>
   <div class="app-container">
-    <MediaList :mediaList="mediaList" @handleDelete="handleDeleteMedia" :uploadUrl="uploadUrl" @uploadCb="uploadCallback"/>
+    <MediaList
+        :mediaList="mediaList"
+        @handleDelete="handleDeleteMedia"
+        :uploadUrl="uploadUrl"
+        @uploadCb="uploadCallback"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import {onActivated, ref} from 'vue'
-import {deleteMedia, getMediaPage} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia, getMediaPage} from "@/apis/media/MediaApi.ts";
 import MediaList from "@/components/Media/MediaList.vue";
 
 onActivated(() => {
@@ -33,7 +38,7 @@ const getPage = () => {
 }
 getPage()
 
-const uploadCallback = ()=>{
+const uploadCallback = () => {
   mediaParam = {
     pageSize: 30,
     pageNumber: 1,
@@ -63,7 +68,7 @@ const handleDeleteMedia = (ids) => {
       for (let i = 0; i < mediaList.value.length; i++) {
         let v = mediaList.value[i];
         for (let j = 0; j < ids.length; j++) {
-          if(v.id === ids[j]){
+          if (v.id === ids[j]) {
 
           }
         }
@@ -99,22 +104,6 @@ const clickCancel = () => {
 </script>
 
 <style scoped>
-.select-icon {
-  position: absolute;
-  right: -0.3rem;
-  bottom: -0.3rem;
-}
-
-.cur-poi {
-  cursor: pointer;
-}
-
-.media-tool-ctn {
-  display: flex;
-  column-gap: 1rem;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
 
 .media-container :deep(img) {
   width: 100%;

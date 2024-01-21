@@ -14,10 +14,14 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
-import {getStartMenuList} from "@/apis/menu/menuRequest.ts";
+import {getStartMenuList} from "@/apis/menu/menuApi.ts";
+import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 
 
 const menu = ref([])
+// useMenuStore().getMenuMap().then(menuMap=>{
+// menu.value = menuMap.startMenu;
+// })
 getStartMenuList().then(res => {
   console.log('startMenu', res)
   if (res.code === 200 && res.data) {

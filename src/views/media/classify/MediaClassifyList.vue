@@ -1,13 +1,19 @@
 <template>
   <div class="app-container">
-    <MediaList :mediaList="list" @handleDelete="handleDelete" v-model:selectMap="selectMap"/>
+    <MediaList
+        :mediaList="list"
+        @handleDelete="handleDelete"
+        :uploadUrl="uploadUrl"
+        v-model:selectMap="selectMap"
+        :isShowBackButton="true"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 
 import MediaList from "@/components/Media/MediaList.vue";
-import {deleteMedia, getMediaListByClassifyId} from "@/apis/media/MediaRequest.ts";
+import {deleteMedia, getMediaListByClassifyId} from "@/apis/media/MediaApi.ts";
 import {useRoute} from "vue-router";
 import {ref, watch} from "vue";
 import {useMessage} from 'naive-ui'
@@ -15,15 +21,17 @@ import {useMessage} from 'naive-ui'
 const message = useMessage()
 
 let route = useRoute()
-const classifyId = ref(0)
+const classifyId = ref("");
+const type = ref("");
 
 const list = ref([])
 
+const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
 
 // 获取某分类下的媒体列表
 const getList = () => {
   console.log(classifyId.value)
-  getMediaListByClassifyId(classifyId.value).then(res => {
+  getMediaListByClassifyId(type.value, classifyId.value).then(res => {
     console.log(res)
     if (res.code === 200 && res.data) {
       list.value = res.data
@@ -34,7 +42,8 @@ const getList = () => {
 watch(() => route.query, (from, to) => {
   if(from && from.classifyId) {
     console.log('==>', from)
-    classifyId.value = Number(from.classifyId)
+    classifyId.value = <string>from.classifyId;
+    type.value = <string>from.type;
     getList()
   }
 }, {immediate: true})

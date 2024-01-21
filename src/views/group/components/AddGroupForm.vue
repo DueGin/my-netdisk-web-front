@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import {reactive, ref} from "vue";
-import {addGroup} from "@/apis/group/GroupRequest.ts";
+import {addGroup} from "@/apis/group/GroupApi.ts";
 import {useNotification} from 'naive-ui'
 
 const emits = defineEmits(['submitCallback']);

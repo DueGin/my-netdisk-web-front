@@ -1,13 +1,17 @@
 import {VNodeChild} from "vue";
 
 export default interface Menu {
+  id?: number,
   name?: string | undefined
-  label: string | (() => VNodeChild)
-  key: string
-  type?: string
   path?: string
+  icon?: string | (() => VNodeChild)
+  // label: string | (() => VNodeChild)
+  key?: string
+  type?: string
+  typeName?:string
   pathName?: string
   childrenList?: Array<Menu>
-  disabled?: boolean
-  icon?: string | (() => VNodeChild)
+  disabled?: boolean,
+  sorted?:number,
+  remark?:string
 }

@@ -13,7 +13,9 @@ export interface State {
 export const useMainStore = defineStore('main',{
   state: ()=>({
     token: <string>localStorage.getItem("token"),
-    user: undefined
+    user: undefined,
+    sysRole: undefined,
+    groupRoleList: undefined
   }),
   getters: {
 

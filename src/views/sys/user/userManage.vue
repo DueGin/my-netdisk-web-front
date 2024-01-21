@@ -19,7 +19,7 @@
           <n-input v-model:value="queryData.phone" placeholder="电话号码" clearable/>
         </n-form-item>
         <n-form-item>
-          <n-button type="primary" attr-type="button" @click="handleClick">
+          <n-button type="primary" attr-type="button" @click="getList">
             查询
           </n-button>
         </n-form-item>
@@ -34,6 +34,7 @@
         :bordered="false"
         align="center"
         striped
+        scroll-x="1000"
     />
     <n-pagination
         v-model:page="queryData.pageNum"
@@ -47,10 +48,12 @@
 
 <script setup lang="ts">
 import {h, reactive, ref} from 'vue'
-import {NButton} from "naive-ui";
+import {DataTableColumn, DataTableColumns, NButton} from "naive-ui";
 import User from "@/model/user/User.ts";
-import {getUserList} from "@/apis/user/userRequest.ts";
+import {getUserList, deleteUser} from "@/apis/sys/user/SysUserApi.ts";
 import TableActions from "@/components/tableActions/TableActions.vue";
+import {dialog, notification} from "@/utils/tip/TipUtil.ts";
+import UserForm from "@/views/sys/user/compoents/UserForm.vue";
 
 
 const total = ref(0)
@@ -71,7 +74,7 @@ const queryData = reactive<QueryData>({
 })
 const data = ref<Array<User>>([]);
 // 点击查询
-const handleClick = () => {
+const getList = () => {
   console.log(queryData)
   if (queryData.phone === '') {
     queryData.phone = undefined
@@ -88,7 +91,7 @@ const handleClick = () => {
     }
   })
 }
-handleClick();
+getList();
 
 
 // 表头
@@ -97,6 +100,7 @@ const createColumns = [
     title: '序号',
     key: 'orderNum',
     align: 'center',
+    width: 100,
     render(rowData, rowIndex) {
       return rowIndex + 1;
     }
@@ -104,6 +108,7 @@ const createColumns = [
   {
     title: '用户名',
     key: 'username',
+    width: 100,
     ellipsis: true,
     align: 'center',
   },
@@ -111,6 +116,7 @@ const createColumns = [
     title: '用户类型',
     key: 'type',
     align: 'center',
+    width: 100,
     render(rowData, rowIndex) {
       if (rowData.type === 1) {
         return '超级管理员'
@@ -118,10 +124,17 @@ const createColumns = [
         return '普通用户'
       }
     }
+  },
+  {
+    title: '手机号码',
+    key: 'phone',
+    align: 'center',
+    width: 130,
   }, {
     title: '角色分配',
     key: 'editRole',
     align: 'center',
+    width: 100,
     render(row) {
       return h(
           NButton,
@@ -141,21 +154,57 @@ const createColumns = [
           }
       )
     }
-  }, {
+  },
+  {
     title: '操作',
     key: 'actions',
     align: 'center',
+    fixed: 'right',
+    width: 100,
     render(row) {
       return h(
           "div",
           {},
           h(TableActions,
               {
+                // 点击编辑
                 handleEdit: (e) => {
                   console.log(e)
+                  dialog.create({
+                    icon: h(''),
+                    title: '编辑用户信息',
+                    content: ()=> h(UserForm, {
+                      formData: row,
+
+                    })
+                  })
                 },
+                // 删除操作
                 handleDelete: (e) => {
-                  console.log(e)
+                  console.log(e, row)
+                  dialog.create({
+                    title: '谨慎操作',
+                    content: '你确定删除该用户吗？',
+                    positiveText: '确定',
+                    negativeText: '取消',
+                    onPositiveClick: () => {
+                      console.log("click confirm");
+                      deleteUser(row.userId).then(res => {
+                        console.log(res);
+                        if (res.code === 200) {
+                          notification.success({
+                            content: "删除成功",
+                            duration: 1000
+                          });
+                          getList();
+                        }
+                      })
+                    },
+                    onNegativeClick: () => {
+                      console.log("click cancel");
+                    }
+                  })
+
                 }
               }
           )

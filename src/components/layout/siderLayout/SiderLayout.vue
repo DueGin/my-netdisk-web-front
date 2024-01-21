@@ -34,7 +34,7 @@
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {getMenuListByType} from "@/apis/menu/menuRequest.ts";
+import {getMenuListByType} from "@/apis/menu/menuApi.ts";
 import {renderIcon} from "@/utils/render/IconRender.ts";
 import {useRoute} from "vue-router";
 import {renderLinkTextWithPath} from "@/utils/render/RouterLinkRender.ts";

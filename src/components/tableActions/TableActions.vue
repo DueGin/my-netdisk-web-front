@@ -37,7 +37,7 @@ const props = defineProps({
 <style scoped>
 .table-actions-ctn {
   display: flex;
-  column-gap: 16px;
+  column-gap: 12px;
   align-items: center;
   justify-content: center;
 }

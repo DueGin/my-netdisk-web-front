@@ -25,7 +25,7 @@ import {useRoute} from "vue-router";
 import {watch, ref, h} from "vue";
 import {Icon} from "@iconify/vue";
 import IconList from "@/components/iconList/IconList.vue";
-import {getGroupInfoById, updateGroupInfo} from "@/apis/group/GroupRequest.ts";
+import {getGroupInfoById, updateGroupInfo} from "@/apis/group/GroupApi.ts";
 import {notification} from "@/utils/tip/TipUtil.ts";
 
 const route = useRoute();

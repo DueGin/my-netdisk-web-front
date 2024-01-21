@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import {h, ref, render} from "vue";
-import {getUserGroupList} from "@/apis/group/GroupRequest.ts";
+import {getUserGroupList} from "@/apis/group/GroupApi.ts";
 import {GroupConstant} from "@/constants/GroupConstant.ts";
 import {useDialog} from 'naive-ui';
 import router from "@/router";

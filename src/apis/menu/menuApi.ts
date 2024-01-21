@@ -15,7 +15,7 @@ export function getMenuTreeList(){
   return request.get('/menu/tree');
 }
 
-export function getMenuMap(){
+export function getMenuMap(): Promise<Result<any>> {
   return request.get('/menu/map');
 }
 
