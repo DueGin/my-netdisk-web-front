@@ -1,7 +1,8 @@
 export enum MediaClassifyConstant {
   MONTH = 'month',
   YEAR = 'year',
-  PLACE = 'place',
+  PROVINCE = 'province',
+  CITY = 'city',
   CHARACTER = 'character',
 
 }

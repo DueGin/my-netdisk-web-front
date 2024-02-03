@@ -6,10 +6,9 @@
         :pagination="pagination"
         @getListApi="getList"
         @handleSave="handleSave"
-        @handleModify="handleModify"
+        @handleUpdate="handleUpdate"
         @handleRemove="handleRemove"
-        addButtonName="字典类型"
-        size="medium"
+        name="字典类型"
     />
   </div>
 </template>
@@ -17,14 +16,15 @@
 <script setup lang="ts">
 
 import {NTag} from "naive-ui";
-import {h, ref} from "vue";
+import {h, reactive, ref} from "vue";
 import TableActions from "@/components/tableActions/TableActions.vue";
-import {getDictTypePage} from "@/apis/sys/dict/DictApi.ts";
+import {getDictTypePage} from "@/apis/sys/dictType/DictTypeApi.ts";
 import NProTable from "@/components/n-pro-table/NProTable.vue";
 import Pagination from "@/components/n-pro-table/Pagination.ts";
 import NProTableColumn from "@/components/n-pro-table/NProTableColumn.ts";
-import {removeDictType, saveDictType, updateDictType} from "@/apis/dict/DictApi.ts";
+import {removeDictType, saveDictType, updateDictType} from "@/apis/sys/dictType/DictTypeApi.ts";
 import {notification} from "@/utils/tip/TipUtil.ts";
+import {renderLinkTextWithPath} from "@/utils/render/RouterLinkRender.ts";
 
 let idx = 1;
 const columns: NProTableColumn[] = [
@@ -32,9 +32,7 @@ const columns: NProTableColumn[] = [
     title: '序号',
     prop: 'idx',
     columnType: 'index',
-    columnDataRender: () => {
-      return idx++
-    }
+    columnDataRender: () => idx++
   },
   {
     title: '字典类型',
@@ -42,6 +40,7 @@ const columns: NProTableColumn[] = [
     formType: 'input',
     isQueryField: true,
     required: true,
+    columnDataRender: (rowData)=>renderLinkTextWithPath('/sys/dict', rowData.code, {dictType: rowData.code})
   },
   {
     title: '字典名称',
@@ -58,6 +57,7 @@ const columns: NProTableColumn[] = [
     }, {
       default: () => rowData.status === 1 ? '启用' : '禁用'
     }),
+    required: true,
     formType: 'selection',
     selectionOptions: [
       {
@@ -74,42 +74,36 @@ const columns: NProTableColumn[] = [
     title: '操作',
     prop: 'control',
     columnType: 'control',
-    // columnDataRender: (row) => h(TableActions, {
-    //   handleEdit: () => {
-    //     console.log("edit", row);
-    //   },
-    //   handleDelete: () => {
-    //     console.log("delete", row);
-    //   }
-    // })
+    fixed: "right",
   }
 ]
 
 
 const list = ref([]);
-let pagination = ref<Pagination>(new Pagination());
+let pagination = reactive<Pagination>(new Pagination());
 const getList = (param) => {
   getDictTypePage(param).then(res => {
     if (res.code === 200 && res.data) {
       list.value = res.data.records;
-      pagination.value.pageSize = res.data.pageSize;
-      pagination.value.pageNumber = res.data.pageNumber;
-      pagination.value.totalRow = res.data.totalRow;
+      Pagination.setByPage(res.data, pagination);
       idx = 1;
     }
   })
 }
 
-const handleSave = (formData, cb) => {
-  cb(saveDictType(formData))
+const handleSave = async (formData, cb) => {
+  await cb(saveDictType(formData));
+  idx = 1;
 }
 
-const handleModify = (formData, cb)=>{
-  cb(updateDictType(formData))
+const handleUpdate = async (formData, cb) => {
+  await cb(updateDictType(formData));
+  idx = 1;
 }
 
-const handleRemove = (id, cb)=>{
-  cb(removeDictType(id))
+const handleRemove = async (id, cb) => {
+  await cb(removeDictType(id));
+  idx = 1;
 }
 
 </script>

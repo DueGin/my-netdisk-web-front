@@ -5,7 +5,7 @@
         :bordered="false"
         :focusable="false"
         strong
-        secondary
+        quaternary
         type="info"
         size="tiny"
         @click="handleEdit"
@@ -17,7 +17,7 @@
         :bordered="false"
         :focusable="false"
         strong
-        secondary
+        quaternary
         type="info"
         size="tiny"
         @click="handleDelete"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   handleEdit: Function,
   handleDelete: Function,
 });
@@ -37,7 +37,7 @@ const props = defineProps({
 <style scoped>
 .table-actions-ctn {
   display: flex;
-  column-gap: 12px;
+  column-gap: 8px;
   align-items: center;
   justify-content: center;
 }

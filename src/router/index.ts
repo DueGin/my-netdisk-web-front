@@ -1,79 +1,88 @@
 import {createRouter, createWebHistory, Router, RouteRecordRaw, RouterOptions} from 'vue-router'
-import MediaRouter from "@/router/components/MediaRouter.ts";
 import HeaderLayout from "@/components/layout/headerLayout/HeaderLayout.vue";
-import {defineAsyncComponent, h} from "vue";
-import GroupRouter from "@/router/components/GroupRouter.ts";
+import {h} from "vue";
+import {addDynamicMenuAndRoutes} from "@/utils/router/RouterUtil.ts";
 import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
+import {useMainStore} from "@/store/store.ts";
 //由于router的API默认使用了类型进行初始化，内部包含类型定义，所以本文内部代码中的所有数据类型是可以省略的
 //RouterRecordRaw是路由组件对象
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: '/',
+  //   component: () => h(HeaderLayout, {isUseRouter: true}),
+  //   // component: () => h(defineAsyncComponent(() => import('@/components/layout/headerLayout/HeaderLayout.vue'))
+  //   //   , {isUseRouter: true}),
+  //   redirect: '/index',
+  //   children: [
+  //     {
+  //       path: '/index',
+  //       name: 'Index',
+  //       component: () => import('@/views/index.vue'),
+  //     }
+  //   ],
+  // },
+  // {
+  //   path: '/layout',
+  //   name: 'Layout',
+  //   component: () => import('@/components/layout/headerLayout/HeaderLayout.vue'),
+  // },
   {
-    path: '/',
-    name: 'Root',
-    // component: () => h(HeaderLayout, {isUseRouter: true}),
-    component: () => h(defineAsyncComponent(() => import('@/components/layout/headerLayout/HeaderLayout.vue'))
-      , {isUseRouter: true}),
-    redirect: '/index',
-    children: [
-      {
-        path: '/index',
-        name: 'Index',
-        component: () => import('@/views/index.vue'),
-      }
-    ],
-  }, {
-    path: '/layout',
-    name: 'Layout',
-    component: () => import('@/components/layout/headerLayout/HeaderLayout.vue'),
-  }, {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/Login.vue'),
-  }, {
-    path: '/sys',
-    name: 'Manager',
-    component: () => h(HeaderLayout, {isUseRouter: true}),
-    children: [
-      {
-        path: 'user/manager',
-        name: 'UserManager',
-        component: () => import('@/views/sys/user/userManage.vue'),
-      },
-      {
-        path: 'group/manager',
-        name: 'GroupManager',
-        component: () => import('@/views/sys/group/GroupManager.vue'),
-      },{
-      path: 'dictType',
-        name: 'DictType',
-        component: ()=> import('@/views/sys/DictType/index.vue')
-      }
-    ]
-  }, {
-    path: '/siderMenu',
-    name: 'SiderMenu',
-    component: () => import('@/components/layout/siderLayout/SiderLayout.vue'),
-  }, {
-    path: '/startMenu',
-    name: 'StartMenu',
-    component: () => import('@/components/startMenu/StartMenu.vue'),
   },
   {
-    path: '/group',
+    path: '/sys',
     component: () => h(HeaderLayout, {isUseRouter: true}),
     children: [
+      // {
+      //   path: 'user/manager',
+      //   name: 'UserManager',
+      //   component: () => import('@/views/sys/user/userManage.vue'),
+      // },
+      // {
+      //   path: 'group/manager',
+      //   name: 'GroupManager',
+      //   component: () => import('@/views/sys/group/GroupManager.vue'),
+      // },
       {
-        path: 'home',
-        name: 'GroupHome',
-        component: () => import('@/views/group/Group.vue')
+        path: 'dictType',
+        name: 'DictType',
+        component: () => import('@/views/sys/DictType/index.vue')
+      },
+      {
+        path: 'dict',
+        name: 'SySDict',
+        component: () => import('@/views/sys/dict/index.vue')
+      },
+      {
+        path: 'menu',
+        name: 'SysMenu',
+        component: () => import('@/views/sys/menu/index.vue')
+      },
+      {
+        path: 'layoutComponent',
+        name: 'LayoutComponent',
+        component: () => import('@/views/sys/layoutComponent/index.vue')
       }
     ]
   },
-  MediaRouter,
-  GroupRouter
-
+  {
+    path: '/test',
+    component: h(HeaderLayout, {isUseRouter: true}),
+    children: [
+      {
+        path: 'exifr',
+        name: 'exifrTest',
+        component: () => import('@/views/test/exifrTest.vue')
+      }
+    ]
+  },
+  // MediaRouter,
+  // GroupRouter
 ]
+
 
 // RouterOptions是路由选项类型
 const options: RouterOptions = {
@@ -85,38 +94,28 @@ const options: RouterOptions = {
 const router: Router = createRouter(options)
 
 // @ts-ignore
-router.beforeEach((to, from, next) => {
-  // 加载菜单并存入store
-  useMenuStore().getMenuMap();
+router.beforeEach(async (to, from, next) => {
+  // 登录的时候不load路由
+  if (to.path === '/login') {
+    console.log('login')
+    next()
+    return;
+  }
+  let menuStore = useMenuStore();
+  if (!menuStore.$state.menuMap) {
+    // 加载菜单并存入store
+    await menuStore.getMenuMap().then(async () => {
+      await addDynamicMenuAndRoutes();
+      console.log('已注册路由', router.getRoutes())
+    });
+    useMainStore().loadUser();
+    console.log("==")
+    next({...to, replace: true})
+    return;
+  }
+
   next();
 })
-
-// router.beforeEach((to, from, next) => {
-//   // 加载动态菜单和路由
-//   addDynamicMenuAndRoutes(to, from)
-//   next()
-// })
-//
-//
-// /**
-//  * 加载动态菜单和路由
-//  */
-// function addDynamicMenuAndRoutes(to, from) {
-//
-//   getMenuTreeList().then(res => {
-//       if (res.code === 200 && res.data) {
-//         console.log(res.data);
-//         for (let i = 0; i < res.data.length; i++) {
-//           router.addRoute(res.data[i]);
-//         }
-//
-//       }
-//
-//     })
-//     .catch(err => {
-//       console.error(err)
-//     })
-// }
 
 
 export default router

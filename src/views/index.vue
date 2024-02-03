@@ -1,6 +1,6 @@
 <template>
-  <div>
-index
+  <div class="app-container">
+indexxxxxxxxxxx
   </div>
 </template>
 

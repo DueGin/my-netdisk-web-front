@@ -1,4 +1,5 @@
 import request from "@/utils/request/request.ts";
+import Page from "@/model/page/Page.ts";
 
 /**
  * 获取全部媒体 todo 添加请求参数
@@ -10,7 +11,7 @@ export function getMediaList(): Promise<Result<Media[]>> {
   })
 }
 
-export function getMediaPage(param: any) {
+export function getMediaPage(param: any): Promise<Result<Page>> {
   return request({
     url: '/media/page',
     method: 'get',
@@ -43,7 +44,7 @@ export function deleteMedia(ids: any): Promise<Result<Media[]>> {
 export function getMediaListByClassifyId(type: string, classifyId: string): Promise<Result<Media[]>> {
   console.log(classifyId)
   return request({
-    url: `/media/classify/${type}/${classifyId}`,
+    url: `/media/classify/list/${type}/${classifyId}`,
     method: 'get',
   })
 }

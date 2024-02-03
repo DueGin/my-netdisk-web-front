@@ -7,7 +7,7 @@ import {h, VNodeChild} from "vue";
  * @param text 链接文字 或 VNode
  */
 export function renderLinkTextWithName(routerName: string, text?: string | (() => VNodeChild)) {
-  return () => h(
+  return h(
     RouterLink,
     {
       to: {name: routerName}
@@ -20,12 +20,16 @@ export function renderLinkTextWithName(routerName: string, text?: string | (() =
  * 返回带链接的VNode
  * @param routerPath 路由地址
  * @param text 链接文字 或 VNode
+ * @param query 地址参数
  */
-export function renderLinkTextWithPath(routerPath: string, text?: string | (() => VNodeChild)) {
-  return () => h(
+export function renderLinkTextWithPath(routerPath: string, text: string | (() => VNodeChild), query?: any) {
+  return h(
     RouterLink,
     {
-      to: {path: routerPath}
+      to: {
+        path: routerPath,
+        query: query
+      }
     },
     {default: () => text}
   )

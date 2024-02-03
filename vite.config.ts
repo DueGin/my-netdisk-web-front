@@ -1,11 +1,12 @@
-import {defineConfig} from 'vite'
-import vue from '@vitejs/plugin-vue'
+import {defineConfig} from 'vite';
+import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
-import AutoImport from 'unplugin-auto-import/vite'
+import AutoImport from 'unplugin-auto-import/vite';
 import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 import {resolve} from 'path';
-import VueSetupExtend from 'vite-plugin-vue-setup-extend'
+import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import {viteMockServe} from "vite-plugin-mock";
+// import requireTransform from 'vite-plugin-require-transform';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +17,9 @@ export default defineConfig({
       mockPath: "./src/mock/source", // 指向mock下的文件
       localEnabled: true // 是否开启开发环境
     }),
+    // requireTransform({
+    //   fileRegex: /.js$|.vue$/
+    // }),
     AutoImport({
       imports: [
         'vue',

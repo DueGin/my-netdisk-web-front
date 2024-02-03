@@ -70,6 +70,8 @@ import router from "@/router";
 import {useMainStore} from "@/store/store.ts";
 import {useMessage} from 'naive-ui';
 import {notification} from "@/utils/tip/TipUtil.ts";
+import {addDynamicMenuAndRoutes} from "@/utils/router/RouterUtil.ts";
+import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 
 const message = useMessage();
 
@@ -115,7 +117,7 @@ const loginHandle = () => {
   // localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
   // }
   console.log("login==>", formState)
-  login(formState).then(res => {
+  login(formState).then(async res => {
     console.log(res)
     if (res.code === 200 && res.data) {
       // 设置用户信息
@@ -124,13 +126,17 @@ const loginHandle = () => {
       mainStore.$state.groupRoleList = res.data.groupRoleList;
       notification.success({
         content: '登录成功！',
-        duration: 1200,
+        duration: 1000,
         closable: true
+      });
+
+      await useMenuStore().getMenuMap().then(async () => {
+        await addDynamicMenuAndRoutes();
       });
       setTimeout(() => {
         // 跳转主页
         router.push({name: 'Index'});
-      }, 800)
+      }, 600)
     }
   })
 }

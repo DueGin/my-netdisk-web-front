@@ -6,6 +6,7 @@
         :uploadUrl="uploadUrl"
         v-model:selectMap="selectMap"
         :isShowBackButton="true"
+        @get-page="getList"
     />
   </div>
 </template>
@@ -29,18 +30,21 @@ const list = ref([])
 const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
 
 // 获取某分类下的媒体列表
-const getList = () => {
+const getList = (cb?) => {
   console.log(classifyId.value)
   getMediaListByClassifyId(type.value, classifyId.value).then(res => {
     console.log(res)
     if (res.code === 200 && res.data) {
       list.value = res.data
     }
+    if (cb) {
+      cb(list.value.length);
+    }
   })
 }
 // 监听参数
 watch(() => route.query, (from, to) => {
-  if(from && from.classifyId) {
+  if (from && from.classifyId) {
     console.log('==>', from)
     classifyId.value = <string>from.classifyId;
     type.value = <string>from.type;

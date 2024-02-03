@@ -53,33 +53,46 @@ const props = defineProps({
 
 // 获取菜单值
 const siderMenuOptions = ref([])
-const getMenuByType = (type: number) => {
-  getMenuListByType(type).then(res => {
-    if (res.code === 200 && res.data) {
-      // 处理菜单
-      res.data.forEach(handleMenuIcon)
-      siderMenuOptions.value = res.data
-      console.log(siderMenuOptions)
-    }
-  })
-}
 
 // 处理菜单
-const handleMenuIcon = (m) => {
-  m.label = renderLinkTextWithPath(m.path, m.name)
+const handleMenuIcon = (m, deepHeight) => {
+  // 需要隐藏的就不处理了
+  if (m.hidden === 1) {
+    return false;
+  }
+  if(m.path && m.path !== '' && m.componentPath && m.componentPath !== '') {
+    m.label = () => renderLinkTextWithPath(m.path, m.name)
+  }else{
+    m.label = m.name;
+  }
   let split = m.path.split('/');
-  m.key = split[2];
+  m.key = split[deepHeight];
 
   // 处理icon
   if (m.icon && typeof m.icon === "string") {
     let t = m.icon
-    m.icon = renderIcon(t)
+    m.icon = () => renderIcon(t)
   }
 
   // 递归处理子菜单
-  if (m.childrenList) {
-    m.childrenList.forEach(handleMenuIcon)
+  if (m.children && m.children.length !== 0) {
+    let count = 0;
+    for (let i = 0; i < m.children.length; i++) {
+      let child = m.children[i];
+      let b = handleMenuIcon(child, deepHeight + 1);
+      if (!b) {
+        m.children.splice(i, 1);
+        i--;
+        count++;
+      }
+    }
+    if (m.children.length === 0) {
+      m.children = undefined;
+    }
+  } else {
+    m.children = undefined
   }
+  return true;
 }
 
 
@@ -100,13 +113,22 @@ const handleMenu = async () => {
   if (route.path) {
     let split = route.path.split('/');
     let menuName = split[1];
-
-    let menuValue = menuStore.menuMap[menuName];
-
-    menuValue.forEach(handleMenuIcon)
+    let menuValue;
+    await menuStore.getMenuMap().then(res => {
+      menuValue = res[menuName];
+    })
+    menuValue.forEach(m => handleMenuIcon(m, 2))
+    console.log('菜单名称：' + menuName + '，菜单列表：', menuValue)
     siderMenuOptions.value = menuValue;
-    // await getMenuByType(menuValue);
-    let menuKey = split[split.length - 1];
+    // 从子往父级找能高亮的菜单
+    let menuKey;
+    for (let i = 0; i < split.length; i++) {
+      menuKey = split[split.length - i - 1];
+      let find = menuValue.find(m => m.key === menuKey);
+      if (find) {
+        break;
+      }
+    }
     handleHighlightMenu(menuKey);
   }
 }

@@ -14,12 +14,12 @@ const request = axios.create({
 
 
 // 请求拦截
-request.interceptors.request.use(config => {
+request.interceptors.request.use((config: any) => {
   console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
   console.log(config)
   // 是否需要设置 token放在请求头
   let token = localStorage.getItem("token");
-  if (token != null && token !== '') {
+  if (token != null && token !== '' && !config.isNotTakeToken) {
     // 让每个请求携带自定义token 请根据实际情况自行修改
     config.headers['Authorization'] = token
   }
@@ -69,7 +69,10 @@ request.interceptors.response.use((res: any) => {
       return Promise.resolve(res.data)
     } else {
       console.error(msg)
-      // message.error(msg) todo
+      notification.error({
+        title: '报错啦',
+        content: res.data.msg ? res.data.msg : (res.data.data ? res.data.data : '没有错误信息')
+      })
       return Promise.reject(res.data)
     }
 

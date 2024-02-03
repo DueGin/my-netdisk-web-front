@@ -1,7 +1,7 @@
 <template>
   <div class="start-menu-container">
-    <div v-for="item in menu" class="start-menu-item">
-      <router-link :to="{name: item.pathName}" class="drop-link-style menu-item">
+    <div v-for="item in menuList" class="start-menu-item">
+      <router-link :to="item.pathName ? {name: item.pathName}: {path: item.path}" class="drop-link-style menu-item">
         <n-icon size="3rem">
           <Icon :icon="item.icon"/>
         </n-icon>
@@ -18,14 +18,22 @@ import {getStartMenuList} from "@/apis/menu/menuApi.ts";
 import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 
 
-const menu = ref([])
-// useMenuStore().getMenuMap().then(menuMap=>{
-// menu.value = menuMap.startMenu;
-// })
-getStartMenuList().then(res => {
-  console.log('startMenu', res)
-  if (res.code === 200 && res.data) {
-    menu.value = res.data
+const menuList = ref([])
+const menuStore = useMenuStore();
+menuStore.getMenuMap().then(map => {
+  let startMenu = map.startMenu;
+  if (startMenu) {
+    let menus = [];
+    startMenu.forEach(m => {
+      let menu = {
+        label: m.name,
+        key: m.id,
+        icon: m.icon,
+        path: m.path,
+      }
+      menus.push(menu);
+    })
+    menuList.value = menus;
   }
 })
 </script>
@@ -44,7 +52,7 @@ getStartMenuList().then(res => {
   width: 4rem;
 }
 
-.menu-item{
+.menu-item {
   display: grid;
   grid-template-rows: 70% 30%;
   row-gap: 3px;

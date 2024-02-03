@@ -1,5 +1,5 @@
 {
-  "name": "my-netdisk-web",
+  "name": "ginDriver",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@vue/cli": "^5.0.8",
     "axios": "^1.6.0",
+    "exifr": "^7.1.3",
     "mockjs": "^1.1.0",
     "pinia": "^2.1.7",
     "unplugin-auto-import": "^0.16.7",

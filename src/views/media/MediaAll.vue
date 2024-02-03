@@ -1,16 +1,18 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @scroll="handleScroll">
     <MediaList
         :mediaList="mediaList"
         @handleDelete="handleDeleteMedia"
         :uploadUrl="uploadUrl"
         @uploadCb="uploadCallback"
+        @scroll="handleScroll"
+        @get-page="getPage"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import {onActivated, ref} from 'vue'
+import {onActivated, onMounted, ref} from 'vue'
 import {deleteMedia, getMediaPage} from "@/apis/media/MediaApi.ts";
 import MediaList from "@/components/Media/MediaList.vue";
 
@@ -27,14 +29,17 @@ let mediaParam = {
   onlyLookSelf: undefined
 }
 const mediaList = ref([])
-const getPage = () => {
+const getPage = (cb?) => {
   getMediaPage(mediaParam).then(res => {
-    if (res.code === 200 && res.data) {
+    if (res.data) {
       mediaList.value = mediaList.value.concat(res.data.records);
       mediaParam.pageNumber++;
-      console.log(mediaList.value)
+    }
+    if(cb) {
+      cb(mediaList.value.length)
     }
   })
+
 }
 getPage()
 
@@ -64,7 +69,7 @@ const handleDeleteMedia = (ids) => {
       console.log('delete success')
       // 关闭选择
       clickCancel()
-      // 删除指定item
+      // todo 删除指定item
       for (let i = 0; i < mediaList.value.length; i++) {
         let v = mediaList.value[i];
         for (let j = 0; j < ids.length; j++) {
@@ -100,7 +105,10 @@ const clickCancel = () => {
   clearSelectPhoto()
 }
 
+const handleScroll = (e) => {
+  console.log(e)
 
+}
 </script>
 
 <style scoped>

@@ -1,8 +1,8 @@
 import HeaderAndSiderLayout from "@/components/layout/headerAndSiderLayout/HeaderAndSiderLayout.vue";
 
 const MediaRouter = {
-  path: '/media',
-  name: 'Media',
+  path: '/',
+  name: '',
   component: HeaderAndSiderLayout,
   redirect: '/media/home',
   meta: {
@@ -10,11 +10,11 @@ const MediaRouter = {
   },
   children: [
     {
-      path: 'home',
+      path: 'media/home',
       name: 'MediaHome',
       component: () => import('@/views/media/index.vue'),
     }, {
-      path: 'mediaAll',
+      path: 'media/mediaAll',
       name: 'MediaAll',
       component: () => import('@/views/media/MediaAll.vue'),
     },

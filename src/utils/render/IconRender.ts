@@ -10,7 +10,7 @@ import {RouterLink} from "vue-router";
  * @param size 图标大小
  */
 export function renderNIcon(icon: string, color?: string, size?: string) {
-  return () => h(NIcon, {
+  return h(NIcon, {
     size: size
   }, {
     default: () => h(Icon, {icon: icon, color: color})
@@ -26,7 +26,7 @@ export function renderNIcon(icon: string, color?: string, size?: string) {
  * @param height (可选)icon高度，单位px
  */
 export function renderIcon(icon: string, color?: string, width?: number, height?: number) {
-  return () => h(Icon,
+  return h(Icon,
     {
       icon: icon,
       color: color,
@@ -45,7 +45,7 @@ export function renderIcon(icon: string, color?: string, width?: number, height?
  * @param height (可选)icon高度，单位px
  */
 export function renderLinkIcon(routerName: string, icon: string | (() => VNodeChild), color?: string, width?: number, height?: number) {
-  return () => h(
+  return h(
     RouterLink,
     {
       to: {name: routerName}

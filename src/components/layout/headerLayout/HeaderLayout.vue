@@ -9,8 +9,12 @@
           </n-icon>
         </n-dropdown>
         <n-dropdown trigger="click" :options="avatarMenuOptions" @select="handleAvatarMenuSelect">
-          <n-avatar class="avatar" style="color: black; background-color: unset;cursor:pointer;">
-            <n-icon>
+          <n-avatar
+              class="avatar"
+              style="color: black; background-color: unset;cursor:pointer; border-radius: 5px"
+              :src="user && user.avatarUrl ? user.avatarUrl : ''"
+          >
+            <n-icon v-if="!user || (user && (!user.avatar || user.avatar === ''))">
               <Icon icon="pajamas:twitter"/>
             </n-icon>
           </n-avatar>
@@ -31,6 +35,9 @@ import {NIcon} from 'naive-ui'
 import StartMenu from "@/components/startMenu/StartMenu.vue";
 import {Icon} from "@iconify/vue";
 import Menu from "@/model/menu/Menu.ts";
+import {logout} from "@/apis/user/userApi.ts";
+import router from "@/router";
+import {useMainStore} from "@/store/store.ts";
 
 const props = defineProps({
   isUseRouter: {
@@ -45,21 +52,12 @@ const startMenu = [
   {
     key: 'header',
     type: 'render',
-    render: () => {
-      return h(StartMenu, {}, {})
-    },
+    render: () => h(StartMenu),
   }
 ]
 
 // 顶部菜单
 const headerMenuOptions = ref<Menu[]>([])
-// getHeaderMenuList().then(res => {
-//   console.log(res)
-//   if (res.code === 200 && res.data) {
-//     // 处理菜单
-//     headerMenuOptions.value = res.data
-//   }
-// })
 
 
 ////// 头像下拉菜单 //////
@@ -79,7 +77,8 @@ const handleAvatarMenuSelect = (key: string | number) => {
   switch (key) {
     case 1:
       // 跳转账户设置页面
-      console.log('navigate to user settings')
+      console.log('navigate to user settings');
+      router.push({name: 'UserCenter'});
       break;
     case 2:
       handleLogout()
@@ -90,8 +89,14 @@ const handleAvatarMenuSelect = (key: string | number) => {
 // 退出登录
 const handleLogout = () => {
   console.log('logout')
+  logout().then(res => {
+    localStorage.removeItem("token");
+    router.push({name: 'Login'});
+  })
 }
 
+const mainStore = useMainStore();
+const user = ref(mainStore.user);
 
 </script>
 

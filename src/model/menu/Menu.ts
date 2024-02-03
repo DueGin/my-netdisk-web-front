@@ -10,7 +10,7 @@ export default interface Menu {
   type?: string
   typeName?:string
   pathName?: string
-  childrenList?: Array<Menu>
+  children?: Array<Menu>
   disabled?: boolean,
   sorted?:number,
   remark?:string
