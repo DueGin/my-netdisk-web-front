@@ -17,13 +17,10 @@
 
 import {NTag} from "naive-ui";
 import {h, reactive, ref} from "vue";
-import TableActions from "@/components/tableActions/TableActions.vue";
-import {getDictTypePage} from "@/apis/sys/dictType/DictTypeApi.ts";
+import {getDictTypePage, removeDictType, saveDictType, updateDictType} from "@/apis/sys/dictType/DictTypeApi.ts";
 import NProTable from "@/components/n-pro-table/NProTable.vue";
 import Pagination from "@/components/n-pro-table/Pagination.ts";
 import NProTableColumn from "@/components/n-pro-table/NProTableColumn.ts";
-import {removeDictType, saveDictType, updateDictType} from "@/apis/sys/dictType/DictTypeApi.ts";
-import {notification} from "@/utils/tip/TipUtil.ts";
 import {renderLinkTextWithPath} from "@/utils/render/RouterLinkRender.ts";
 
 let idx = 1;

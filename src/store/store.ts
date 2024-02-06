@@ -4,7 +4,7 @@ import {getUserDetail} from "@/apis/user/userApi.ts";
 
 // 为 store state 声明类型
 export interface State {
-  token: string,
+  token: string | undefined,
   user?: User,
   sysRole?: string,
   groupRoleList?: Array<any>
@@ -25,12 +25,21 @@ export const useMainStore = defineStore('main', {
     loadUser() {
       if(!this.user) {
         getUserDetail().then(res => {
+          this.token = localStorage.getItem("token") as string;
           if (res.data) {
             this.user = res.data;
             this.sysRole = res.data.sysRole;
             this.groupRoleList = res.data.groupRoleList;
           }
         })
+      }
+    },
+    clearAll(){
+      this.$state = {
+        token: undefined,
+        user: undefined,
+        sysRole: undefined,
+        groupRoleList: undefined
       }
     }
   }

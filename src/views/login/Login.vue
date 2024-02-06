@@ -24,6 +24,13 @@
             </template>
           </n-input>
         </n-form-item>
+        <n-form-item v-if="isRegister" label="确认密码" name="confirmPassword">
+          <n-input type="password" v-model:value="formState.confirmPassword" clearable>
+            <template #prefix>
+              <icon icon="ant-design:lock-outlined"/>
+            </template>
+          </n-input>
+        </n-form-item>
         <n-form-item label="验证码" name="code">
           <n-input v-model:value="formState.verifyCode" placeholder="" clearable>
             <template #prefix>
@@ -34,7 +41,7 @@
         </n-form-item>
 
         <n-form-item class="remember-me-item" name="remember" no-style>
-          <div style="display: flex; margin: 0 1rem;justify-content: space-between; width: 100%;">
+          <div v-if="!isRegister" style="display: flex; margin: 0 1rem;justify-content: space-between; width: 100%;">
             <n-checkbox v-model:checked="formState.rememberMe">记住密码</n-checkbox>
             <n-button @click="clickForgetPassword" :focusable="false" text>忘记密码？</n-button>
           </div>
@@ -48,12 +55,12 @@
               html-type="submit"
               class="login-form-button"
               style="width: 30%"
-              @click="loginHandle"
+              @click="isRegister ? handleRegister(): loginHandle()"
           >
-            登录
+            {{ isRegister ? '注册' : '登录' }}
           </n-button>
-          <n-button style="position: absolute; right: 10px;" @click="navigateToRegister" text :focusable="false">
-            现在注册！
+          <n-button style="position: absolute; right: 10px;" @click="isRegister=!isRegister" text :focusable="false">
+            现在{{ isRegister ? '登录' : '注册' }}！
           </n-button>
         </div>
       </n-form>
@@ -64,7 +71,7 @@
 <script setup lang="ts">
 import {computed, reactive, ref} from 'vue';
 import {Icon} from "@iconify/vue";
-import {login} from '@/apis/user/userApi.ts'
+import {login, register} from '@/apis/user/userApi.ts'
 import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
 import router from "@/router";
 import {useMainStore} from "@/store/store.ts";
@@ -89,6 +96,7 @@ getCode();
 const formState = reactive({
   username: '',
   password: '',
+  confirmPassword: '',
   uuid: '',
   verifyCode: '',
   rememberMe: false,
@@ -116,7 +124,6 @@ const loginHandle = () => {
   // todo 从后端登录后返回的加密串保存到浏览器缓存中
   // localStorage.setItem(remberMeLocalStorageKey, JSON.stringify(formState))
   // }
-  console.log("login==>", formState)
   login(formState).then(async res => {
     console.log(res)
     if (res.code === 200 && res.data) {
@@ -125,7 +132,8 @@ const loginHandle = () => {
       mainStore.$state.sysRole = res.data.sysRole;
       mainStore.$state.groupRoleList = res.data.groupRoleList;
       notification.success({
-        content: '登录成功！',
+        title: '登录成功！',
+        content: '即将跳转主页',
         duration: 1000,
         closable: true
       });
@@ -146,15 +154,27 @@ const disabled = computed(() => {
 
 
 // 点击现在注册按钮
-const navigateToRegister = () => {
-  console.log('Click Register Now!')
-}
+const isRegister = ref(false);
 
 // 点击忘记密码按钮
 const clickForgetPassword = () => {
   console.log('Click Forget Password')
 }
 
+const handleRegister = () => {
+  register(formState).then(() => {
+    notification.success({
+      title: '注册成功！',
+      content: '喔吼！又新来了一位伙伴',
+      duration: 888
+    });
+    setTimeout(() => {
+      isRegister.value = false;
+      getCode();
+      formState.verifyCode = '';
+    }, 200)
+  })
+}
 
 </script>
 

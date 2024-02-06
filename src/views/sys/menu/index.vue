@@ -15,6 +15,7 @@
     </n-tabs>
     <n-pro-table
         name="菜单"
+        :table-key="tableKey"
         :columns="menuTypeValue !== '5' ? columns : startMenuColumns"
         :table-data="data"
         @getListApi="getMenuList"
@@ -32,14 +33,14 @@ import NProTable from "@/components/n-pro-table/NProTable.vue";
 import NProTableColumn from "@/components/n-pro-table/NProTableColumn.ts";
 import {getMenuListByType, removeMenu, saveMenu, updateMenu} from "@/apis/menu/menuApi.ts";
 import {getDictList} from "@/apis/sys/dict/DictApi.ts";
-import {NSelect, NTag, NTreeSelect, TreeSelectOption} from "naive-ui";
+import {NTag, NTreeSelect} from "naive-ui";
 import {getRoleListByType} from "@/apis/sys/role/RoleApi.ts";
 import {getLayoutComponentList} from "@/apis/layoutComponent/layoutComponentApi.ts";
 import {selectStatusOptions} from "@/utils/option/OptionUtil.ts";
-import {getIconPage} from "@/apis/icon/IconApi.ts";
 import IconSelector from "@/components/iconSelector/IconSelector.vue";
 
 const icon = ref('');
+const tableKey = ref(0);
 
 // region 标签页，菜单类型
 const menuTypeValue = ref('2');
@@ -110,6 +111,35 @@ const iconSelector = (value) => h(IconSelector, {
   }
 })
 
+const data = ref([]);
+const getMenuList = () => {
+  getMenuListByType(menuTypeValue.value).then(res => {
+    if (res.code === 200 && res.data) {
+      data.value = res.data;
+      let menus = [];
+      res.data.forEach(m => {
+        let menuOpt = {
+          label: m.name,
+          key: m.id,
+          children: []
+        }
+        if (m.children) {
+          menuOpt.children = handleChildMenuOpt(m.children);
+        }
+        menus.push(menuOpt);
+      })
+      console.log(menus)
+      let root = {
+        label: '根菜单',
+        key: 0,
+        children: menus
+      }
+      menuTree = [root];
+      tableKey.value++;
+    }
+  })
+}
+
 // region 列
 const columns = ref<NProTableColumn[]>([
   {
@@ -163,23 +193,18 @@ const columns = ref<NProTableColumn[]>([
   {
     title: '布局组件',
     prop: 'layoutComponentId',
-    notTableColumn: true,
     formType: 'selection',
     selectionOptions: layoutComponentList,
-  },
-  {
-    title: '布局组件',
-    prop: 'layoutComponent.name',
-    notTableColumn: menuTypeValue.value === '5'
+    columnDataRender: (rowData) => h('span', {}, {default: () => rowData.layoutComponent?.name})
   },
   {
     title: '角色权限',
-    prop: 'role',
+    prop: 'roleId',
     formType: 'selection',
     selectionOptions: roleList,
     columnDataRender: (rowData, rowIndex) => h('span', {}, {
       default: () => {
-        let find = roleList.value.find(r => r.value === rowData.role);
+        let find = roleList.value.find(r => r.value === rowData.roleId);
         return find ? find.label : '--';
       }
     })
@@ -187,7 +212,9 @@ const columns = ref<NProTableColumn[]>([
   {
     title: '是否隐藏菜单',
     prop: 'hidden',
-    columnDataRender: (rowData) => h('span', {}, {
+    columnDataRender: (rowData) => h(NTag, {
+      type: rowData.hidden !== 1 ? 'success' : 'warning'
+    }, {
       default: () => {
         return rowData.hidden !== 1 ? "显示" : "隐藏";
       }
@@ -251,12 +278,12 @@ const startMenuColumns = ref<NProTableColumn[]>([
   },
   {
     title: '角色权限',
-    prop: 'role',
+    prop: 'roleId',
     formType: 'selection',
     selectionOptions: roleList,
     columnDataRender: (rowData, rowIndex) => h('span', {}, {
       default: () => {
-        let find = roleList.value.find(r => r.value === rowData.role);
+        let find = roleList.value.find(r => r.value === rowData.roleId);
         return find ? find.label : '--';
       }
     })
@@ -281,33 +308,6 @@ const startMenuColumns = ref<NProTableColumn[]>([
 ])
 // endregion 列
 
-const data = ref([]);
-const getMenuList = () => {
-  getMenuListByType(menuTypeValue.value).then(res => {
-    if (res.code === 200 && res.data) {
-      data.value = res.data;
-      let menus = [];
-      res.data.forEach(m => {
-        let menuOpt = {
-          label: m.name,
-          key: m.id,
-          children: []
-        }
-        if (m.children) {
-          menuOpt.children = handleChildMenuOpt(m.children);
-        }
-        menus.push(menuOpt);
-      })
-      console.log(menus)
-      let root = {
-        label: '根菜单',
-        key: 0,
-        children: menus
-      }
-      menuTree = [root];
-    }
-  })
-}
 
 const handleChildMenuOpt = (menuList: any[]) => {
   let menus = [];

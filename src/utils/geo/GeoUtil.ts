@@ -1,7 +1,7 @@
 /**
  * @return \{lng:经度, lat:纬度\}
  */
-export function getLongitudeLatitude(cb: (lng: any, lat: any) => void) {
+export function getLongitudeLatitude(cb: (lng?: any, lat?: any) => void) {
   //如果该对象存在，那么地理位置服务可用。
   if ('geolocation' in navigator) {
     /* 地理位置服务可用 */
@@ -11,8 +11,8 @@ export function getLongitudeLatitude(cb: (lng: any, lat: any) => void) {
       maximumAge: 0 //表明可以返回多长时间（即最长年龄，单位毫秒）内的可获取的缓存位置。如果设置为 0, 说明设备不能使用一个缓存位置，而且必须去获取一个真实的当前位置。默认0
     }
 
-    let lat = 0;
-    let lng = 0;
+    let lat:any = undefined;
+    let lng:any = undefined;
 
     function success(position: any) {
       //position.coords (只读) 返回一个定义了当前位置的Coordinates对象。
@@ -26,6 +26,7 @@ export function getLongitudeLatitude(cb: (lng: any, lat: any) => void) {
     function error(err: any) {
       let errorType = ['您拒绝共享位置信息', '获取不到位置信息', '获取位置信息超时']
       console.log(errorType[err.code - 1])
+      cb()
     }
 
     navigator.geolocation.getCurrentPosition(success, error, options)

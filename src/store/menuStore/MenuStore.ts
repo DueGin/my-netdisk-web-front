@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {getMenuFlatMap, getMenuMap} from "@/apis/menu/menuApi.ts";
+import {getMenuFlatMap, getUserMenuMap} from "@/apis/menu/menuApi.ts";
 
 interface MenuStore {
   menuMap: object | undefined,
@@ -18,7 +18,7 @@ export const useMenuStore = defineStore('menu', {
     getMenuMap(): Promise<any> {
       if (!this.menuMap) {
         return new Promise<object>(resolve => {
-          getMenuMap().then(res => {
+          getUserMenuMap().then(res => {
             if (res.code === 200 && res.data) {
               this.menuMap = res.data;
             } else {
@@ -62,6 +62,13 @@ export const useMenuStore = defineStore('menu', {
         })
       } else {
         return new Promise<any>(this.menuFlatMap);
+      }
+    },
+    clearAll(){
+      this.$state = {
+        menuMap: undefined,
+        menuList: {},
+        menuFlatMap: {}
       }
     }
   }

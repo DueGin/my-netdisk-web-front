@@ -1,15 +1,7 @@
 import request from "@/utils/request/request.ts";
 import Page from "@/model/page/Page.ts";
+import PageDTO from "@/model/page/PageDTO.ts";
 
-/**
- * 获取全部媒体 todo 添加请求参数
- */
-export function getMediaList(): Promise<Result<Media[]>> {
-  return request({
-    url: '/media/list',
-    method: 'get',
-  })
-}
 
 export function getMediaPage(param: any): Promise<Result<Page>> {
   return request({
@@ -17,11 +9,6 @@ export function getMediaPage(param: any): Promise<Result<Page>> {
     method: 'get',
     params: param
   })
-}
-
-export function getMediaListByType(type: string): Promise<Result<Media[]>> {
-  res.data?.filter(v => v.type === type)
-  return new Promise<Result<Media[]>>(resolve => resolve(res))
 }
 
 /**
@@ -38,18 +25,19 @@ export function deleteMedia(ids: any): Promise<Result<Media[]>> {
 
 /**
  * 获取分类下的媒体列表
+ * @param page 分页
  * @param type 分类类型
  * @param classifyId 分类ID
  */
-export function getMediaListByClassifyId(type: string, classifyId: string): Promise<Result<Media[]>> {
+export function getMediaPageByClassifyId(page: PageDTO, type: string, classifyId: string): Promise<Result<Page>> {
   console.log(classifyId)
   return request({
-    url: `/media/classify/list/${type}/${classifyId}`,
+    url: `/media/classify/page/${type}/${classifyId}`,
     method: 'get',
+    params: page
   })
 }
 
-
-const res: Result<Media[]> = {
-  code: 200,
+export function getThatYearToday(limit:number|string): Promise<Result<any>>{
+  return request.get(`/media/thatYearToday/${limit}`)
 }

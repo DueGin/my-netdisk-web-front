@@ -2,7 +2,7 @@ import {RouteRecordRaw} from "vue-router";
 import router from "@/router";
 import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 import {getLayoutComponentMap} from "@/apis/layoutComponent/layoutComponentApi.ts";
-import {h, defineAsyncComponent} from "vue";
+import {defineAsyncComponent, h} from "vue";
 
 const viewModules = import.meta.glob("@/views/**/*.vue");
 const layoutModules = import.meta.glob("@/components/layout/**/*.vue");
@@ -15,7 +15,7 @@ console.log(viewModules, layoutModules)
 export async function addDynamicMenuAndRoutes() {
   const menuStore = useMenuStore();
   let layoutComponentMap: any;
-  getLayoutComponentMap().then(res => {
+  await getLayoutComponentMap().then(res => {
     if (res.data) {
       layoutComponentMap = res.data;
     }
@@ -36,9 +36,11 @@ export async function addDynamicMenuAndRoutes() {
       }
 
       if (layoutComponent.hasSlot === 0 && layoutComponent.hasRouter === 1) {
-        rootMenu.component = defineAsyncComponent(() => import(`/src/components/layout${layoutComponent.path}.vue`));
+        rootMenu.component = layoutModules[`/src/components/layout${layoutComponent.path}.vue`];
       } else if (layoutComponent.hasSlot === 1 && layoutComponent.hasRouter === 1) {
+        console.log(layoutModules[`/src/components/layout${layoutComponent.path}.vue`])
         rootMenu.component = () => h(defineAsyncComponent(() => import(`/src/components/layout${layoutComponent.path}.vue`)), {isUseRouter: true})
+        // rootMenu.component = h(layoutModules[`/src/components/layout${layoutComponent.path}.vue`], {isUseRouter: true})
       }
 
       router.addRoute(rootMenu);

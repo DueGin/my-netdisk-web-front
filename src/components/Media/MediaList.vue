@@ -5,9 +5,14 @@
         <n-button @click="router.go(-2)" v-if="isShowBackButton">返回</n-button>
       </div>
       <div class="tool-right">
+        <n-icon size="1.5rem" @click="clickReload" style="cursor:pointer;">
+          <Icon icon="ci:arrow-reload-02"/>
+        </n-icon>
         <n-button
+            v-if="isShowUploadButton && showUploadButton"
             :render-icon="()=>renderIcon('ion:cloud-upload-outline')"
             @click="clickUpload"
+            v-has-role="'ROLE_ADMIN'"
         >
           上传
         </n-button>
@@ -16,6 +21,7 @@
             @click="clickDelete"
             :render-icon="()=>renderIcon('mi:delete')"
             v-show="isShowCancelButton"
+            :loading="removeButtonLoading"
         >
           删除
         </n-button>
@@ -53,7 +59,7 @@
         </n-button>
       </div>
     </div>
-    <div ref="mediaContainerRef" class="media-container">
+    <div v-if="mediaList && mediaList.length!==0" class="media-container">
       <div
           v-for="(item, index) in mediaList"
           :class="['media-item',{'cur-poi':isShowCancelButton}]"
@@ -61,14 +67,16 @@
       >
         <n-image
             @contextmenu="showRightMenu"
-            v-if="item.mimeType.includes('image')"
+            v-if="!item.mimeType || (item.mimeType && item.mimeType.includes('image'))"
             :src="item.url"
-            object-fit="contain"
-            style="border-radius: 0.5rem"
+            width="100%"
+            height="100%"
+            object-fit="cover"
+            style="border-radius: 0.5rem;height: 100%; width: 100%;"
             :preview-disabled="isPreviewPhoto"
         />
         <VideoPlayer
-            v-if="item.mimeType.includes('video')"
+            v-else-if="item.mimeType.includes('video')"
             :isUseDialog="isUseVideoDialog"
             :src="item.url"
         />
@@ -77,9 +85,20 @@
         </n-icon>
       </div>
     </div>
-    <div style="display: flex;align-items: center;justify-content: center">
-      <n-button :disabled="!hasMore" tertiary style="width: 30%" @click="handleClickMoreButton"
-                :loading="moreButtonLoading">
+    <div v-else style="width: 100%;height: 100px;display:flex;align-items: center;justify-content: center">
+      {{ emptyText && emptyText.length !== 0 ? emptyText : '暂无相片，快去上传吧！' }}
+    </div>
+    <div
+        v-if="mediaList && mediaList.length!==0"
+        style="display: flex;align-items: center;justify-content: center; margin-top: 2rem; margin-bottom: 1rem;"
+    >
+      <n-button
+          :disabled="!hasMore"
+          tertiary
+          style="width: 30%"
+          @click="handleClickMoreButton(false)"
+          :loading="moreButtonLoading"
+      >
         {{ hasMore ? '加载更多' : '没有更多' }}
       </n-button>
     </div>
@@ -87,13 +106,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, h, watch, onMounted, nextTick} from 'vue'
+import {computed, h, ref, watch} from 'vue'
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
 import {Icon} from "@iconify/vue";
 import {renderIcon} from "@/utils/render/IconRender.ts";
-import {deleteMedia} from "@/apis/media/MediaApi.ts";
-import {useMainStore} from "@/store/store.ts";
-import {dialog} from "@/utils/tip/TipUtil.ts";
+import {dialog, notification} from "@/utils/tip/TipUtil.ts";
 import FileUpload from "@/components/fileUpload/FileUpload.vue";
 import router from "@/router";
 
@@ -115,36 +132,65 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  reloadKey: {
+    type: Number,
+    default: 0
+  },
+  isShowUploadButton: {
+    type: Boolean,
+    default: true
+  },
+  emptyText: {
+    type: String,
+    default: undefined
+  }
 })
 
 const emits = defineEmits<{
-  (e: "getPage", cb: (size: number) => any),
-  (e: 'handleDelete', ids: any[]),
+  (e: "getPage", isReload: boolean, cb: (nowSize: number, total: number) => any),
+  (e: 'handleDelete', ids: any[], cb: (resPromise: Promise<Result<any>>) => any),
   (e: 'uploadCb'),
-  (e: 'update:modelValue', obj: any)
+  (e: 'update:modelValue', obj: any),
+  (e: 'reload')
 }>()
 
+// 获取更多按钮
 const moreButtonLoading = ref(false);
 const hasMore = ref(true);
-const handleClickMoreButton = async () => {
+const handleClickMoreButton = async (isReload: boolean, cb?) => {
   moreButtonLoading.value = true;
-  let oldListSize = (<Array<any>>props.mediaList).length;
   console.log(props.mediaList)
-  await emits('getPage', (size)=>{
-    console.log(oldListSize, size)
-    if (oldListSize === size) {
+  await emits('getPage', isReload, (nowSize: number, total: number) => {
+    if (nowSize >= total) {
       hasMore.value = false;
+    }
+    // 获取完分页回调
+    if (cb) {
+      cb()
     }
   });
 
-  console.log(props.mediaList)
-
-
   moreButtonLoading.value = false;
+}
+// 获取分页
+handleClickMoreButton(false);
 
+const clickReload = async () => {
+  await handleClickMoreButton(true, () => {
+    notification.success({
+      title: '重新加载成功！',
+      duration: 888
+    })
+  });
 }
 
-const isShowUploadButton = ref(true)
+// 监听重新加载key
+watch(() => props.reloadKey, () => {
+  console.log("reload media list")
+  handleClickMoreButton(true);
+})
+
+const showUploadButton = ref(true)
 const isPreviewPhoto = ref(false)
 const isShowCancelButton = ref(false)
 const isUseVideoDialog = ref(true)
@@ -216,6 +262,7 @@ const selectItem = (item, idx) => {
 }
 
 // 点击删除按钮
+const removeButtonLoading = ref(false);
 const clickDelete = () => {
   let ids = [];
   let indexs: number[] = [];
@@ -224,16 +271,43 @@ const clickDelete = () => {
     indexs.push(t.index);
   })
   dialog.create({
-    icon: '🚮',
+    icon: h('div', {}, {default: () => '🚮'}),
     title: '确定删除吗？',
     content: '他们将去往垃圾篓🗑️，帮你保管30天先',
     positiveText: '😑早就想删了',
-    onPositiveClick: () => {
-      emits('handleDelete', ids);
+    onPositiveClick: async () => {
+      removeButtonLoading.value = true
+      await emits('handleDelete', ids, (resPromise: Promise<Result<any>>) => {
+        resPromise
+            .then(res => {
+              notification.success({
+                title: '删除成功！',
+                content: res.msg && res.msg !== '' ? res.msg : undefined,
+                duration: 888
+              })
 
-      // 手动删掉
-      indexs.forEach(idx => (<Array<any>>props.mediaList).splice(idx, 1));
-      clickCancel();
+              // 索引倒序删除
+              indexs.sort((i1, i2) => {
+                if (i1 === i2) {
+                  return 0;
+                }
+                return i2 > i1 ? 1 : -1;
+              })
+              // 手动删掉
+              indexs.forEach(idx => (<Array<any>>props.mediaList).splice(idx, 1));
+
+              clickCancel();
+            })
+            .catch(err => {
+              notification.error({
+                title: '删除失败！',
+                content: err.msg,
+                duration: 1288
+              })
+            })
+            .finally(() => removeButtonLoading.value = false)
+      });
+
     },
     negativeText: '🤔容我再想想',
   })
@@ -268,7 +342,7 @@ const clickCancel = () => {
   isUseVideoDialog.value = false
   // 关闭点击事件
   isOpenSelect.value = false
-  isShowUploadButton.value = true;
+  showUploadButton.value = true;
   // 清空选中map
   clearSelectPhoto()
 }
@@ -281,7 +355,7 @@ const clickEdit = () => {
   isShowCancelButton.value = true
   // 关掉视频dialog
   isUseVideoDialog.value = false
-  isShowUploadButton.value = false;
+  showUploadButton.value = false;
   // 打开点击事件
   isOpenSelect.value = true
 }
@@ -289,8 +363,8 @@ const clickEdit = () => {
 // 点击上传按钮
 const clickUpload = () => {
   dialog.create({
-    icon: h(''),
-    title: h(''),
+    icon: () => h('div'),
+    title: undefined,
     content: () => h(FileUpload, {
       uploadUrl: props.uploadUrl,
       isAnalysisExif: true,
@@ -301,6 +375,8 @@ const clickUpload = () => {
     }),
     onClose: () => {
       emits('uploadCb')
+      // 重新获取列表
+      handleClickMoreButton(true);
     }
   })
 }
@@ -331,6 +407,7 @@ const clickUpload = () => {
   display: flex;
   column-gap: 1rem;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .media-container :deep(img) {

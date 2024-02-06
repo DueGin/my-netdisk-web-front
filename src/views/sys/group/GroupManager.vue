@@ -68,14 +68,14 @@ columns.value = [
 const groupList = ref([])
 
 interface QueryData {
-  pageSize: number,
+  size: number,
   pageNum: number,
   groupName: any,
 }
 
 // 查询条件表单
 const queryData = reactive<QueryData>({
-  pageSize: 10,
+  size: 10,
   pageNum: 1,
   groupName: '',
 })

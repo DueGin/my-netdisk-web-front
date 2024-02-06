@@ -2,7 +2,7 @@
   <div class="start-menu-container">
     <div v-for="item in menuList" class="start-menu-item">
       <router-link :to="item.pathName ? {name: item.pathName}: {path: item.path}" class="drop-link-style menu-item">
-        <n-icon size="3rem">
+        <n-icon size="2rem">
           <Icon :icon="item.icon"/>
         </n-icon>
         <span>{{ item.label }}</span>
@@ -14,7 +14,6 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
-import {getStartMenuList} from "@/apis/menu/menuApi.ts";
 import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 
 
@@ -30,6 +29,7 @@ menuStore.getMenuMap().then(map => {
         key: m.id,
         icon: m.icon,
         path: m.path,
+        roleName: m.roleName
       }
       menus.push(menu);
     })

@@ -1,20 +1,20 @@
 import Page from "@/model/page/Page.ts";
-import { UnwrapNestedRefs} from "vue";
+import {UnwrapNestedRefs} from "vue";
 
 export default class Pagination {
-  pageNumber: number
-  pageSize: number
-  totalRow: number
+  current: number
+  size: number
+  total: number
 
-  constructor(pageNumber?: number, pageSize?: number, totalRow?: number) {
-    this.pageNumber = pageNumber ? pageNumber : 1;
-    this.pageSize = pageSize ? pageSize : 10;
-    this.totalRow = totalRow ? totalRow : 0;
+  constructor(current?: number, size?: number, total?: number) {
+    this.current = current ? current : 1;
+    this.size = size ? size : 10;
+    this.total = total ? total : 0;
   }
 
   static setByPage(page: Page, pagination: UnwrapNestedRefs<Pagination>) {
-    pagination.pageSize = page.pageSize;
-    pagination.pageNumber = page.pageNumber;
-    pagination.totalRow = page.totalRow;
+    pagination.size = page.size;
+    pagination.current = page.current;
+    pagination.total = page.total;
   }
 }

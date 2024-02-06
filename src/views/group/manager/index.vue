@@ -32,7 +32,6 @@
 
 import {h, reactive, ref} from "vue";
 import TableActions from "@/components/tableActions/TableActions.vue";
-import {NButton} from "naive-ui";
 
 const columns = ref([])
 columns.value = [
@@ -64,14 +63,14 @@ columns.value = [
 const groupList = ref([])
 
 interface QueryData {
-  pageSize: number,
+  size: number,
   pageNum: number,
   groupName: any,
 }
 
 // 查询条件表单
 const queryData = reactive<QueryData>({
-  pageSize: 10,
+  size: 10,
   pageNum: 1,
   groupName: '',
 })

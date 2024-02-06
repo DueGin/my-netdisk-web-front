@@ -1,17 +1,14 @@
 export default class Page {
-  pageNumber: number
-  pageSize: number
+  current: number
+  size: number
   // 总数据数量
-  totalRow: number
-  // 总页数
-  totalPage: number
+  total: number
   records: Array<any>
 
-  constructor(pageNumber: number, pageSize: number, totalRow: number, totalPage: number, records?: Array<any>) {
-    this.pageNumber = pageNumber;
-    this.pageSize = pageSize;
-    this.totalRow = totalRow;
-    this.totalPage = totalPage;
+  constructor(current: number, size: number, total: number, records?: Array<any>) {
+    this.current = current;
+    this.size = size;
+    this.total = total;
     this.records = records ? records : [];
   }
 

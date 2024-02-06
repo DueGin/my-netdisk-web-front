@@ -18,7 +18,7 @@ import {h, ref} from "vue";
 import {NIcon} from "naive-ui";
 import {Icon} from "@iconify/vue";
 
-const value = defineModel<string>('value', {default: ''})
+const value = defineModel<string>('value', {default: undefined})
 
 // 图标选项列表
 let size = 32;

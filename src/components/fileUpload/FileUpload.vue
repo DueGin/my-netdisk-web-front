@@ -33,14 +33,13 @@
 <script setup lang="ts">
 import {Icon} from "@iconify/vue";
 import {useMainStore} from "@/store/store.ts";
-import {NImage, UploadCustomRequestOptions, UploadFileInfo} from "naive-ui";
-import {h, ref} from 'vue';
+import {UploadFileInfo} from "naive-ui";
+import {ref} from 'vue';
 import {getExif} from "@/utils/ExifUtil.ts";
 import ExifDTO from "@/model/exif/ExifDTO.ts";
 import {timestampToDateTime} from "@/utils/dateTime/DateTimeUtil.ts";
 import {useGeoStore} from "@/store/geoStore/GeoStore.ts";
-import {dialog, notification} from "@/utils/tip/TipUtil.ts";
-import request from "@/utils/request/request.ts";
+import {notification} from "@/utils/tip/TipUtil.ts";
 import {deleteFile} from "@/apis/file/FileApi.ts";
 
 const props = defineProps({
@@ -108,6 +107,7 @@ const onBeforeUpload = async (options: {
       await geoStore.getLngLat().then(res => {
         console.log(res)
         if (res) {
+          console.log(res.lng, typeof res.lng)
           v.longitude = res.lng;
           v.latitude = res.lat;
         }
@@ -138,8 +138,6 @@ const onFinish = ({file, event}: {
     title: `${file.name}上传成功！`,
     duration: 888
   })
-  // 文件后缀名
-  const ext = file.name.split('.')[1];
 
   // 文件对象名称
   file.name = res.data.fileName;
@@ -148,7 +146,7 @@ const onFinish = ({file, event}: {
   file.url = res.data.url;
 
   // 执行自定义回调
-  emits('finish');
+  emits('finish', file);
   return file
 }
 

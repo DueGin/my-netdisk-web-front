@@ -38,7 +38,7 @@
     />
     <n-pagination
         v-model:page="queryData.pageNum"
-        v-model:page-size="queryData.pageSize"
+        v-model:page-size="queryData.size"
         :item-count="total"
         :page-sizes="[10, 20, 30, 40]"
         show-size-picker
@@ -48,9 +48,9 @@
 
 <script setup lang="ts">
 import {h, reactive, ref} from 'vue'
-import {DataTableColumn, DataTableColumns, NButton} from "naive-ui";
+import {NButton} from "naive-ui";
 import User from "@/model/user/User.ts";
-import {getUserList, deleteUser} from "@/apis/sys/user/SysUserApi.ts";
+import {deleteUser, getUserList} from "@/apis/sys/user/SysUserApi.ts";
 import TableActions from "@/components/tableActions/TableActions.vue";
 import {dialog, notification} from "@/utils/tip/TipUtil.ts";
 import UserForm from "@/views/sys/user/compoents/UserForm.vue";
@@ -59,7 +59,7 @@ import UserForm from "@/views/sys/user/compoents/UserForm.vue";
 const total = ref(0)
 
 interface QueryData {
-  pageSize: number,
+  size: number,
   pageNum: number,
   username: any,
   phone: any,
@@ -67,7 +67,7 @@ interface QueryData {
 
 // 查询条件表单
 const queryData = reactive<QueryData>({
-  pageSize: 10,
+  size: 10,
   pageNum: 1,
   username: undefined,
   phone: undefined,

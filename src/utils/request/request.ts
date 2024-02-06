@@ -19,7 +19,7 @@ request.interceptors.request.use((config: any) => {
   console.log(config)
   // 是否需要设置 token放在请求头
   let token = localStorage.getItem("token");
-  if (token != null && token !== '' && !config.isNotTakeToken) {
+  if (token != null && token !== '' && !config.isNotTakeToken && token !== 'Bearer null') {
     // 让每个请求携带自定义token 请根据实际情况自行修改
     config.headers['Authorization'] = token
   }
@@ -59,7 +59,6 @@ request.interceptors.response.use((res: any) => {
     // 未设置状态码则默认成功状态
     const code = res.data['code'] || 200;
     // 获取错误信息
-    const msg = errorCodeType(code) || res.data['msg'] || errorCodeType('default')
     if (code === 200) {
       let headers = res.headers;
       if (headers && headers.authorization) {
@@ -68,6 +67,7 @@ request.interceptors.response.use((res: any) => {
       }
       return Promise.resolve(res.data)
     } else {
+      const msg = errorCodeType(code) || res.data['msg'] || errorCodeType('default')
       console.error(msg)
       notification.error({
         title: '报错啦',
@@ -85,18 +85,29 @@ request.interceptors.response.use((res: any) => {
         title: resp.data,
         duration: 1000,
       })
-      setTimeout(() => {
-        router.push({name: "Login"})
-      }, 800)
+      let data = err.response.data;
+      if (data && data.includes("未登录")) {
+        setTimeout(() => {
+          router.push({name: "Login"})
+        }, 800)
+      }
       return Promise.reject(err);
     }
-    let {msg} = err;
-    if (msg == "Network Error") {
-      msg = "后端接口连接异常";
-    } else if (msg.includes("timeout")) {
-      msg = "系统接口请求超时";
-    } else if (msg.includes("Request failed with status code")) {
-      msg = "系统接口" + msg.substr(msg.length - 3) + "异常";
+
+    let msg = err.response.data.error || err.message;
+    if (msg) {
+      if (msg == "Network Error") {
+        msg = "后端接口连接异常";
+      } else if (msg.includes("timeout")) {
+        msg = "系统接口请求超时";
+      } else if (msg.includes("Request failed with status code")) {
+        msg = "系统接口" + msg.substr(msg.length - 3) + "异常";
+      } else if (msg.includes("Not Found") || msg.includes("Request failed with status code 404")) {
+        notification.error({
+          title: '未找到接口404',
+          duration: 1688
+        })
+      }
     }
     // message.error(msg) todo
     return Promise.reject(err)

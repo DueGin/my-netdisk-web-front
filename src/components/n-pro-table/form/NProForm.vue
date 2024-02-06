@@ -63,7 +63,7 @@
         :label-width="formFields[0]?.labelWidth ? formFields[0].labelWidth: 'auto'"
         :size="size ? size:'medium'"
     >
-      <n-button v-if="$emit('resetForm', formData)" @click="$emit('resetForm', formData)">
+      <n-button v-if="isShowResetButton" @click="$emit('resetForm', formData)">
         重置
       </n-button>
       <n-button
@@ -92,7 +92,7 @@ import FormItem from "@/components/n-pro-table/form/FormItem.ts";
 import {NProFormType} from "@/components/n-pro-table/form/NProFormType.ts";
 import {NProFormSize} from "@/components/n-pro-table/form/NProFormSize.ts";
 import {NButton} from "naive-ui";
-import {computed, isRef, unref} from "vue";
+import {isRef, unref} from "vue";
 
 interface Props {
   // 表单字段项列表
@@ -104,7 +104,8 @@ interface Props {
   // 是否为行内表单
   inline?: boolean,
   // 表单key
-  formKey: number
+  formKey: number,
+  isShowResetButton?: boolean,
 }
 
 // const props = defineProps<Props>();
@@ -122,7 +123,8 @@ const props = withDefaults(defineProps<Props>(), {
   size: NProFormSize.medium,
   inline: false,
   formType: NProFormType.editForm,
-  formKey: 0
+  formKey: 0,
+  isShowResetButton: true,
 })
 
 const formData = defineModel<Record<string, any>>('formData', {default: {}})
@@ -140,7 +142,7 @@ const emits = defineEmits<{
 
 // 表单提交
 const onSubmit = () => {
-  emits('handleSubmit', formData);
+  emits('handleSubmit', formData.value);
   // emits('submitSuccess')
 }
 

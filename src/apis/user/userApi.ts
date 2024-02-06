@@ -11,7 +11,7 @@ export function register(data: object): Promise<Result<any>> {
 }
 
 export function logout() {
-  return request.get('/logout')
+  return request.get('/user/logout')
 }
 
 export function getUserDetail(): Promise<Result<any>> {

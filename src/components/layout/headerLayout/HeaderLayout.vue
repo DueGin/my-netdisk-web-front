@@ -3,6 +3,9 @@
     <n-layout>
       <n-layout-header class="header-container" :inverted="false" bordered>
         <n-menu mode="horizontal" :inverted="false" :options="headerMenuOptions"/>
+        <n-icon size="1.6rem" style="cursor: pointer;" @click="router.push({name:'Index'})">
+          <Icon icon="pixelarticons:home"/>
+        </n-icon>
         <n-dropdown trigger="hover" :options="startMenu">
           <n-icon size="1.6rem" style="cursor: pointer;">
             <Icon icon="ion:apps"/>
@@ -38,6 +41,9 @@ import Menu from "@/model/menu/Menu.ts";
 import {logout} from "@/apis/user/userApi.ts";
 import router from "@/router";
 import {useMainStore} from "@/store/store.ts";
+import {notification} from "@/utils/tip/TipUtil.ts";
+import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
+import {useGeoStore} from "@/store/geoStore/GeoStore.ts";
 
 const props = defineProps({
   isUseRouter: {
@@ -91,7 +97,15 @@ const handleLogout = () => {
   console.log('logout')
   logout().then(res => {
     localStorage.removeItem("token");
-    router.push({name: 'Login'});
+    useMainStore().clearAll();
+    useMenuStore().clearAll();
+    useGeoStore().clearAll();
+    notification.success({
+      title: '登出成功！',
+      duration: 888
+    })
+    setTimeout(() => router.push({name: 'Login'}), 500)
+
   })
 }
 

@@ -24,6 +24,7 @@
 
 
   <n-data-table
+      :key="tableKey"
       :columns="processedColumns"
       :data="TableData"
       :pagination="false"
@@ -38,10 +39,10 @@
 
   <n-pagination
       v-if="pagination"
-      v-model:page="pagination.pageNumber"
-      v-model:page-size="pagination.pageSize"
-      :item-count="pagination.totalRow"
-      :page-sizes="<Array<number>>pageSizes"
+      v-model:page="pagination.current"
+      v-model:page-size="pagination.size"
+      :item-count="pagination.total"
+      :page-sizes="<Array<number>>sizes"
       show-size-picker
       :size="size ? size : NProTableSize.medium"
   />
@@ -49,8 +50,8 @@
 
 <script setup lang="ts">
 
-import {computed, ref, reactive, toRaw, h, watch, toRef} from "vue";
-import {DialogReactive, NButton} from "naive-ui";
+import {computed, h, ref, toRef, watch} from "vue";
+import {NButton} from "naive-ui";
 import Pagination from "@/components/n-pro-table/Pagination.ts";
 import {dialog, notification} from "@/utils/tip/TipUtil.ts";
 import FormItem from "@/components/n-pro-table/form/FormItem.ts";
@@ -67,29 +68,32 @@ interface Props {
   // 分页
   pagination?: Pagination,
   // 页大小选项
-  pageSizes?: Array<any>,
+  sizes?: Array<any>,
   // 添加xx按钮的xx
   name: String,
   // 表格、表单大小
   size?: NProTableSize,
+  // 表格key
+  tableKey?: number,
 }
 
 // const props = defineProps<Props>();
 // const {
 //   columns = props.columns ? props.columns : [],
 //   pagination = props.pagination ? props.pagination : {
-//     pageNumber: 1,
-//     pageSize: 10,
-//     totalRow: 0
+//     current: 1,
+//     size: 10,
+//     total: 0
 //   },
-//   pageSizes = props.pageSizes ? props.pageSizes : [10, 20, 30, 50],
+//   sizes = props.sizes ? props.sizes : [10, 20, 30, 50],
 //   size = props.size ? props.size : NProTableSize.medium
 // } = props;
 
 // @ts-ignore
 const props = withDefaults(defineProps<Props>(), {
-  pageSizes: [10, 20, 30, 50],
-  size: NProTableSize.medium
+  sizes: [10, 20, 30, 50],
+  size: NProTableSize.medium,
+  tableKey: 0,
 })
 
 
@@ -217,8 +221,8 @@ watch(() => props.columns, () => {
 
 // 查询表单
 const queryForm = ref({
-  pageSize: props.pagination && props.pagination.pageSize ? props.pagination.pageSize : -1,
-  pageNumber: props.pagination && props.pagination.pageNumber ? props.pagination.pageNumber : undefined
+  size: props.pagination && props.pagination.size ? props.pagination.size : -1,
+  current: props.pagination && props.pagination.current ? props.pagination.current : undefined
 });
 const getList = () => {
   // 查询列表
@@ -252,8 +256,8 @@ watch(() => props.pagination, () => {
 const resetQueryForm = () => {
   console.log("reset form")
   queryForm.value = {
-    pageSize: props.pagination && props.pagination.pageSize ? props.pagination.pageSize : -1,
-    pageNumber: props.pagination && props.pagination.pageNumber ? props.pagination.pageNumber : undefined
+    size: props.pagination && props.pagination.size ? props.pagination.size : -1,
+    current: props.pagination && props.pagination.current ? props.pagination.current : undefined
   }
 
   queryFormKey.value++;
@@ -279,7 +283,7 @@ const onSave = (control: string, formName: string, handleSaveEmit: 'handleSave' 
   console.log(data);
   if (handleSaveEmit === 'handleUpdate' && data) {
     // 过滤表单字段，不填写的不提交
-    let tFormData:any = {};
+    let tFormData: any = {};
     formItemList.value.forEach(item => {
       tFormData[item.prop] = data[item.prop]
     })
@@ -301,12 +305,12 @@ const onSave = (control: string, formName: string, handleSaveEmit: 'handleSave' 
       },
       // 重置表单操作
       ['onResetForm']: (formData) => {
-        console.log(formData)
         formData.value = {};
         editFormKey.value++;
       },
       // 保存操作
       ['onHandleSubmit']: (form) => {
+        console.log(form)
         // @ts-ignore
         emits(handleSaveEmit, form, (resPromise) => {
           resPromise.then(res => {

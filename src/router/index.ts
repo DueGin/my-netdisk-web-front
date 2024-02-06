@@ -1,6 +1,4 @@
 import {createRouter, createWebHistory, Router, RouteRecordRaw, RouterOptions} from 'vue-router'
-import HeaderLayout from "@/components/layout/headerLayout/HeaderLayout.vue";
-import {h} from "vue";
 import {addDynamicMenuAndRoutes} from "@/utils/router/RouterUtil.ts";
 import {useMenuStore} from "@/store/menuStore/MenuStore.ts";
 import {useMainStore} from "@/store/store.ts";
@@ -32,53 +30,42 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: () => import('@/views/login/Login.vue'),
   },
-  {
-    path: '/sys',
-    component: () => h(HeaderLayout, {isUseRouter: true}),
-    children: [
-      // {
-      //   path: 'user/manager',
-      //   name: 'UserManager',
-      //   component: () => import('@/views/sys/user/userManage.vue'),
-      // },
-      // {
-      //   path: 'group/manager',
-      //   name: 'GroupManager',
-      //   component: () => import('@/views/sys/group/GroupManager.vue'),
-      // },
-      {
-        path: 'dictType',
-        name: 'DictType',
-        component: () => import('@/views/sys/DictType/index.vue')
-      },
-      {
-        path: 'dict',
-        name: 'SySDict',
-        component: () => import('@/views/sys/dict/index.vue')
-      },
-      {
-        path: 'menu',
-        name: 'SysMenu',
-        component: () => import('@/views/sys/menu/index.vue')
-      },
-      {
-        path: 'layoutComponent',
-        name: 'LayoutComponent',
-        component: () => import('@/views/sys/layoutComponent/index.vue')
-      }
-    ]
-  },
-  {
-    path: '/test',
-    component: h(HeaderLayout, {isUseRouter: true}),
-    children: [
-      {
-        path: 'exifr',
-        name: 'exifrTest',
-        component: () => import('@/views/test/exifrTest.vue')
-      }
-    ]
-  },
+  // {
+  //   path: '/sys',
+  //   component: () => h(HeaderLayout, {isUseRouter: true}),
+  //   children: [
+  //     // {
+  //     //   path: 'user/manager',
+  //     //   name: 'UserManager',
+  //     //   component: () => import('@/views/sys/user/userManage.vue'),
+  //     // },
+  //     // {
+  //     //   path: 'group/manager',
+  //     //   name: 'GroupManager',
+  //     //   component: () => import('@/views/sys/group/GroupManager.vue'),
+  //     // },
+  //     {
+  //       path: 'dictType',
+  //       name: 'dictType',
+  //       component: () => import('@/views/sys/dictType/index.vue')
+  //     },
+  //     {
+  //       path: 'dict',
+  //       name: 'SySDict',
+  //       component: () => import('@/views/sys/dict/index.vue')
+  //     },
+  //     {
+  //       path: 'menu',
+  //       name: 'SysMenu',
+  //       component: () => import('@/views/sys/menu/index.vue')
+  //     },
+  //     {
+  //       path: 'layoutComponent',
+  //       name: 'LayoutComponent',
+  //       component: () => import('@/views/sys/layoutComponent/index.vue')
+  //     }
+  //   ]
+  // },
   // MediaRouter,
   // GroupRouter
 ]

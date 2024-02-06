@@ -4,9 +4,9 @@
         :mediaList="list"
         @handleDelete="handleDelete"
         :uploadUrl="uploadUrl"
-        v-model:selectMap="selectMap"
         :isShowBackButton="true"
         @get-page="getList"
+        :reload-key="mediaReloadKey"
     />
   </div>
 </template>
@@ -14,10 +14,11 @@
 <script setup lang="ts">
 
 import MediaList from "@/components/Media/MediaList.vue";
-import {deleteMedia, getMediaListByClassifyId} from "@/apis/media/MediaApi.ts";
+import {deleteMedia, getMediaPageByClassifyId} from "@/apis/media/MediaApi.ts";
 import {useRoute} from "vue-router";
 import {ref, watch} from "vue";
 import {useMessage} from 'naive-ui'
+import PageDTO from "@/model/page/PageDTO.ts";
 
 const message = useMessage()
 
@@ -30,46 +31,52 @@ const list = ref([])
 const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
 
 // 获取某分类下的媒体列表
-const getList = (cb?) => {
-  console.log(classifyId.value)
-  getMediaListByClassifyId(type.value, classifyId.value).then(res => {
-    console.log(res)
+let page: PageDTO = {
+  current: 1,
+  size: 30
+}
+
+const resetPage = () => {
+  page.current = 1;
+}
+
+const mediaReloadKey = ref(0);
+
+const getList = (isReload?: boolean, cb?) => {
+  if (isReload) {
+    resetPage();
+  }
+  getMediaPageByClassifyId(page, type.value, classifyId.value).then(res => {
     if (res.code === 200 && res.data) {
-      list.value = res.data
-    }
-    if (cb) {
-      cb(list.value.length);
+      if (isReload) {
+        list.value = res.data.records;
+      } else {
+        list.value = list.value.concat(res.data.records);
+      }
+      page.size = res.data.size;
+      page.current = res.data.current + 1;
+      if (cb) {
+        cb(list.value.length, res.data.total);
+      }
     }
   })
 }
+
 // 监听参数
 watch(() => route.query, (from, to) => {
   if (from && from.classifyId) {
     console.log('==>', from)
     classifyId.value = <string>from.classifyId;
     type.value = <string>from.type;
-    getList()
+    page.size = 30;
+    page.current = 1;
+    mediaReloadKey.value++;
   }
 }, {immediate: true})
 
-
-const selectMap = ref(new Map())
-
 // 处理删除
-const handleDelete = () => {
-  let ids = []
-  selectMap.value.forEach((v, k) => {
-    ids.push(k)
-  })
-  deleteMedia(ids).then(res => {
-    console.log(res)
-    if (res.code === 200) {
-      console.log('success')
-      message.success('删除成功')
-      // 重新获取列表
-      getList()
-    }
-  })
+const handleDelete = (ids: any[], cb: (resPromise: Promise<Result<any>>) => any) => {
+  cb(deleteMedia(ids))
 }
 
 

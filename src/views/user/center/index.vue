@@ -1,25 +1,30 @@
 <template>
   <div class="app-container">
     <div style="display: grid;grid-template-columns: 30% 70%;align-items: center;justify-items: center;">
-      <!--      <n-icon-->
-      <!--          size="5rem"-->
-      <!--          style="cursor: pointer; border: 1px solid rgba(136,136,136,0.3);border-radius: 100%"-->
-      <!--          :src="data.avatarUrl"-->
-      <!--          @click="clickAvatar"-->
-      <!--      >-->
-      <!--      </n-icon>-->
-      <n-upload
-          action=""
-          :default-file-list="fileList"
-          list-type="image-card"
-
-      />
+      <n-avatar
+          round
+          size="large"
+          style="cursor: pointer; width: 160px; height: 160px; border: 1px solid rgba(136,136,136,0.3);"
+          :src="data.avatarUrl"
+          @click="clickAvatar"
+      >
+      </n-avatar>
+      <!--      <n-upload-->
+      <!--          :action="uploadUrl"-->
+      <!--          :max="1"-->
+      <!--          :file-list="fileList"-->
+      <!--          list-type="image-card"-->
+      <!--          :headers="{Authorization: useMainStore().token}"-->
+      <!--          @remove="onRemove"-->
+      <!--          :key="uploadKey"-->
+      <!--      />-->
 
       <n-pro-form
           :formFields="formFields"
           :formKey="formKey"
           v-model:formData="data"
           @handle-submit="handleUpdate"
+          :is-show-reset-button="false"
       />
     </div>
   </div>
@@ -30,8 +35,9 @@ import NProForm from "@/components/n-pro-table/form/NProForm.vue";
 import {h, ref} from "vue";
 import FormItem from "@/components/n-pro-table/form/FormItem.ts";
 import {getUserDetail, updateUser} from "@/apis/user/userApi.ts";
-import {dialog} from "@/utils/tip/TipUtil.ts";
+import {dialog, notification} from "@/utils/tip/TipUtil.ts";
 import FileUpload from "@/components/fileUpload/FileUpload.vue";
+import {useMainStore} from "@/store/store.ts";
 
 const formKey = ref(0);
 const formFields = ref<FormItem[]>([
@@ -41,18 +47,18 @@ const formFields = ref<FormItem[]>([
     formType: 'input',
     required: true
   },
-  {
-    prop: 'phone',
-    label: '手机号码',
-    formType: 'other',
-    formItemRender: () => h('div', {}, {default: () => '修改手机号，需要验证码'})
-  },
-  {
-    prop: 'email',
-    label: '邮箱',
-    formType: 'other',
-    formItemRender: () => h('div', {}, {default: () => '修改邮箱，需要验证码'})
-  }
+  // {
+  //   prop: 'phone',
+  //   label: '手机号码',
+  //   formType: 'other',
+  //   formItemRender: () => h('div', {}, {default: () => '修改手机号，需要验证码'})
+  // },
+  // {
+  //   prop: 'email',
+  //   label: '邮箱',
+  //   formType: 'other',
+  //   formItemRender: () => h('div', {}, {default: () => '修改邮箱，需要验证码'})
+  // }
 ]);
 
 const data = ref({});
@@ -61,40 +67,61 @@ const getUserInfo = () => {
   getUserDetail().then(res => {
     if (res.data) {
       data.value = res.data;
-      let f = {
-        id: Math.random() * 100,
-        name: res.data.avatar,
-        url: res.data.avatarUrl,
-        status: 'finished',
+      if (res.data.avatar) {
+        let f = {
+          id: Math.random() * 100,
+          name: res.data.avatar,
+          url: res.data.avatarUrl,
+          status: 'finished',
+        }
+        fileList.value = [];
+        fileList.value.push(f);
       }
-      fileList.value = [];
-      fileList.value.push(f);
     }
   })
 }
+getUserInfo();
+
+
+const mainStore = useMainStore();
 
 const handleUpdate = (data) => {
   updateUser(data).then(() => {
+    mainStore.clearAll();
+    mainStore.loadUser();
     getUserInfo();
+    notification.success({
+      title: '保存成功！',
+      duration: 888
+    })
   })
 }
 
-let uploadUrl = import.meta.env.VITE_APP_BASE_API + '/user/upload';
+let uploadUrl = import.meta.env.VITE_APP_BASE_API + '/user/avatar/upload';
 
+let avatarUploadDialog;
 const clickAvatar = () => {
-  dialog.create({
+  avatarUploadDialog = dialog.create({
     icon: h(''),
     title: h(''),
     content: () => h(FileUpload, {
-      uploadUrl: uploadUrl
+      uploadUrl: uploadUrl,
+      isAnalysisExif: false,
+      onFinish: (file) => {
+        console.log(file)
+        data.value.avatarUrl = file.url;
+        data.value.avatar = file.name;
+        mainStore.clearAll();
+        mainStore.loadUser();
+        setTimeout(() => {
+          avatarUploadDialog.destroy();
+        }, 300)
+      }
     }),
-    onClose: () => {
-      // 只重新获取头像
-    }
   })
 }
 
-
+const uploadKey = ref(0);
 
 </script>
 
