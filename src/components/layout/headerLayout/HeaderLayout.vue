@@ -3,9 +3,9 @@
     <n-layout>
       <n-layout-header class="header-container" :inverted="false" bordered>
         <n-menu mode="horizontal" :inverted="false" :options="headerMenuOptions"/>
-        <n-icon size="1.6rem" style="cursor: pointer;" @click="router.push({name:'Index'})">
-          <Icon icon="pixelarticons:home"/>
-        </n-icon>
+<!--        <n-icon size="1.6rem" style="cursor: pointer;" @click="router.push({name:'Index'})">-->
+<!--          <Icon icon="pixelarticons:home"/>-->
+<!--        </n-icon>-->
         <n-dropdown trigger="hover" :options="startMenu">
           <n-icon size="1.6rem" style="cursor: pointer;">
             <Icon icon="ion:apps"/>
@@ -23,10 +23,12 @@
           </n-avatar>
         </n-dropdown>
       </n-layout-header>
-      <n-layout-content>
+<!--      <n-loading-bar-provider :to="headerLayoutContentRef" container-style="position: absolute;">-->
+      <n-layout-content ref="headerLayoutContentRef">
         <router-view v-if="isUseRouter"/>
         <slot name="content" v-if="!isUseRouter"/>
       </n-layout-content>
+<!--        </n-loading-bar-provider>-->
     </n-layout>
   </n-space>
 </template>
@@ -52,6 +54,7 @@ const props = defineProps({
   },
 })
 
+const headerLayoutContentRef = ref();
 
 // 启动台
 const startMenu = [
@@ -110,7 +113,7 @@ const handleLogout = () => {
 }
 
 const mainStore = useMainStore();
-const user = ref(mainStore.user);
+const user = ref<any>(mainStore.user);
 
 </script>
 

@@ -21,6 +21,6 @@ app.component('Icon', Icon)
   .component('n-pro-form', NProForm)
 
 app.directive('preventReClick', PreventReClick.preventReClick)
-app.directive('hasRole', HasRole.hasRole)
+  .directive('hasRole', HasRole.hasRole)
 
 app.mount('#app')

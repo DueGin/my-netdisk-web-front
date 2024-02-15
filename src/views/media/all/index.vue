@@ -18,7 +18,7 @@ onActivated(() => {
   console.log('activated mediaList')
 })
 
-const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
+const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload';
 
 // 媒体资源列表
 let mediaParam = {
@@ -36,7 +36,7 @@ const getPage = (isReload?: boolean, cb?) => {
     };
   }
   getMediaPage(mediaParam).then(res => {
-    console.log('===>',res.data)
+    // console.log('===>',res.data)
     if (res.data) {
       if (isReload) {
         mediaList.value = res.data.records;

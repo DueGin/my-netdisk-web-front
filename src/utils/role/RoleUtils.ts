@@ -1,7 +1,7 @@
 import {useMainStore} from "@/store/store.ts";
 import {SysRoleConstant} from "@/directive/hasRole/SysRoleConstant.ts";
 
-export function checkRole(needRole:any) {
+export function checkRole(needRole: any) {
   const mainStore = useMainStore();
   let sysRole = mainStore.sysRole;
 
@@ -9,7 +9,7 @@ export function checkRole(needRole:any) {
     return true;
   }
 
-  if(!sysRole || sysRole === ''){
+  if (!sysRole || sysRole === '') {
     console.error("该用户没有分配角色")
     return false;
   }
@@ -17,9 +17,7 @@ export function checkRole(needRole:any) {
   let needRoleConstant = SysRoleConstant[needRole.value as keyof typeof SysRoleConstant];
 
   let userRole = SysRoleConstant[sysRole as keyof typeof SysRoleConstant];
-  if (userRole > needRoleConstant) {
-    return false;
-  }
+  return userRole <= needRoleConstant;
 
-  return true;
+
 }

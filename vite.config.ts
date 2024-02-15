@@ -54,6 +54,18 @@ export default defineConfig({
       }
     }
   },
+  build: {
+    outDir: 'dist', // 生成输出的根目录。如果该目录存在，则会在生成之前将其删除。 默认文件夹名称为dist
+    target: 'esnext',
+    terserOptions: {
+      compress: {
+        drop_console: true, // 生产环境去掉控制台 console
+        drop_debugger: true, // 生产环境去掉控制台 debugger 默认就是true
+        dead_code: true, // 删除无法访问的代码 默认就是true
+      }
+    },
+    chunkSizeWarningLimit: 2000, // 调整区块大小警告限制
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, "src")

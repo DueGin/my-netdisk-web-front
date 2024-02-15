@@ -61,7 +61,7 @@ const formFields = ref<FormItem[]>([
   // }
 ]);
 
-const data = ref({});
+const data = ref<any>({});
 const fileList = ref([]);
 const getUserInfo = () => {
   getUserDetail().then(res => {
@@ -99,7 +99,7 @@ const handleUpdate = (data) => {
 
 let uploadUrl = import.meta.env.VITE_APP_BASE_API + '/user/avatar/upload';
 
-let avatarUploadDialog;
+let avatarUploadDialog : any;
 const clickAvatar = () => {
   avatarUploadDialog = dialog.create({
     icon: h(''),
@@ -121,7 +121,7 @@ const clickAvatar = () => {
   })
 }
 
-const uploadKey = ref(0);
+// const uploadKey = ref(0);
 
 </script>
 

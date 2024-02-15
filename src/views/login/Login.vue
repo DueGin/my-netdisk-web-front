@@ -48,7 +48,8 @@
         </n-form-item>
 
         <div
-            style="display: flex; justify-content: center; column-gap: 1rem;align-items: center;margin-top: 1rem; position: relative">
+            style="display: flex; justify-content: center; column-gap: 1rem;align-items: center;margin-top: 1rem; position: relative"
+        >
           <n-button
               :disabled="disabled"
               type="primary"
@@ -143,7 +144,7 @@ const loginHandle = () => {
       });
       setTimeout(() => {
         // 跳转主页
-        router.push({name: 'Index'});
+        router.push({name: 'MediaHome'});
       }, 600)
     }
   })

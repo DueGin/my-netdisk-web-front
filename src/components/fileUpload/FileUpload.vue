@@ -80,7 +80,7 @@ const onBeforeUpload = async (options: {
     return true;
   }
 
-  await getExif(nFile.file).then(async (dto: ExifDTO) => {
+  await getExif(nFile.file).then(async (dto: ExifDTO | any) => {
     console.log(dto)
     let v: ExifDTO = {
       originalDateTime: "",

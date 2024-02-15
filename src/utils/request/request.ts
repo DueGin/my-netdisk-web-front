@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {errorCodeType} from './errorCode.ts';
 import router from "@/router/index.ts";
-import {notification} from "@/utils/tip/TipUtil.ts";
+import {loadingBar, notification} from "@/utils/tip/TipUtil.ts";
 
 // 创建axios实例
 const request = axios.create({
@@ -17,6 +17,7 @@ const request = axios.create({
 request.interceptors.request.use((config: any) => {
   console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
   console.log(config)
+  loadingBar.start();
   // 是否需要设置 token放在请求头
   let token = localStorage.getItem("token");
   if (token != null && token !== '' && !config.isNotTakeToken && token !== 'Bearer null') {
@@ -55,6 +56,7 @@ request.interceptors.request.use((config: any) => {
 // 响应拦截器
 request.interceptors.response.use((res: any) => {
     console.log('响应', res)
+    loadingBar.finish();
     // todo 如果传回来存在auth头，则设置进去store
     // 未设置状态码则默认成功状态
     const code = res.data['code'] || 200;

@@ -35,12 +35,14 @@ export async function addDynamicMenuAndRoutes() {
         children: [],
       }
 
+      console.log("router layout==>")
       if (layoutComponent.hasSlot === 0 && layoutComponent.hasRouter === 1) {
+        console.log(layoutModules[`/src/components/layout${layoutComponent.path}.vue`])
         rootMenu.component = layoutModules[`/src/components/layout${layoutComponent.path}.vue`];
       } else if (layoutComponent.hasSlot === 1 && layoutComponent.hasRouter === 1) {
         console.log(layoutModules[`/src/components/layout${layoutComponent.path}.vue`])
-        rootMenu.component = () => h(defineAsyncComponent(() => import(`/src/components/layout${layoutComponent.path}.vue`)), {isUseRouter: true})
-        // rootMenu.component = h(layoutModules[`/src/components/layout${layoutComponent.path}.vue`], {isUseRouter: true})
+        // @ts-ignore
+        rootMenu.component = h(defineAsyncComponent(layoutModules[`/src/components/layout${layoutComponent.path}.vue`]), {isUseRouter: true})
       }
 
       router.addRoute(rootMenu);
