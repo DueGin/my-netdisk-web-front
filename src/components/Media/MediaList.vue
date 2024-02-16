@@ -12,7 +12,6 @@
             v-if="isShowUploadButton && showUploadButton"
             :render-icon="()=>renderIcon('ion:cloud-upload-outline')"
             @click="clickUpload"
-            v-has-role="'ROLE_ADMIN'"
         >
           上传
         </n-button>
