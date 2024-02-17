@@ -37,22 +37,20 @@ export const useGeoStore = defineStore('geo', {
         getLongitudeLatitude((lng, lat) => {
           console.log('坐标', lng, lat)
 
-          if (lng && lat) {
+          if (lng && lat && lng != 'NaN' && lat != 'NaN') {
             console.log(lng, typeof lng)
             this.lng = lng;
             this.lat = lat;
-          } else {
-            // todo 没有的话，获取他当前IP，查他
 
-          }
-
-          if (lng && lat) {
             this.nextUpdateTimeStamp = Date.now() + this.expireTimeStamp;
             resolve({lng: lng, lat: lat});
           } else {
+            // todo 没有的话，获取他当前IP，查他
+
             this.nextUpdateTimeStamp = Date.now() + this.expireTimeStamp / 2;
             resolve(undefined);
           }
+
         });
       })
     },
