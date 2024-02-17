@@ -6,6 +6,7 @@ import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 import {resolve} from 'path';
 import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import {viteMockServe} from "vite-plugin-mock";
+import {viteStaticCopy} from "vite-plugin-static-copy";
 // import requireTransform from 'vite-plugin-require-transform';
 
 // https://vitejs.dev/config/
@@ -20,6 +21,14 @@ export default defineConfig({
     // requireTransform({
     //   fileRegex: /.js$|.vue$/
     // }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: './_redirects',
+          dest: '',
+        },
+      ],
+    }),
     AutoImport({
       imports: [
         'vue',
