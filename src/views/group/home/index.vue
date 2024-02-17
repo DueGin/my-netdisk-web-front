@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import {h, ref, render} from "vue";
+import {h, ref} from "vue";
 import {getUserGroupList} from "@/apis/group/GroupApi.ts";
 import {GroupConstant} from "@/constants/GroupConstant.ts";
 import {useDialog} from 'naive-ui';
