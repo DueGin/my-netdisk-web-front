@@ -17,6 +17,7 @@ export function getLongitudeLatitude(cb: (lng?: any, lat?: any) => void) {
     function success(position: any) {
       //position.coords (只读) 返回一个定义了当前位置的Coordinates对象。
       //position.timestamp (只读) 返回一个时间戳DOMTimeStamp， 这个时间戳表示获取到的位置的时间。
+      // TODO: 记得改回去
       lat = position.coords.latitude ?? 123 // 当前位置纬度
       lng = position.coords.longitude ?? 123 // 当前位置经度
       // console.log(lng, lat)
