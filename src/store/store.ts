@@ -23,7 +23,6 @@ export const useMainStore = defineStore('main', {
   getters: {},
   actions: {
     loadUser() {
-      console.log("uuuu", this.user, !this.user)
       if(!this.user) {
         getUserDetail().then(res => {
           this.token = localStorage.getItem("token") as string;
