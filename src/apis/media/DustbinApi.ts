@@ -10,6 +10,14 @@ export function getDustbinPage(page: PageDTO): Promise<Result<Page>> {
   })
 }
 
-export function removeDustbin(ids: string[]): Promise<Result<Page>> {
+export function removeDustbin(ids: string[]): Promise<Result<any>> {
   return request.post('/media/dustbin/remove', JSON.stringify(ids))
+}
+
+/**
+ * 还原在垃圾桶中的媒体资源
+ * @param ids 垃圾箱主键集合
+ */
+export function rebornDustbin(ids: string[]): Promise<Result<any>> {
+  return request.post('/media/dustbin/reborn', JSON.stringify(ids))
 }

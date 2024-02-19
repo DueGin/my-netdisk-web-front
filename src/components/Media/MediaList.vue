@@ -8,6 +8,7 @@
         <n-icon size="1.5rem" @click="clickReload" style="cursor:pointer;">
           <Icon icon="ci:arrow-reload-02"/>
         </n-icon>
+        <slot name="tool-refresh-right" :selectIds="selectIds"/>
         <n-button
             v-if="isShowUploadButton && showUploadButton"
             :render-icon="()=>renderIcon('ion:cloud-upload-outline')"
@@ -245,6 +246,15 @@ const selectAll = () => {
   }
 }
 
+const selectIds = ref([]);
+const handleSelectIds = () => {
+  let ids = [];
+  selectMap.forEach(t => {
+    ids.push(t.id);
+  })
+  selectIds.value = ids;
+}
+
 // 选择图片
 const selectItem = (item, idx) => {
   console.log(item)
@@ -258,6 +268,7 @@ const selectItem = (item, idx) => {
     item.isSelected = true
   }
   console.log(item)
+  handleSelectIds();
 }
 
 // 点击删除按钮

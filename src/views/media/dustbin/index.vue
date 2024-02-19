@@ -6,15 +6,21 @@
         @get-page="getPage"
         :is-show-upload-button="false"
         empty-text="🚮 暂无垃圾篓相片"
-    />
+        :reloadKey="reloadKey"
+    >
+      <template #tool-refresh-right="val">
+        <n-button @click="handleReborn(val)">还原</n-button>
+      </template>
+    </MediaList>
   </div>
 </template>
 
 <script setup lang="ts">
 import {onActivated, ref} from 'vue'
 import MediaList from "@/components/Media/MediaList.vue";
-import {getDustbinPage, removeDustbin} from "@/apis/media/DustbinApi.ts";
+import {getDustbinPage, rebornDustbin, removeDustbin} from "@/apis/media/DustbinApi.ts";
 import PageDTO from "@/model/page/PageDTO.ts";
+import {notification} from "@/utils/tip/TipUtil.ts";
 
 onActivated(() => {
   console.log('activated dustbinList')
@@ -55,6 +61,21 @@ const getPage = (isReload?: boolean, cb?) => {
 // 点击删除按钮
 const handleDeleteDustbin = (ids: any[], cb: (resPromise: Promise<Result<any>>) => any) => {
   cb(removeDustbin(ids))
+}
+
+const reloadKey = ref(0);
+// 点击还原按钮
+const handleReborn = ({selectIds}) => {
+  console.log(selectIds)
+  rebornDustbin(selectIds).then(() => {
+    notification.success({
+      title: '还原照片成功',
+      content: '又觉得这照片有价值了？',
+      duration: 888
+    });
+
+    reloadKey.value++;
+  })
 }
 
 </script>
