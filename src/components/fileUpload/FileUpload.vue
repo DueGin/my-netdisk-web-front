@@ -6,7 +6,7 @@
       :action="uploadUrl"
       :max="30"
       :data="data"
-      :headers="{Authorization: useMainStore().token}"
+      :headers="{Authorization: tokenHeader}"
       @before-upload="onBeforeUpload"
       @finish="onFinish"
       show-download-button
@@ -67,6 +67,9 @@ const props = defineProps({
 
 const emits = defineEmits(['finish']);
 
+const tokenHeader =  ref('');
+tokenHeader.value = <string>useMainStore().token;
+
 const data = ref({});
 const onBeforeUpload = async (options: {
   file: UploadFileInfo,
@@ -75,6 +78,7 @@ const onBeforeUpload = async (options: {
   let nFile = options.file;
   console.log("before")
   console.log(nFile);
+  tokenHeader.value = <string>useMainStore().token;
 
   if (!props.isAnalysisExif) {
     return true;

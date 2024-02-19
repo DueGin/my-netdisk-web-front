@@ -88,6 +88,10 @@ router.beforeEach(async (to, from, next) => {
     next()
     return;
   }
+
+  if (to.path === '/'){
+    to.path = '/media/home';
+  }
   let menuStore = useMenuStore();
   if (!menuStore.$state.menuMap) {
     // 加载菜单并存入store
@@ -95,8 +99,8 @@ router.beforeEach(async (to, from, next) => {
       await addDynamicMenuAndRoutes();
       console.log('已注册路由', router.getRoutes())
     });
+    console.log('load user...')
     useMainStore().loadUser();
-    console.log("==")
     next({...to, replace: true})
     return;
   }

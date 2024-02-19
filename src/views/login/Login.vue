@@ -132,6 +132,7 @@ const loginHandle = () => {
       mainStore.$state.user = res.data
       mainStore.$state.sysRole = res.data.sysRole;
       mainStore.$state.groupRoleList = res.data.groupRoleList;
+      mainStore.$state.token = localStorage.getItem("token") as string;
       notification.success({
         title: '登录成功！',
         content: '即将跳转主页',
