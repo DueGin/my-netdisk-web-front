@@ -2,7 +2,7 @@
   <div>
     <div class="media-tool-ctn">
       <div class="tool-left">
-        <n-button @click="router.go(-2)" v-if="isShowBackButton">返回</n-button>
+        <n-button @click="router.push({path:backToPath})" v-if="isShowBackButton">返回</n-button>
       </div>
       <div class="tool-right">
         <n-icon size="1.5rem" @click="clickReload" style="cursor:pointer;">
@@ -146,6 +146,10 @@ const props = defineProps({
   emptyText: {
     type: String,
     default: undefined
+  },
+  backToPath: {
+    type: String,
+    default: '/media/home'
   }
 })
 
@@ -189,6 +193,7 @@ const clickReload = async () => {
       title: '重新加载成功！',
       duration: 888
     })
+    hasMore.value = true;
   });
 }
 
@@ -306,11 +311,12 @@ const clickDelete = () => {
                 return i2 > i1 ? 1 : -1;
               })
               // 手动删掉
-              indexs.forEach(idx => (<Array<any>>props.mediaList).splice(idx, 1));
+              indexs.forEach(idx => list.value?.splice(idx, 1));
 
               clickCancel();
             })
             .catch(err => {
+              console.error(err)
               notification.error({
                 title: '删除失败！',
                 content: err.msg,

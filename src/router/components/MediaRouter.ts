@@ -24,11 +24,6 @@ const MediaRouter = {
       component: () => import('@/views/media/MediaPlace.vue'),
     },
     {
-      path: 'classify',
-      name: 'MediaClassify',
-      component: () => import('@/views/media/classify/MediaClassify.vue'),
-    },
-    {
       path: 'classify/list',
       name: 'MediaClassifyList',
       component: () => import('@/views/media/classify/MediaClassifyList.vue'),

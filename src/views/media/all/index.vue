@@ -30,13 +30,12 @@ const mediaList = ref([])
 const getPage = (isReload?: boolean, cb?) => {
   if (isReload) {
     mediaParam = {
-      size: 30,
+      size: 15,
       current: 1,
       onlyLookSelf: undefined
     };
   }
   getMediaPage(mediaParam).then(res => {
-    // console.log('===>',res.data)
     if (res.data) {
       if (isReload) {
         mediaList.value = res.data.records;

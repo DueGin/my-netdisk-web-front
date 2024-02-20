@@ -44,10 +44,11 @@ const clickFolder = (id) => {
   console.log('click folder')
   console.log(tabsValue.value, id);
   router.push({
-    path: '/media/classify/list',
+    path: '/media/classify/detail',
     query: {
       classifyId: id,
-      type: tabsValue.value
+      type: tabsValue.value,
+      backToPath: '/media/classify/date'
     }
   })
 }

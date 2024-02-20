@@ -5,6 +5,7 @@
         @handleDelete="handleDelete"
         :uploadUrl="uploadUrl"
         :isShowBackButton="true"
+        :back-to-path="backToPath"
         @get-page="getList"
         :reload-key="mediaReloadKey"
     />
@@ -25,6 +26,7 @@ const message = useMessage()
 let route = useRoute()
 const classifyId = ref("");
 const type = ref("");
+const backToPath = ref('');
 
 const list = ref([])
 
@@ -33,7 +35,7 @@ const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
 // 获取某分类下的媒体列表
 let page: PageDTO = {
   current: 1,
-  size: 30
+  size: 15
 }
 
 const resetPage = () => {
@@ -68,6 +70,7 @@ watch(() => route.query, (from, to) => {
     console.log('==>', from)
     classifyId.value = <string>from.classifyId;
     type.value = <string>from.type;
+    backToPath.value = <string>from.backToPath;
     page.size = 30;
     page.current = 1;
     mediaReloadKey.value++;
