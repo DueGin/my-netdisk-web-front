@@ -16,7 +16,7 @@ export default class NProTableColumn extends FieldItem {
   // 子数据
   children?: NProTableColumn[]
   // 数据表格字段render
-  columnDataRender?: (rowData: object, rowIndex: number) => VNodeChild
+  columnDataRender?: (rowData: any, rowIndex: number) => VNodeChild
   // 字段类型为control时，编辑操作
   handleEdit?: (row: object) => void
   // 字段类型为control时，删除操作
