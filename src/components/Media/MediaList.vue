@@ -8,7 +8,9 @@
         <n-icon size="1.5rem" @click="clickReload" style="cursor:pointer;">
           <Icon icon="ci:arrow-reload-02"/>
         </n-icon>
-        <slot name="tool-refresh-right" :selectIds="selectIds"/>
+        <div v-show="isShowCancelButton">
+          <slot name="select-action-tool" :selectIds="selectIds" :clickCancel="clickCancel"/>
+        </div>
         <n-button
             v-if="isShowUploadButton && showUploadButton"
             :render-icon="()=>renderIcon('ion:cloud-upload-outline')"
@@ -22,6 +24,7 @@
             :render-icon="()=>renderIcon('mi:delete')"
             v-show="isShowCancelButton"
             :loading="removeButtonLoading"
+            :disabled="selectMap.size===0"
         >
           删除
         </n-button>
@@ -59,9 +62,9 @@
         </n-button>
       </div>
     </div>
-    <div v-if="mediaList && mediaList.length!==0" class="media-container">
+    <div v-if="list && list.length!==0" class="media-container">
       <div
-          v-for="(item, index) in mediaList"
+          v-for="(item, index) in list"
           :class="['media-item',{'cur-poi':isShowCancelButton}]"
           @click="isOpenSelect && selectItem(item, index)"
       >
@@ -81,15 +84,15 @@
             :src="item.url"
         />
         <n-icon v-show="item.isSelected" size="2rem" class="select-icon">
-          <Icon icon="zondicons:checkmark-outline" color="#758f69"/>
+          <Icon icon="zondicons:checkmark-outline" color="#00ff66"/>
         </n-icon>
       </div>
     </div>
     <div v-else style="width: 100%;height: 100px;display:flex;align-items: center;justify-content: center">
-      {{ emptyText && emptyText.length !== 0 ? emptyText : '暂无相片，快去上传吧！' }}
+      {{ emptyText && emptyText.length !== 0 ? emptyText : '暂无照片，快去上传吧！' }}
     </div>
     <div
-        v-if="mediaList && mediaList.length!==0"
+        v-if="list && list.length!==0"
         style="display: flex;align-items: center;justify-content: center; margin-top: 2rem; margin-bottom: 1rem;"
     >
       <n-button
@@ -146,6 +149,11 @@ const props = defineProps({
   }
 })
 
+const list = ref(props.mediaList);
+watch(() => props.mediaList, () => {
+  list.value = props.mediaList;
+})
+
 const emits = defineEmits<{
   (e: "getPage", isReload: boolean, cb: (nowSize: number, total: number) => any),
   (e: 'handleDelete', ids: any[], cb: (resPromise: Promise<Result<any>>) => any),
@@ -159,7 +167,7 @@ const moreButtonLoading = ref(false);
 const hasMore = ref(true);
 const handleClickMoreButton = async (isReload: boolean, cb?) => {
   moreButtonLoading.value = true;
-  console.log(props.mediaList)
+  console.log(list)
   await emits('getPage', isReload, (nowSize: number, total: number) => {
     if (nowSize >= total) {
       hasMore.value = false;
@@ -229,15 +237,10 @@ const showRightMenu = (e) => {
 const selectAll = () => {
   if (isAlwaysSelectAll.value) {
     console.log('cancel select all')
-    props.mediaList?.forEach(t => {
-      t.isSelected = false
-    })
-
-    selectMap.clear()
-    isAlwaysSelectAll.value = false
+    clearSelectPhoto();
   } else {
     console.log('select all')
-    props.mediaList?.forEach(t => {
+    list.value?.forEach(t => {
       t.isSelected = true
       selectMap.set(t.id, t)
     })
@@ -260,15 +263,14 @@ const selectItem = (item, idx) => {
   console.log(item)
   if (selectMap.has(item.id)) {
     console.log('had')
-    selectMap.delete(item.id)
     item.isSelected = false
+    selectMap.delete(item.id)
   } else {
     console.log('no had')
+    item.isSelected = true;
     selectMap.set(item.id, {...item, index: idx})
-    item.isSelected = true
   }
-  console.log(item)
-  handleSelectIds();
+  handleSelectIds()
 }
 
 // 点击删除按钮
@@ -335,11 +337,13 @@ const clickDelete = () => {
 
 // 清空选择的图片
 const clearSelectPhoto = () => {
-  for (let value of selectMap.values()) {
-    value.isSelected = false
-  }
-  isAlwaysSelectAll.value = false
+  list.value?.forEach(t => {
+    t.isSelected = false
+  })
+
   selectMap.clear()
+  isAlwaysSelectAll.value = false
+  handleSelectIds();
 }
 
 // 点击取消按钮

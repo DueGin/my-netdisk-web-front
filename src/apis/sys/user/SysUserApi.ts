@@ -1,10 +1,11 @@
 import request from "@/utils/request/request.ts";
+import Page from "@/model/page/Page.ts";
 
-export function deleteUser(id: string): Promise<Result<any>> {
+export function removeUserByAdmin(id: string): Promise<Result<any>> {
   return request.delete(`/sys/user/remove/${id}`);
 }
 
-export function getUserList(params?: any): Promise<Result<any>> {
+export function getUserList(params?: any): Promise<Result<Page>> {
   return request.get('/sys/user/page', {
       params: params
     }

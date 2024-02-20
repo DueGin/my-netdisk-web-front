@@ -73,7 +73,8 @@ request.interceptors.response.use((res: any) => {
       console.error(msg)
       notification.error({
         title: '报错啦',
-        content: res.data.msg ? res.data.msg : (res.data.data ? res.data.data : '没有错误信息')
+        content: res.data.msg ? res.data.msg : (res.data.data ? res.data.data : '没有错误信息'),
+        duration: 1688
       })
       return Promise.reject(res.data)
     }
@@ -87,13 +88,18 @@ request.interceptors.response.use((res: any) => {
         title: resp.data,
         duration: 1000,
       })
-      let data = err.response.data;
+      let data = resp.data;
       if (data && data.includes("未登录")) {
         setTimeout(() => {
           router.push({name: "Login"})
         }, 800)
       }
       return Promise.reject(err);
+    }else{
+      notification.info({
+        title: resp.data,
+        duration: 1000,
+      })
     }
 
     let msg = err.response.data.error || err.message;

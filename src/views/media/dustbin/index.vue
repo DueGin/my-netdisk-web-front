@@ -5,11 +5,11 @@
         @handleDelete="handleDeleteDustbin"
         @get-page="getPage"
         :is-show-upload-button="false"
-        empty-text="🚮 暂无垃圾篓相片"
+        empty-text="🚮 暂无垃圾篓照片"
         :reloadKey="reloadKey"
     >
-      <template #tool-refresh-right="val">
-        <n-button @click="handleReborn(val)">还原</n-button>
+      <template #select-action-tool="val">
+        <n-button :disabled="val.selectIds.length === 0" :loading="rebornLoading" @click="handleReborn(val)">还原</n-button>
       </template>
     </MediaList>
   </div>
@@ -63,10 +63,12 @@ const handleDeleteDustbin = (ids: any[], cb: (resPromise: Promise<Result<any>>) 
   cb(removeDustbin(ids))
 }
 
+const rebornLoading = ref(false);
 const reloadKey = ref(0);
 // 点击还原按钮
-const handleReborn = ({selectIds}) => {
+const handleReborn = ({selectIds, clickCancel}) => {
   console.log(selectIds)
+  rebornLoading.value = true;
   rebornDustbin(selectIds).then(() => {
     notification.success({
       title: '还原照片成功',
@@ -74,8 +76,12 @@ const handleReborn = ({selectIds}) => {
       duration: 888
     });
 
-    reloadKey.value++;
-  })
+    // 刷新
+    setTimeout(() => {
+      reloadKey.value++;
+    }, 100)
+    clickCancel();
+  }).finally(() => rebornLoading.value = false)
 }
 
 </script>

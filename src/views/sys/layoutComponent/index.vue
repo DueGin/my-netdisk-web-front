@@ -18,7 +18,8 @@ import NProTable from "@/components/n-pro-table/NProTable.vue";
 import {h, reactive, ref} from "vue";
 import NProTableColumn from "@/components/n-pro-table/NProTableColumn.ts";
 import {
-  getLayoutComponentPage, removeLayoutComponent,
+  getLayoutComponentPage,
+  removeLayoutComponent,
   saveLayoutComponent,
   updateLayoutComponent
 } from "@/apis/layoutComponent/layoutComponentApi.ts";
@@ -62,7 +63,7 @@ const columns: NProTableColumn[] = [
       }
     ],
     columnDataRender: (rowData, rowIndex) => h('span', {}, {
-      default: () => rowData.hasSlot === 1 ? '✅' : '❌'
+      default: () => (<any>rowData).hasSlot === 1 ? '✅' : '❌'
     }),
     required: true,
   },
@@ -82,7 +83,7 @@ const columns: NProTableColumn[] = [
       }
     ],
     columnDataRender: (rowData, rowIndex) => h('span', {}, {
-      default: () => rowData.hasRouter === 1 ? '✅' : '❌'
+      default: () => (<any>rowData).hasRouter === 1 ? '✅' : '❌'
     }),
     required: true,
   },

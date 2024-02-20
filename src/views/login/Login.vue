@@ -6,7 +6,7 @@
           name="normal_login"
           class="login-form"
           label-placement="left"
-          label-width="65px"
+          label-width="80px"
           size="large"
       >
         <n-form-item label="用户名" name="username">
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from 'vue';
+import {computed, onActivated, reactive, ref} from 'vue';
 import {Icon} from "@iconify/vue";
 import {login, register} from '@/apis/user/userApi.ts'
 import {getVerifyCode} from "@/apis/verifyCode/verifyCodeRequest.ts";
@@ -92,7 +92,9 @@ const getCode = () => {
     verifyCodeUrl.value = <string>res.data?.img;
   })
 }
-getCode();
+onActivated(()=>{
+  getCode();
+})
 
 const formState = reactive({
   username: '',

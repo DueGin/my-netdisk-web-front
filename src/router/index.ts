@@ -85,7 +85,7 @@ router.beforeEach(async (to, from, next) => {
   // 登录的时候不load路由
   if (to.path === '/login') {
     console.log('login')
-    next()
+    next();
     return;
   }
 
