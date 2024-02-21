@@ -28,7 +28,7 @@ onActivated(() => {
 
 // 媒体资源列表
 let page: PageDTO = {
-  size: 30,
+  size: 10,
   current: 1,
 }
 

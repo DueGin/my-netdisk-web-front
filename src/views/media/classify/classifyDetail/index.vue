@@ -35,7 +35,7 @@ const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload'
 // 获取某分类下的媒体列表
 let page: PageDTO = {
   current: 1,
-  size: 15
+  size: 10
 }
 
 const resetPage = () => {

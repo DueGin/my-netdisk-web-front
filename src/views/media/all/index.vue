@@ -22,7 +22,7 @@ const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/media/upload';
 
 // 媒体资源列表
 let mediaParam = {
-  size: 30,
+  size: 10,
   current: 1,
   onlyLookSelf: undefined
 }
@@ -30,7 +30,7 @@ const mediaList = ref([])
 const getPage = (isReload?: boolean, cb?) => {
   if (isReload) {
     mediaParam = {
-      size: 15,
+      size: 10,
       current: 1,
       onlyLookSelf: undefined
     };
