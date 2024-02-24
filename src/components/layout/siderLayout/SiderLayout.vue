@@ -34,7 +34,6 @@
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {getMenuListByType} from "@/apis/menu/menuApi.ts";
 import {renderIcon} from "@/utils/render/IconRender.ts";
 import {useRoute} from "vue-router";
 import {renderLinkTextWithPath} from "@/utils/render/RouterLinkRender.ts";
@@ -113,12 +112,13 @@ const handleMenu = async () => {
   if (route.path) {
     let split = route.path.split('/');
     let menuName = split[1];
+    console.log("路由菜单名称", menuName)
     let menuValue;
     await menuStore.getMenuMap().then(res => {
       menuValue = res[menuName];
     })
-    menuValue.forEach(m => handleMenuIcon(m, 2))
     console.log('菜单名称：' + menuName + '，菜单列表：', menuValue)
+    menuValue.forEach(m => handleMenuIcon(m, 2))
     siderMenuOptions.value = menuValue;
     // 从子往父级找能高亮的菜单
     let menuKey;

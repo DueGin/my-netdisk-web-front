@@ -48,7 +48,7 @@ const clickFolder = (id) => {
     query: {
       classifyId: id,
       type: tabsValue.value,
-      backToPath: '/media/classify/date'
+      backToPath: '/media/classify/classifyDate'
     }
   })
 }
