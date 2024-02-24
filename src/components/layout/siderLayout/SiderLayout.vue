@@ -59,9 +59,9 @@ const handleMenuIcon = (m, deepHeight) => {
   if (m.hidden === 1) {
     return false;
   }
-  if(m.path && m.path !== '' && m.componentPath && m.componentPath !== '') {
+  if (m.path && m.path !== '' && m.componentPath && m.componentPath !== '') {
     m.label = () => renderLinkTextWithPath(m.path, m.name)
-  }else{
+  } else {
     m.label = m.name;
   }
   let split = m.path.split('/');
@@ -103,8 +103,43 @@ const menuStore = useMenuStore();
 
 const handleHighlightMenu = (menuKey) => {
   selectKey.value = menuKey
-  console.log(siderMenuRef.value)
+  console.log(menuKey)
   siderMenuRef.value?.showOption(menuKey)
+}
+
+/**
+ * 寻找高亮菜单key，从子路径往父找
+ * @param menu 菜单列表
+ * @param menuKey 需要的key
+ * @param deepHeight 当前路由深度
+ * @param needDeepHeight 需要的路由深度
+ */
+const handleFindHighlightMenuKey = (menu, menuKey, deepHeight, needDeepHeight) => {
+
+  function handle(m, menuKey, deepHeight, needDeepHeight) {
+    if (m.children) {
+      for (let j = 0; j < m.children.length; j++) {
+        let c = m.children[j];
+        let mKey = handle(c, menuKey, deepHeight + 1, needDeepHeight);
+        if (mKey) {
+          return mKey;
+        }
+      }
+    }
+
+    if (m.key === menuKey && deepHeight === needDeepHeight) {
+      return m.key;
+    }
+  }
+
+  for (let i = 0; i < menu.length; i++) {
+    let m = menu[i];
+    let mKey = handle(m, menuKey, deepHeight + 1, needDeepHeight);
+    if (mKey) {
+      return mKey;
+    }
+  }
+
 }
 
 const handleMenu = async () => {
@@ -122,10 +157,13 @@ const handleMenu = async () => {
     siderMenuOptions.value = menuValue;
     // 从子往父级找能高亮的菜单
     let menuKey;
+    console.log(split)
     for (let i = 0; i < split.length; i++) {
-      menuKey = split[split.length - i - 1];
-      let find = menuValue.find(m => m.key === menuKey);
+      let deepHeight = split.length - i - 1;
+      menuKey = split[deepHeight];
+      let find = handleFindHighlightMenuKey(menuValue, menuKey, 1, deepHeight);
       if (find) {
+        menuKey = find;
         break;
       }
     }

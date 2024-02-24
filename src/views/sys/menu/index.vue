@@ -9,8 +9,8 @@
       <n-tab
           v-for="tab in menuType"
           :label="tab.label"
-          :key="tab.id"
-          :name="<string>tab.id"
+          :key="tab.value"
+          :name="<string>tab.value"
       />
     </n-tabs>
     <n-pro-table
@@ -45,13 +45,15 @@ const tableKey = ref(0);
 // region 标签页，菜单类型
 const menuTypeValue = ref('2');
 const menuType = ref([]);
-const startMenu = ref({});
 const getMenuTypeList = () => {
   getDictList('menu').then(res => {
     if (res.code === 200 && res.data) {
-      menuType.value = res.data;
-      startMenu.value = menuType.value.find(m => m.label === 'startMenu');
-      console.log(startMenu)
+      (<any[]>res.data).forEach(d => {
+        menuType.value.push({
+          label: d.label,
+          value: d.id
+        });
+      })
     }
   })
 }
@@ -210,6 +212,13 @@ const columns = ref<NProTableColumn[]>([
     })
   },
   {
+    title: '菜单类型',
+    prop: 'type',
+    notTableColumn: true,
+    formType: 'selection',
+    selectionOptions: menuType
+  },
+  {
     title: '是否隐藏菜单',
     prop: 'hidden',
     columnDataRender: (rowData) => h(NTag, {
@@ -327,11 +336,11 @@ const handleChildMenuOpt = (menuList: any[]) => {
 
 
 const handleSave = (param, cb) => {
-  cb(saveMenu({...param, type: menuTypeValue.value}))
+  cb(saveMenu({...param}))
 }
 
 const handleUpdate = (param, cb) => {
-  cb(updateMenu({...param, type: menuTypeValue.value}))
+  cb(updateMenu({...param}))
 }
 
 const handleRemove = (id, cb) => {

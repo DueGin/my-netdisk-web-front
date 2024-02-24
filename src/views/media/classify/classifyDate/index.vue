@@ -39,6 +39,8 @@ const getList = () => {
 }
 getList()
 
+const routePath: string = router.currentRoute.value.fullPath
+
 // 点击folder
 const clickFolder = (id) => {
   console.log('click folder')
@@ -48,7 +50,7 @@ const clickFolder = (id) => {
     query: {
       classifyId: id,
       type: tabsValue.value,
-      backToPath: '/media/classify/classifyDate'
+      backToPath: routePath
     }
   })
 }

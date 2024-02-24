@@ -158,6 +158,8 @@ watch(() => props.mediaList, () => {
   list.value = props.mediaList;
 })
 
+console.log("backkk", props.backToPath)
+
 const emits = defineEmits<{
   (e: "getPage", isReload: boolean, cb: (nowSize: number, total: number) => any),
   (e: 'handleDelete', ids: any[], cb: (resPromise: Promise<Result<any>>) => any),
