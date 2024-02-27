@@ -78,6 +78,16 @@ const onBeforeUpload = async (options: {
   let nFile = options.file;
   console.log("before")
   console.log(nFile);
+
+  if (nFile.file?.size > 1000000) {
+    notification.error({
+      title:'暂时不支持上传超过1M的照片',
+      content:'除非你给钱我换服务器🫤',
+      duration:1688
+    })
+    return false;
+  }
+
   tokenHeader.value = <string>useMainStore().token;
 
   if (!props.isAnalysisExif) {
