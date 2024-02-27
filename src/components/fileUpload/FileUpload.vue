@@ -79,9 +79,9 @@ const onBeforeUpload = async (options: {
   console.log("before")
   console.log(nFile);
 
-  if (nFile.file?.size > 1000000) {
+  if (nFile.file?.size > 5000000) {
     notification.error({
-      title:'暂时不支持上传超过1M的照片',
+      title:'暂时不支持上传超过5M的照片',
       content:'除非你给钱我换服务器🫤',
       duration:1688
     })
