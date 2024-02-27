@@ -52,6 +52,6 @@ export function getThatYearToday(limit: number | string): Promise<Result<any>> {
 
 export function downloadMedia(fileName: string) {
   let res;
-  request.get(`/media/download/${fileName}`).then(r => res = r)
+  request.get(`/media/download/${fileName}`, {isShowLoading: false}).then(r => res = r)
   return res;
 }

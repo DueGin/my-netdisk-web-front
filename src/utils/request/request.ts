@@ -17,7 +17,9 @@ const request = axios.create({
 request.interceptors.request.use((config: any) => {
   console.log("请求" + config.baseURL + config.url + '，参数：' + config.params + '请求体：' + config.data)
   console.log(config)
-  loadingBar.start();
+  if(typeof config.isShowLoading === 'undefined' || config.isShowLoading) {
+    loadingBar.start();
+  }
   // 是否需要设置 token放在请求头
   let token = localStorage.getItem("token");
   if (token != null && token !== '' && !config.isNotTakeToken && token !== 'Bearer null') {
