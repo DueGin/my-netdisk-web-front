@@ -38,6 +38,20 @@ export function getMediaPageByClassifyId(page: PageDTO, type: string, classifyId
   })
 }
 
-export function getThatYearToday(limit:number|string): Promise<Result<any>>{
+/**
+ * 获取那年今天
+ * @param limit 限制多少张图片
+ */
+export function getThatYearToday(limit: number | string): Promise<Result<any>> {
   return request.get(`/media/thatYearToday/${limit}`)
+}
+
+// export function downloadMedia(fileName:string){
+//   return request.get(`/media/download/${fileName}`)
+// }
+
+export function downloadMedia(fileName: string) {
+  let res;
+  request.get(`/media/download/${fileName}`).then(r => res = r)
+  return res;
 }

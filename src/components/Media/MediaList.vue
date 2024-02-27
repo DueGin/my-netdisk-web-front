@@ -77,6 +77,7 @@
             object-fit="cover"
             style="border-radius: 0.5rem;height: 100%; width: 100%;"
             :preview-disabled="isPreviewPhoto"
+            :preview-src="downloadMedia(item.fileName)"
         />
         <VideoPlayer
             v-else-if="item.mimeType.includes('video')"
@@ -116,6 +117,7 @@ import {renderIcon} from "@/utils/render/IconRender.ts";
 import {dialog, notification} from "@/utils/tip/TipUtil.ts";
 import FileUpload from "@/components/fileUpload/FileUpload.vue";
 import router from "@/router";
+import {downloadMedia} from "@/apis/media/MediaApi.ts";
 
 const props = defineProps({
   uploadUrl: {
