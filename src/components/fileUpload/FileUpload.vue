@@ -110,7 +110,7 @@ const onBeforeUpload = async (options: {
       let geoStore = useGeoStore();
       await geoStore.getLngLat().then(res => {
         console.log(res)
-        if (res) {
+        if (res && res.lng && res.lat && res.lng != 'NaN' && res.lat != 'NaN') {
           console.log(res.lng, typeof res.lng)
           v.longitude = res.lng;
           v.latitude = res.lat;
