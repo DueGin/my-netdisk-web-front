@@ -392,7 +392,8 @@ const clickUpload = () => {
     content: () => h(FileUpload, {
       uploadUrl: props.uploadUrl,
       isAnalysisExif: true,
-      isMultiple: true
+      isMultiple: true,
+      maskClosable: false
       // ['on-finish']: () => {
       //   emits('uploadCb')
       // }

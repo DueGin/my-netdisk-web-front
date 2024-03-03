@@ -298,6 +298,13 @@ const startMenuColumns = ref<NProTableColumn[]>([
     })
   },
   {
+    title: '菜单类型',
+    prop: 'type',
+    notTableColumn: true,
+    formType: 'selection',
+    selectionOptions: menuType
+  },
+  {
     title: '状态',
     prop: 'status',
     columnDataRender: (rowData, rowIndex) => h(NTag, {
