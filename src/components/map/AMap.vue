@@ -132,7 +132,7 @@ const initMap = () => {
     securityJsCode: '3547f52bcab88052221105cdd01a8a6c'
   }
   AMapLoader.load({
-    key: 'b59c490f61a694b9d7576dd864f74d6e', // 申请好的Web端开发者Key，首次调用 load 时必填 todo 如何保存
+    key: 'cf8892ac657d09b05d9b6d3369d83935', // 申请好的Web端开发者Key，首次调用 load 时必填 todo 如何保存
     version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     // plugins: ['AMap.Scale', 'AMap.ToolBar'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
     Loca: {
