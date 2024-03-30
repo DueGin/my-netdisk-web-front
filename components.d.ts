@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AMap: typeof import('./src/components/map/AMap.vue')['default']
+    ChunkFileUploader: typeof import('./src/components/chunkFileUploader/ChunkFileUploader.vue')['default']
     FileUpload: typeof import('./src/components/fileUpload/FileUpload.vue')['default']
     Folder: typeof import('./src/components/folder/Folder.vue')['default']
     GinPiece: typeof import('./src/components/gin-piece/GinPiece.vue')['default']

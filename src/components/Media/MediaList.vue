@@ -152,6 +152,10 @@ const props = defineProps({
   backToPath: {
     type: String,
     default: '/media/home'
+  },
+  selectValue: {
+    type: String,
+    default: 'fileId'
   }
 })
 
@@ -251,7 +255,7 @@ const selectAll = () => {
     console.log('select all')
     list.value?.forEach(t => {
       t.isSelected = true
-      selectMap.set(t.id, t)
+      selectMap.set(t[props.selectValue], t)
     })
 
     isAlwaysSelectAll.value = true
@@ -262,7 +266,7 @@ const selectIds = ref([]);
 const handleSelectIds = () => {
   let ids = [];
   selectMap.forEach(t => {
-    ids.push(t.id);
+    ids.push(t[props.selectValue]);
   })
   selectIds.value = ids;
 }
@@ -270,14 +274,14 @@ const handleSelectIds = () => {
 // 选择图片
 const selectItem = (item, idx) => {
   console.log(item)
-  if (selectMap.has(item.id)) {
+  if (selectMap.has(item[props.selectValue])) {
     console.log('had')
     item.isSelected = false
-    selectMap.delete(item.id)
+    selectMap.delete(item[props.selectValue])
   } else {
     console.log('no had')
     item.isSelected = true;
-    selectMap.set(item.id, {...item, index: idx})
+    selectMap.set(item[props.selectValue], {...item, index: idx})
   }
   handleSelectIds()
 }
@@ -288,7 +292,7 @@ const clickDelete = () => {
   let ids = [];
   let indexs: number[] = [];
   selectMap.forEach(t => {
-    ids.push(t.id);
+    ids.push(t[props.selectValue]);
     indexs.push(t.index);
   })
   dialog.create({

@@ -5,14 +5,12 @@
       directory-dnd
       :action="uploadUrl"
       :max="30"
-      :data="data"
       :headers="{Authorization: tokenHeader}"
-      @before-upload="onBeforeUpload"
-      @finish="onFinish"
       show-download-button
       @download="onDownload"
       show-remove-button
       @remove="onRemove"
+      :custom-request="customRequest"
   >
     <n-upload-dragger>
       <div style="margin-bottom: 12px">
@@ -33,14 +31,17 @@
 <script setup lang="ts">
 import {Icon} from "@iconify/vue";
 import {useMainStore} from "@/store/store.ts";
-import {UploadFileInfo} from "naive-ui";
+import {UploadCustomRequestOptions, UploadFileInfo} from "naive-ui";
 import {ref} from 'vue';
 import {getExif} from "@/utils/ExifUtil.ts";
 import ExifDTO from "@/model/exif/ExifDTO.ts";
 import {timestampToDateTime} from "@/utils/dateTime/DateTimeUtil.ts";
 import {useGeoStore} from "@/store/geoStore/GeoStore.ts";
 import {notification} from "@/utils/tip/TipUtil.ts";
-import {deleteFile} from "@/apis/file/FileApi.ts";
+import {deleteFile, preUploadFileCheck} from "@/apis/file/FileApi.ts";
+import SparkMD5 from "spark-md5";
+import request from "@/utils/request/request.ts";
+
 
 const props = defineProps({
   uploadUrl: {
@@ -67,38 +68,85 @@ const props = defineProps({
 
 const emits = defineEmits(['finish']);
 
-const tokenHeader =  ref('');
+const tokenHeader = ref('');
 tokenHeader.value = <string>useMainStore().token;
 
-const data = ref({});
+// 文件获取hash值
+const getFileMD5 = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const spark = new SparkMD5.ArrayBuffer();
+    const fileReader = new FileReader()
+    fileReader.onload = (e: ProgressEvent<FileReader>): void => {
+      spark.append(<ArrayBuffer>e.target?.result)
+      resolve(spark.end())
+    }
+    fileReader.onerror = () => {
+      reject('')
+    }
+    fileReader.readAsArrayBuffer(file)
+  })
+}
+
 const onBeforeUpload = async (options: {
   file: UploadFileInfo,
   fileList: UploadFileInfo[]
-}): Promise<boolean | void> => {
+}): Promise<boolean | void | any> => {
   let nFile = options.file;
   console.log("before")
   console.log(nFile);
 
-  if (nFile.file?.size > 5000000) {
+  // 对文件做限制
+  if (nFile.file?.size > 10000000) {
     notification.error({
-      title:'暂时不支持上传超过5M的照片',
-      content:'除非你给钱我换服务器🫤',
-      duration:1688
+      title: '暂时不支持上传超过10M的照片',
+      content: '除非你给钱我换服务器🫤',
+      duration: 1688
     })
     return false;
   }
 
   tokenHeader.value = <string>useMainStore().token;
 
-  if (!props.isAnalysisExif) {
-    return true;
+  // 获取md5值
+  let fileMD5 = await getFileMD5(<File>nFile.file);
+
+  // 传值后端校验md5，并申请uploadId
+  let flag = false;
+  let uploadId, md5;
+  let preUploadDTO;
+  await preUploadFileCheck(<String>fileMD5).then(res => {
+    console.log(res)
+    uploadId = res.data.uploadId;
+    md5 = res.data.md5;
+    preUploadDTO = res.data;
+    flag = true;
+  });
+
+  let res = {
+    ...preUploadDTO,
+    size: nFile.file?.size,
+    name: nFile.name,
+    lastModifiedDate: nFile.file?.lastModifiedDate,
+    hasInfo: 1,
+    flag: true,
   }
 
+  // md5校验报错了，就不上传了
+  if (!flag) {
+    res.flag = false;
+    return res;
+  }
+
+  if (!props.isAnalysisExif) {
+    return res;
+  }
+
+  // 获取exif信息
   await getExif(nFile.file).then(async (dto: ExifDTO | any) => {
     console.log(dto)
     let v: ExifDTO = {
       originalDateTime: "",
-      mimeType: ""
+      mimeType: "",
     };
     for (let dtoKey in dto) {
       if (dto[dtoKey] !== undefined) {
@@ -128,23 +176,32 @@ const onBeforeUpload = async (options: {
       })
     }
 
-    data.value = v;
+    res = {...v, ...res};
   })
 
-  return true;
+
+  // data.value = {
+  //   ...data.value, ...preUploadDTO,
+  //   size: nFile.file?.size,
+  //   name: nFile.name,
+  //   lastModifiedDate: nFile.file?.lastModifiedDate,
+  //   hasInfo: 1
+  // };
+
+  return res;
 }
 
-const onFinish = ({file, event}: {
-  file: UploadFileInfo
-  event?: ProgressEvent
-}): UploadFileInfo | undefined => {
-  console.log(file, event)
-  let resStr = (<XMLHttpRequest>event.target).response;
-  let res: Result<any> = JSON.parse(resStr);
+const doFinish = (file: UploadFileInfo, res: any) => {
+  console.log(file, res)
 
   // 上传不成功，修改上传组件状态
   if (res.code !== 200 || !res.data) {
     file.status = 'error';
+    notification.error({
+      title: `${file.name}上传失败！`,
+      content: res.msg,
+      duration: 1888
+    })
     return file;
   }
 
@@ -159,10 +216,163 @@ const onFinish = ({file, event}: {
   // 文件URL
   file.url = res.data.url;
 
+  file.status = 'finished';
+
   // 执行自定义回调
   emits('finish', file);
   return file
 }
+
+const customRequest = async ({
+                               file,
+                               data,
+                               headers,
+                               withCredentials,
+                               action,
+                               onFinish,
+                               onError,
+                               onProgress
+                             }: UploadCustomRequestOptions) => {
+  console.log('-=-=-', file, data)
+  const formData = new FormData()
+
+  // 构造请求数据
+  let d: any = await onBeforeUpload({file: file, fileList: []});
+  if (!d || !d.flag) {
+    return;
+  }
+
+  if (d) {
+    Object.keys(d).forEach((key) => {
+      formData.append(
+          key,
+          d[key]
+      )
+    })
+  }
+  if(d.exist !== 1) {
+    formData.append('file', file.file as File)
+  }
+
+  request.post(<string>props.uploadUrl, formData, {
+    headers: {"Content-Type": 'application/x-www-form-urlencoded'}
+  }).then(res => {
+    console.log(res)
+    onProgress(percent => 100)
+    doFinish(file, res);
+    onFinish();
+  }).catch(err => {
+    console.log('on error ==> ', err);
+    file.status = 'error';
+    onError();
+  })
+}
+
+
+// const data = ref({});
+// const onBeforeUpload = async (options: {
+//   file: UploadFileInfo,
+//   fileList: UploadFileInfo[]
+// }): Promise<boolean | void> => {
+//   let nFile = options.file;
+//   console.log("before")
+//   console.log(nFile);
+//
+//   // 对文件做限制
+//   if (nFile.file?.size > 10000000) {
+//     notification.error({
+//       title: '暂时不支持上传超过10M的照片',
+//       content: '除非你给钱我换服务器🫤',
+//       duration: 1688
+//     })
+//     return false;
+//   }
+//
+//   tokenHeader.value = <string>useMainStore().token;
+//
+//   // 获取md5值
+//   let fileMD5 = await getFileMD5(<File>nFile.file);
+//
+//   // 传值后端校验md5，并申请uploadId
+//   let flag = false;
+//   let uploadId, md5;
+//   let preUploadDTO;
+//   await preUploadFileCheck(<String>fileMD5).then(res => {
+//     console.log(res)
+//     uploadId = res.data.uploadId;
+//     md5 = res.data.md5;
+//     preUploadDTO = res.data;
+//     flag = true;
+//   });
+//
+//
+//   // md5校验报错了，就不上传了
+//   if (!flag) {
+//     return false;
+//   }
+//
+//   // TODO 文件已存在的话，快速成功
+//
+//   if (!props.isAnalysisExif) {
+//     return true;
+//   }
+//
+//   // 获取exif信息
+//   await getExif(nFile.file).then(async (dto: ExifDTO | any) => {
+//     console.log(dto)
+//     let v: ExifDTO = {
+//       originalDateTime: "",
+//       mimeType: "",
+//     };
+//     for (let dtoKey in dto) {
+//       if (dto[dtoKey] !== undefined) {
+//         console.log(dto[dtoKey])
+//         v[dtoKey] = dto[dtoKey];
+//       }
+//     }
+//     // 照片中没有拍摄时间的话，则读取在用户系统中的创建时间
+//     if (!v.originalDateTime) {
+//       v.originalDateTime = timestampToDateTime(nFile.file?.lastModified)
+//     }
+//     // 照片中没有mineType，则从系统读取的file拿
+//     if (!v.mimeType) {
+//       v.mimeType = <string>nFile.type;
+//     }
+//
+//     // 没有经纬度的话，拿他当前所在经纬度传过来
+//     if (!(dto.longitude && dto.latitude)) {
+//       let geoStore = useGeoStore();
+//       await geoStore.getLngLat().then(res => {
+//         console.log(res)
+//         if (res && res.lng && res.lat && res.lng != 'NaN' && res.lat != 'NaN') {
+//           console.log(res.lng, typeof res.lng)
+//           v.longitude = res.lng;
+//           v.latitude = res.lat;
+//         }
+//       })
+//     }
+//
+//     data.value = {
+//       ...v, ...preUploadDTO,
+//       size: nFile.file?.size,
+//       name: nFile.name,
+//       lastModifiedDate: nFile.file?.lastModifiedDate,
+//       hasInfo: 1
+//     };
+//   })
+//
+//
+//   // data.value = {
+//   //   ...data.value, ...preUploadDTO,
+//   //   size: nFile.file?.size,
+//   //   name: nFile.name,
+//   //   lastModifiedDate: nFile.file?.lastModifiedDate,
+//   //   hasInfo: 1
+//   // };
+//
+//   return true;
+// }
+
 
 const onDownload = (file: UploadFileInfo) => {
   notification.success({
