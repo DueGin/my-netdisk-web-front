@@ -18,6 +18,9 @@ export function deleteFile(bucketName: string, fileName: string): Promise<Result
   });
 }
 
-export function preUploadFileCheck(md5: string): Promise<Result<any>> {
-  return request.post(baseUrl + '/preUpload', md5)
+export function preUploadFileCheck(md5: string, contentType: string): Promise<Result<any>> {
+  return request.post(baseUrl + '/preUpload', {
+    md5: md5,
+    contentType: contentType
+  })
 }

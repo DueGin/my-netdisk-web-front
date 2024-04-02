@@ -63,6 +63,10 @@ const props = defineProps({
   bucketName: {
     type: String,
     default: 'system'
+  },
+  chunkSize:{
+    type: Number,
+    default: 1024 * 500
   }
 });
 
@@ -111,15 +115,13 @@ const onBeforeUpload = async (options: {
   let fileMD5 = await getFileMD5(<File>nFile.file);
 
   // 传值后端校验md5，并申请uploadId
-  let flag = false;
   let uploadId, md5;
   let preUploadDTO;
-  await preUploadFileCheck(<String>fileMD5).then(res => {
+  await preUploadFileCheck(<String>fileMD5, nFile.type).then(res => {
     console.log(res)
     uploadId = res.data.uploadId;
     md5 = res.data.md5;
     preUploadDTO = res.data;
-    flag = true;
   });
 
   let res = {
@@ -128,12 +130,10 @@ const onBeforeUpload = async (options: {
     name: nFile.name,
     lastModifiedDate: nFile.file?.lastModifiedDate,
     hasInfo: 1,
-    flag: true,
   }
 
   // md5校验报错了，就不上传了
-  if (!flag) {
-    res.flag = false;
+  if (preUploadDTO && preUploadDTO.exist === 1) {
     return res;
   }
 
@@ -178,15 +178,6 @@ const onBeforeUpload = async (options: {
 
     res = {...v, ...res};
   })
-
-
-  // data.value = {
-  //   ...data.value, ...preUploadDTO,
-  //   size: nFile.file?.size,
-  //   name: nFile.name,
-  //   lastModifiedDate: nFile.file?.lastModifiedDate,
-  //   hasInfo: 1
-  // };
 
   return res;
 }
@@ -238,27 +229,32 @@ const customRequest = async ({
 
   // 构造请求数据
   let d: any = await onBeforeUpload({file: file, fileList: []});
-  if (!d || !d.flag) {
+  if (!d) {
+    onError();
     return;
   }
 
-  if (d) {
-    Object.keys(d).forEach((key) => {
-      formData.append(
-          key,
-          d[key]
-      )
-    })
-  }
-  if(d.exist !== 1) {
-    formData.append('file', file.file as File)
+  // 填充表单
+  Object.keys(d).forEach((key) => {
+    formData.append(
+        key,
+        d[key]
+    )
+  })
+
+  // 需要上传文件本体
+  if (d.exist !== 1) {
+    // 做分片
+    let f = (<UploadFileInfo>file).file as File;
+
+    formData.append('file', null)
   }
 
   request.post(<string>props.uploadUrl, formData, {
     headers: {"Content-Type": 'application/x-www-form-urlencoded'}
   }).then(res => {
     console.log(res)
-    onProgress(percent => 100)
+    onProgress({percent: 100})
     doFinish(file, res);
     onFinish();
   }).catch(err => {
