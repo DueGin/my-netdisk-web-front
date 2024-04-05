@@ -41,6 +41,7 @@ import {notification} from "@/utils/tip/TipUtil.ts";
 import {deleteFile, preUploadFileCheck} from "@/apis/file/FileApi.ts";
 import SparkMD5 from "spark-md5";
 import request from "@/utils/request/request.ts";
+import AsyncCounter from "@/utils/counter/AsyncCounter.ts";
 
 
 const props = defineProps({
@@ -62,9 +63,9 @@ const props = defineProps({
   },
   bucketName: {
     type: String,
-    default: 'system'
+    required: true,
   },
-  chunkSize:{
+  chunkSize: {
     type: Number,
     default: 1024 * 500
   }
@@ -80,6 +81,7 @@ const getFileMD5 = (file: File) => {
   return new Promise((resolve, reject) => {
     const spark = new SparkMD5.ArrayBuffer();
     const fileReader = new FileReader()
+
     fileReader.onload = (e: ProgressEvent<FileReader>): void => {
       spark.append(<ArrayBuffer>e.target?.result)
       resolve(spark.end())
@@ -90,6 +92,18 @@ const getFileMD5 = (file: File) => {
     fileReader.readAsArrayBuffer(file)
   })
 }
+
+/**
+ * 生成64位哈希值，由SHA-256算法获取
+ * @param file
+ */
+async function calculateFileSHA256(file: Blob): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 
 const onBeforeUpload = async (options: {
   file: UploadFileInfo,
@@ -112,7 +126,7 @@ const onBeforeUpload = async (options: {
   tokenHeader.value = <string>useMainStore().token;
 
   // 获取md5值
-  let fileMD5 = await getFileMD5(<File>nFile.file);
+  let fileMD5 = await calculateFileSHA256(<File>nFile.file);
 
   // 传值后端校验md5，并申请uploadId
   let uploadId, md5;
@@ -182,7 +196,7 @@ const onBeforeUpload = async (options: {
   return res;
 }
 
-const doFinish = (file: UploadFileInfo, res: any) => {
+const doFinish = (file: UploadFileInfo, res: any, onFinish) => {
   console.log(file, res)
 
   // 上传不成功，修改上传组件状态
@@ -209,9 +223,54 @@ const doFinish = (file: UploadFileInfo, res: any) => {
 
   file.status = 'finished';
 
+  onFinish();
+
   // 执行自定义回调
   emits('finish', file);
   return file
+}
+
+const uploadProgressMap: Map<String, AsyncCounter> = new Map<String, AsyncCounter>();
+
+const uploadChunk = (formData: FormData,
+                     onProgress: (e: {
+                       percent: number;
+                     }) => void,
+                     progressAddNum: number,
+                     file: UploadFileInfo,
+                     onFinish,
+                     onError) => {
+  request.post(<string>props.uploadUrl, formData, {
+    headers: {"Content-Type": 'application/x-www-form-urlencoded'}
+  }).then(res => {
+    console.log(res)
+    let uploadId: string = <string>formData.get("uploadId");
+    let asyncCounter: AsyncCounter = <AsyncCounter>uploadProgressMap.get(uploadId);
+    asyncCounter.increment(progressAddNum);
+    onProgress({percent: asyncCounter.getCount()})
+    console.log(asyncCounter.getCount());
+
+    // 判断是否所有分片上传完毕
+    if (asyncCounter.getCount() >= 100 && res.data.url) {
+      onProgress({percent: 100})
+      doFinish(file, res, onFinish);
+    }
+  }).catch(err => {
+    console.log(err);
+    onError();
+  })
+}
+
+const fillFormData = (data) => {
+  const formData = new FormData();
+  // 填充表单
+  Object.keys(data).forEach((key) => {
+    formData.append(
+        key,
+        data[key]
+    )
+  })
+  return formData;
 }
 
 const customRequest = async ({
@@ -224,8 +283,6 @@ const customRequest = async ({
                                onError,
                                onProgress
                              }: UploadCustomRequestOptions) => {
-  console.log('-=-=-', file, data)
-  const formData = new FormData()
 
   // 构造请求数据
   let d: any = await onBeforeUpload({file: file, fileList: []});
@@ -234,140 +291,75 @@ const customRequest = async ({
     return;
   }
 
-  // 填充表单
-  Object.keys(d).forEach((key) => {
-    formData.append(
-        key,
-        d[key]
-    )
-  })
-
   // 需要上传文件本体
   if (d.exist !== 1) {
     // 做分片
-    let f = (<UploadFileInfo>file).file as File;
+    if (props.chunkSize > 0) {
+      console.log("do chunk..")
+      let f = (<UploadFileInfo>file).file as File;
+      // 文件大小
+      let fileSize = f.size;
 
-    formData.append('file', null)
+      // 分片数量
+      let chunkNum = Math.ceil(fileSize / props.chunkSize)
+
+      let progressAddNum = Math.ceil(100 / chunkNum);
+
+      // 初始化计数器
+      uploadProgressMap.set(d.uploadId, new AsyncCounter());
+
+      // 上传分片
+      for (let i = 0; i < chunkNum; i++) {
+        let start = i * props.chunkSize, end = Math.min(fileSize, start + props.chunkSize);
+
+        // 切割文件
+        let blob = f.slice(start, end);
+
+        let formData;
+        // 把信息藏在最后一个分片
+        if (i === chunkNum - 1) {
+          // 填充表单
+          formData = fillFormData(d);
+        } else {
+          formData = new FormData();
+          formData.append("uploadId", d.uploadId);
+          formData.append("contentType", d.contentType);
+          formData.append("exist", d.exist);
+          formData.append("md5", d.md5);
+          formData.append("name", d.name)
+        }
+        formData.append("chunks", chunkNum);
+        formData.append("chunk", i + 1);
+        formData.append("file", blob);
+        // 上传分片
+        uploadChunk(formData, onProgress, progressAddNum, file, onFinish, onError);
+      }
+    }
+    return;
   }
 
+  // 填充表单
+  let formData = fillFormData(d);
+  // 只需要上传文件相关信息，无需上传文件本体
   request.post(<string>props.uploadUrl, formData, {
-    headers: {"Content-Type": 'application/x-www-form-urlencoded'}
+    headers: {"Content-Type": 'application/x-www-form-urlencoded'},
+    onUploadProgress: function (progressEvent) {
+      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      onProgress({percent: percentCompleted})
+      console.log(`Upload Progress: ${percentCompleted}%`);
+    }
   }).then(res => {
     console.log(res)
     onProgress({percent: 100})
-    doFinish(file, res);
-    onFinish();
+    doFinish(file, res, onFinish);
   }).catch(err => {
     console.log('on error ==> ', err);
-    file.status = 'error';
+
+    (<UploadFileInfo>file).status = 'error';
     onError();
   })
+
 }
-
-
-// const data = ref({});
-// const onBeforeUpload = async (options: {
-//   file: UploadFileInfo,
-//   fileList: UploadFileInfo[]
-// }): Promise<boolean | void> => {
-//   let nFile = options.file;
-//   console.log("before")
-//   console.log(nFile);
-//
-//   // 对文件做限制
-//   if (nFile.file?.size > 10000000) {
-//     notification.error({
-//       title: '暂时不支持上传超过10M的照片',
-//       content: '除非你给钱我换服务器🫤',
-//       duration: 1688
-//     })
-//     return false;
-//   }
-//
-//   tokenHeader.value = <string>useMainStore().token;
-//
-//   // 获取md5值
-//   let fileMD5 = await getFileMD5(<File>nFile.file);
-//
-//   // 传值后端校验md5，并申请uploadId
-//   let flag = false;
-//   let uploadId, md5;
-//   let preUploadDTO;
-//   await preUploadFileCheck(<String>fileMD5).then(res => {
-//     console.log(res)
-//     uploadId = res.data.uploadId;
-//     md5 = res.data.md5;
-//     preUploadDTO = res.data;
-//     flag = true;
-//   });
-//
-//
-//   // md5校验报错了，就不上传了
-//   if (!flag) {
-//     return false;
-//   }
-//
-//   // TODO 文件已存在的话，快速成功
-//
-//   if (!props.isAnalysisExif) {
-//     return true;
-//   }
-//
-//   // 获取exif信息
-//   await getExif(nFile.file).then(async (dto: ExifDTO | any) => {
-//     console.log(dto)
-//     let v: ExifDTO = {
-//       originalDateTime: "",
-//       mimeType: "",
-//     };
-//     for (let dtoKey in dto) {
-//       if (dto[dtoKey] !== undefined) {
-//         console.log(dto[dtoKey])
-//         v[dtoKey] = dto[dtoKey];
-//       }
-//     }
-//     // 照片中没有拍摄时间的话，则读取在用户系统中的创建时间
-//     if (!v.originalDateTime) {
-//       v.originalDateTime = timestampToDateTime(nFile.file?.lastModified)
-//     }
-//     // 照片中没有mineType，则从系统读取的file拿
-//     if (!v.mimeType) {
-//       v.mimeType = <string>nFile.type;
-//     }
-//
-//     // 没有经纬度的话，拿他当前所在经纬度传过来
-//     if (!(dto.longitude && dto.latitude)) {
-//       let geoStore = useGeoStore();
-//       await geoStore.getLngLat().then(res => {
-//         console.log(res)
-//         if (res && res.lng && res.lat && res.lng != 'NaN' && res.lat != 'NaN') {
-//           console.log(res.lng, typeof res.lng)
-//           v.longitude = res.lng;
-//           v.latitude = res.lat;
-//         }
-//       })
-//     }
-//
-//     data.value = {
-//       ...v, ...preUploadDTO,
-//       size: nFile.file?.size,
-//       name: nFile.name,
-//       lastModifiedDate: nFile.file?.lastModifiedDate,
-//       hasInfo: 1
-//     };
-//   })
-//
-//
-//   // data.value = {
-//   //   ...data.value, ...preUploadDTO,
-//   //   size: nFile.file?.size,
-//   //   name: nFile.name,
-//   //   lastModifiedDate: nFile.file?.lastModifiedDate,
-//   //   hasInfo: 1
-//   // };
-//
-//   return true;
-// }
 
 
 const onDownload = (file: UploadFileInfo) => {

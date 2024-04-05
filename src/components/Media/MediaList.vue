@@ -79,7 +79,7 @@
             style="border-radius: 0.5rem;height: 100%; width: 100%;"
             :preview-disabled="isPreviewPhoto"
         />
-<!--            :preview-src="downloadMedia(item.fileName)"-->
+        <!--            :preview-src="downloadMedia(item.fileName)"-->
         <VideoPlayer
             v-else-if="item.mimeType.includes('video')"
             :isUseDialog="isUseVideoDialog"
@@ -397,7 +397,8 @@ const clickUpload = () => {
       uploadUrl: props.uploadUrl,
       isAnalysisExif: true,
       isMultiple: true,
-      maskClosable: false
+      maskClosable: false,
+      bucketName: 'media'
       // ['on-finish']: () => {
       //   emits('uploadCb')
       // }
@@ -411,8 +412,8 @@ const clickUpload = () => {
 }
 
 
-const handlePreviewPhoto=(item)=>{
-  if(item.previewUrl){
+const handlePreviewPhoto = (item) => {
+  if (item.previewUrl) {
 
   }
 }
