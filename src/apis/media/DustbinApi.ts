@@ -1,8 +1,9 @@
 import PageDTO from "@/model/page/PageDTO.ts";
 import Page from "@/model/page/Page.ts";
 import request from "@/utils/request/request.ts";
+import {FileTypeConstant} from "@/constants/FileTypeConstant.ts";
 
-export function getDustbinPage(page: PageDTO): Promise<Result<Page>> {
+export function getDustbinPage(page: any | PageDTO): Promise<Result<Page>> {
   return request({
     url: '/media/dustbin/page',
     method: 'get',
@@ -10,8 +11,11 @@ export function getDustbinPage(page: PageDTO): Promise<Result<Page>> {
   })
 }
 
-export function removeDustbin(ids: string[]): Promise<Result<any>> {
-  return request.post('/media/dustbin/remove', JSON.stringify(ids))
+export function removeDustbin(ids: string[], fileType: FileTypeConstant): Promise<Result<any>> {
+  return request.post('/media/dustbin/remove', {
+    ids: ids,
+    fileType: fileType
+  })
 }
 
 /**

@@ -79,7 +79,7 @@
             style="border-radius: 0.5rem;height: 100%; width: 100%;"
             :preview-disabled="isPreviewPhoto"
         />
-<!--            :preview-src="downloadMedia(item.fileName)"-->
+        <!--            :preview-src="downloadMedia(item.fileName)"-->
         <VideoPlayer
             v-else-if="item.mimeType.includes('video')"
             :isUseDialog="isUseVideoDialog"
@@ -152,6 +152,10 @@ const props = defineProps({
   backToPath: {
     type: String,
     default: '/media/home'
+  },
+  selectValue: {
+    type: String,
+    default: 'fileId'
   }
 })
 
@@ -251,7 +255,7 @@ const selectAll = () => {
     console.log('select all')
     list.value?.forEach(t => {
       t.isSelected = true
-      selectMap.set(t.id, t)
+      selectMap.set(t[props.selectValue], t)
     })
 
     isAlwaysSelectAll.value = true
@@ -262,7 +266,7 @@ const selectIds = ref([]);
 const handleSelectIds = () => {
   let ids = [];
   selectMap.forEach(t => {
-    ids.push(t.id);
+    ids.push(t[props.selectValue]);
   })
   selectIds.value = ids;
 }
@@ -270,14 +274,14 @@ const handleSelectIds = () => {
 // 选择图片
 const selectItem = (item, idx) => {
   console.log(item)
-  if (selectMap.has(item.id)) {
+  if (selectMap.has(item[props.selectValue])) {
     console.log('had')
     item.isSelected = false
-    selectMap.delete(item.id)
+    selectMap.delete(item[props.selectValue])
   } else {
     console.log('no had')
     item.isSelected = true;
-    selectMap.set(item.id, {...item, index: idx})
+    selectMap.set(item[props.selectValue], {...item, index: idx})
   }
   handleSelectIds()
 }
@@ -288,7 +292,7 @@ const clickDelete = () => {
   let ids = [];
   let indexs: number[] = [];
   selectMap.forEach(t => {
-    ids.push(t.id);
+    ids.push(t[props.selectValue]);
     indexs.push(t.index);
   })
   dialog.create({
@@ -318,6 +322,11 @@ const clickDelete = () => {
               indexs.forEach(idx => list.value?.splice(idx, 1));
 
               clickCancel();
+              if (!props.mediaList || props.mediaList?.length === 0) {
+                handleClickMoreButton(true, () => {
+                  hasMore.value = true;
+                });
+              }
             })
             .catch(err => {
               console.error(err)
@@ -393,7 +402,8 @@ const clickUpload = () => {
       uploadUrl: props.uploadUrl,
       isAnalysisExif: true,
       isMultiple: true,
-      maskClosable: false
+      maskClosable: false,
+      bucketName: 'media'
       // ['on-finish']: () => {
       //   emits('uploadCb')
       // }
@@ -407,8 +417,8 @@ const clickUpload = () => {
 }
 
 
-const handlePreviewPhoto=(item)=>{
-  if(item.previewUrl){
+const handlePreviewPhoto = (item) => {
+  if (item.previewUrl) {
 
   }
 }

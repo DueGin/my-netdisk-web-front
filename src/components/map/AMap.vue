@@ -42,7 +42,8 @@ function markerClick(e, marker) {
   console.log('sourceInfoWindow.value', sourceInfoWindow.value, e.target, marker)
 
   // sourceInfoWindow.value.setContent(e.target.infoWindow)
-  sourceInfoWindow.value.setContent(props.markerInfoWindowHtml)
+  // 信息窗口html
+  // sourceInfoWindow.value.setContent(props.markerInfoWindowHtml)
   sourceInfoWindow.value.open(map, marker.getPosition())
 }
 

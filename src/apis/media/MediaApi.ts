@@ -50,8 +50,25 @@ export function getThatYearToday(limit: number | string): Promise<Result<any>> {
 //   return request.get(`/media/download/${fileName}`)
 // }
 
-export function downloadMedia(fileName: string) {
-  let res;
-  request.get(`/media/download/${fileName}`, {isShowLoading: false}).then(r => res = r)
-  return res;
+// export function getMedia(fileId: string|number) {
+//   let res;
+//   request.get('/file/download/media', {
+//     isShowLoading: false,
+//     responseType:'blob',
+//     params: {
+//       fileId: fileId
+//     }
+//   }).then(r => res = r)
+//   return res;
+// }
+
+export function getMedia(fileId: string|number) {
+  return request.get('/file/download/media', {
+    isShowLoading: false,
+    responseType:'blob',
+    params: {
+      fileId: fileId
+    }
+  })
 }
+

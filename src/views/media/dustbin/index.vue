@@ -7,6 +7,7 @@
         :is-show-upload-button="false"
         empty-text="🚮 暂无垃圾篓照片"
         :reloadKey="reloadKey"
+        select-value="id"
     >
       <template #select-action-tool="val">
         <n-button :disabled="val.selectIds.length === 0" :loading="rebornLoading" @click="handleReborn(val)">还原</n-button>
@@ -21,6 +22,7 @@ import MediaList from "@/components/Media/MediaList.vue";
 import {getDustbinPage, rebornDustbin, removeDustbin} from "@/apis/media/DustbinApi.ts";
 import PageDTO from "@/model/page/PageDTO.ts";
 import {notification} from "@/utils/tip/TipUtil.ts";
+import {FileTypeConstant} from "@/constants/FileTypeConstant.ts";
 
 onActivated(() => {
   console.log('activated dustbinList')
@@ -29,7 +31,7 @@ onActivated(() => {
 // 媒体资源列表
 let page: PageDTO = {
   size: 10,
-  current: 1,
+  current: 1
 }
 
 const resetPage = () => {
@@ -41,7 +43,7 @@ const getPage = (isReload?: boolean, cb?) => {
   if (isReload) {
     resetPage();
   }
-  getDustbinPage(page).then(res => {
+  getDustbinPage({...page, fileType: FileTypeConstant.MEDIA}).then(res => {
     if (res.data) {
       if (isReload) {
         dustbinList.value = res.data.records;
@@ -60,7 +62,7 @@ const getPage = (isReload?: boolean, cb?) => {
 
 // 点击删除按钮
 const handleDeleteDustbin = (ids: any[], cb: (resPromise: Promise<Result<any>>) => any) => {
-  cb(removeDustbin(ids))
+  cb(removeDustbin(ids, FileTypeConstant.MEDIA))
 }
 
 const rebornLoading = ref(false);

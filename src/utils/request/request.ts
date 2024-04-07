@@ -86,7 +86,7 @@ request.interceptors.response.use((res: any) => {
     console.error(err)
     const resp = err.response;
     if (resp.status === 403) {
-      notification.info({
+      notification.error({
         title: resp.data,
         duration: 1000,
       })
@@ -98,8 +98,9 @@ request.interceptors.response.use((res: any) => {
       }
       return Promise.reject(err);
     }else{
-      notification.info({
-        title: resp.data,
+      console.log(resp)
+      notification.error({
+        title: resp.data.error,
         duration: 1000,
       })
     }
