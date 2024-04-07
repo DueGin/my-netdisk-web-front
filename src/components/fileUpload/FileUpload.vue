@@ -116,9 +116,9 @@ const onBeforeUpload = async (options: {
   console.log(nFile);
 
   // 对文件做限制
-  if (nFile.file?.size > 20971520) {
+  if (nFile.file?.size > 10485760) {
     notification.error({
-      title: '暂时不支持上传超过20M的照片',
+      title: '暂时不支持上传超过10M的照片',
       content: '除非你给钱我换服务器🫤',
       duration: 1688
     });
