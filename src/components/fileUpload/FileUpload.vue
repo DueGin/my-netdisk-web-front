@@ -122,7 +122,6 @@ const onBeforeUpload = async (options: {
       content: '除非你给钱我换服务器🫤',
       duration: 1688
     });
-    uploadingCounter.increment(-1);
     return false;
   }
 
