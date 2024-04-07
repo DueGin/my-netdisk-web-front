@@ -322,6 +322,11 @@ const clickDelete = () => {
               indexs.forEach(idx => list.value?.splice(idx, 1));
 
               clickCancel();
+              if (!props.mediaList || props.mediaList?.length === 0) {
+                handleClickMoreButton(true, () => {
+                  hasMore.value = true;
+                });
+              }
             })
             .catch(err => {
               console.error(err)

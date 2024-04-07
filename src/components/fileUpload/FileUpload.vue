@@ -11,6 +11,7 @@
       show-remove-button
       @remove="onRemove"
       :custom-request="customRequest"
+      :disabled="uploadingCounter.getCount() !== 0"
   >
     <n-upload-dragger>
       <div style="margin-bottom: 12px">
@@ -32,7 +33,7 @@
 import {Icon} from "@iconify/vue";
 import {useMainStore} from "@/store/store.ts";
 import {UploadCustomRequestOptions, UploadFileInfo} from "naive-ui";
-import {ref} from 'vue';
+import {reactive, ref} from 'vue';
 import {getExif} from "@/utils/ExifUtil.ts";
 import ExifDTO from "@/model/exif/ExifDTO.ts";
 import {timestampToDateTime} from "@/utils/dateTime/DateTimeUtil.ts";
@@ -75,6 +76,7 @@ const emits = defineEmits(['finish']);
 
 const tokenHeader = ref('');
 tokenHeader.value = <string>useMainStore().token;
+const uploadingCounter = reactive<AsyncCounter>(new AsyncCounter());
 
 // 文件获取hash值
 const getFileMD5 = (file: File) => {
@@ -119,7 +121,8 @@ const onBeforeUpload = async (options: {
       title: '暂时不支持上传超过10M的照片',
       content: '除非你给钱我换服务器🫤',
       duration: 1688
-    })
+    });
+    uploadingCounter.increment(-1);
     return false;
   }
 
@@ -240,6 +243,7 @@ const uploadChunk = (formData: FormData,
                      file: UploadFileInfo,
                      onFinish,
                      onError) => {
+  uploadingCounter.increment(1);
   request.post(<string>props.uploadUrl, formData, {
     headers: {"Content-Type": 'application/x-www-form-urlencoded'}
   }).then(res => {
@@ -251,14 +255,14 @@ const uploadChunk = (formData: FormData,
     console.log(asyncCounter.getCount());
 
     // 判断是否所有分片上传完毕
-    if (asyncCounter.getCount() >= 100 && res.data.url) {
+    if (asyncCounter.getCount() >= 100 && res.data && res.data.url) {
       onProgress({percent: 100})
       doFinish(file, res, onFinish);
     }
   }).catch(err => {
     console.log(err);
     onError();
-  })
+  }).finally(()=> uploadingCounter.increment(-1))
 }
 
 const fillFormData = (data) => {
@@ -284,9 +288,12 @@ const customRequest = async ({
                                onProgress
                              }: UploadCustomRequestOptions) => {
 
+  await uploadingCounter.increment(1);
+
   // 构造请求数据
   let d: any = await onBeforeUpload({file: file, fileList: []});
   if (!d) {
+    await uploadingCounter.increment(-1);
     onError();
     return;
   }
@@ -335,6 +342,7 @@ const customRequest = async ({
         uploadChunk(formData, onProgress, progressAddNum, file, onFinish, onError);
       }
     }
+    uploadingCounter.increment(-1);
     return;
   }
 
@@ -357,7 +365,7 @@ const customRequest = async ({
 
     (<UploadFileInfo>file).status = 'error';
     onError();
-  })
+  }).finally(() => uploadingCounter.increment(-1));
 
 }
 
@@ -388,42 +396,6 @@ const onRemove = async (options: { file: UploadFileInfo, fileList: Array<UploadF
 //
 // }
 
-// const customRequest = ({
-//                          file,
-//                          data,
-//                          headers,
-//                          withCredentials,
-//                          action,
-//                          onFinish,
-//                          onError,
-//                          onProgress
-//                        }: UploadCustomRequestOptions) => {
-//   const formData = new FormData()
-//   if (data) {
-//     Object.keys(data).forEach((key) => {
-//       formData.append(
-//           key,
-//           data[key as keyof UploadCustomRequestOptions['data']]
-//       )
-//     })
-//   }
-//   formData.append(file.name, file.file as File)
-//   request.post(action as string, formData, {
-//         headers: headers,
-//       })
-//       .then((res) => {
-//         if(onFinish){
-//           file.url = res.data.url;
-//           file.name = res.data.fileName;
-//           onFinish()
-//         }
-//       })
-//       .catch((error) => {
-//         if(onError) {
-//           onError()
-//         }
-//       })
-// }
 
 
 </script>
