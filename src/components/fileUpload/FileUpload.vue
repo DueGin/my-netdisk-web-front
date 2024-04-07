@@ -150,9 +150,9 @@ const onBeforeUpload = async (options: {
   }
 
   // md5校验报错了，就不上传了
-  if (preUploadDTO && preUploadDTO.exist === 1) {
-    return res;
-  }
+  // if (preUploadDTO && preUploadDTO.exist === 1) {
+  //   return res;
+  // }
 
   if (!props.isAnalysisExif) {
     return res;
