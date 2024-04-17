@@ -187,6 +187,7 @@ const handleRegister = () => {
 .app-container {
   height: 100vh;
   box-sizing: border-box;
+  background: center / contain no-repeat url("src/assets/background.png");
 }
 
 .login-form {
