@@ -36,7 +36,8 @@ import GinPiece from "@/components/gin-piece/GinPiece.vue";
 import {getThatYearToday} from "@/apis/media/MediaApi.ts";
 
 onActivated(() => {
-  console.log('activated home')
+  console.log('activated home');
+  getList();
 })
 
 let size = 3;
@@ -48,6 +49,7 @@ const getList = () => {
     }
   })
 }
+
 </script>
 
 <style scoped>
