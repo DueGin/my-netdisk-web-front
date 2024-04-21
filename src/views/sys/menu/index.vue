@@ -43,7 +43,7 @@ const icon = ref('');
 const tableKey = ref(0);
 
 // region 标签页，菜单类型
-const menuTypeValue = ref('2');
+const menuTypeValue = ref('3');
 const menuType = ref([]);
 const getMenuTypeList = () => {
   getDictList('menu').then(res => {

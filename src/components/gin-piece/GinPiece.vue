@@ -1,12 +1,18 @@
 <template>
   <div
-      :class="['piece', {'piece-rectangle-medium' : size === 'medium', 'piece-rectangle-small' : size === 'small', 'piece-rectangle-large' : size === 'large'}]"
+      :class="['piece', {'piece-rectangle-medium' : size === 'medium',
+      'piece-rectangle-small' : size === 'small',
+      'piece-rectangle-large' : size === 'large'
+      }]"
       v-if="type || (type && type === 'rectangle')"
   >
     <slot/>
   </div>
   <div
-      :class="['piece', {'piece-square-medium' : size === 'medium', 'piece-square-small' : size === 'small', 'piece-square-large' : size === 'large'}]"
+      :class="['piece', {'piece-square-medium' : size === 'medium',
+      'piece-square-small' : size === 'small',
+      'piece-square-large' : size === 'large'
+      }]"
       v-else-if="type && type === 'square'"
   >
     <slot/>
@@ -16,7 +22,7 @@
 
 <script setup lang="ts">
 interface Props {
-  size?: 'small' | 'medium' | 'large',
+  size?: 'small' | 'medium' | 'large' | 'unset',
   type?: 'square' | 'rectangle',
 }
 
