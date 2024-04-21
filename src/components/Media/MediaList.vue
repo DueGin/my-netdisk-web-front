@@ -69,9 +69,14 @@
           @click="isOpenSelect && selectItem(item, index)"
           :key="item.fileName"
       >
+        <VideoPlayer
+            v-if="item.mimeType && item.mimeType.includes('video') || item.fileName.includes('.mp4') || item.fileName.includes('.mov')"
+            :isUseDialog="isUseVideoDialog"
+            :src="item.url"
+        />
         <n-image
             @contextmenu="showRightMenu"
-            v-if="!item.mimeType || (item.mimeType && item.mimeType.includes('image'))"
+            v-else-if="!item.mimeType || (item.mimeType && item.mimeType.includes('image'))"
             :src="item.url"
             width="100%"
             height="100%"
@@ -80,11 +85,7 @@
             :preview-disabled="isPreviewPhoto"
         />
         <!--            :preview-src="downloadMedia(item.fileName)"-->
-        <VideoPlayer
-            v-else-if="item.mimeType.includes('video')"
-            :isUseDialog="isUseVideoDialog"
-            :src="item.url"
-        />
+
         <n-icon v-show="item.isSelected" size="2rem" class="select-icon">
           <Icon icon="zondicons:checkmark-outline" color="#00ff66"/>
         </n-icon>

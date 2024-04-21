@@ -193,6 +193,8 @@ const onBeforeUpload = async (options: {
     }
 
     res = {...v, ...res};
+  }).catch(err => {
+    console.log(err);
   })
 
   return res;
@@ -261,7 +263,7 @@ const uploadChunk = (formData: FormData,
   }).catch(err => {
     console.log(err);
     onError();
-  }).finally(()=> uploadingCounter.increment(-1))
+  }).finally(() => uploadingCounter.increment(-1))
 }
 
 const fillFormData = (data) => {
@@ -394,7 +396,6 @@ const onRemove = async (options: { file: UploadFileInfo, fileList: Array<UploadF
 //   })
 //
 // }
-
 
 
 </script>
